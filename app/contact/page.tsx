@@ -45,19 +45,6 @@ export default function ContactPage() {
                 
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="font-medium text-lg mb-2">Phone</h3>
-                    <p className="text-muted-foreground mb-2">For urgent matters or to speak directly:</p>
-                    <a href="tel:+15551234567" className="text-deepBlue hover:text-deepBlue-light">
-                      (555) 123-4567
-                    </a>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Available Monday-Friday, 10am-6pm EST
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardContent className="p-6">
                     <h3 className="font-medium text-lg mb-2">Follow Me</h3>
                     <p className="text-muted-foreground mb-4">Connect on social media for updates and cosmic insights:</p>
                     <div className="flex space-x-4">
@@ -123,7 +110,7 @@ export default function ContactPage() {
               <CardContent className="p-6">
                 <h3 className="font-medium text-lg mb-2">Do you offer emergency readings?</h3>
                 <p className="text-muted-foreground">
-                  While I don't typically offer same-day appointments, I do my best to accommodate urgent situations when possible. Please call directly for immediate needs.
+                  While I don't typically offer same-day appointments, I do my best to accommodate urgent situations when possible. Please email me directly for immediate needs.
                 </p>
               </CardContent>
             </Card>
