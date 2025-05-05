@@ -3,22 +3,16 @@
 import { useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
-import { Metadata } from "next"
 import { retrievePaymentIntent } from "@/lib/stripe"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-
-export const metadata: Metadata = {
-  title: "Booking Confirmation | Sarah Wharton Astrology",
-  description: "Confirmation of your astrology reading booking.",
-}
 
 export default function BookingConfirmationPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
-  const [status, setStatus] = useState<"success" | "processing" | "error">("processing")
-  const [bookingDetails, setBookingDetails] = useState<any>(null)
+  const [status, setStatus] = useState("processing")
+  const [bookingDetails, setBookingDetails] = useState(null)
 
   useEffect(() => {
     async function checkPaymentStatus() {
@@ -134,7 +128,7 @@ export default function BookingConfirmationPage() {
                 Unfortunately, there was a problem processing your payment. Your booking has not been confirmed.
               </p>
               <p className="text-sm text-muted-foreground mb-6">
-                Please try again or contact us if you continue to experience issues.
+                Please try again or contact me if you continue to experience issues.
               </p>
             </CardContent>
             <CardFooter className="flex flex-col space-y-2">
@@ -142,7 +136,7 @@ export default function BookingConfirmationPage() {
                 <Link href="/booking">Try Again</Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/contact">Contact Support</Link>
+                <Link href="/contact">Contact Me</Link>
               </Button>
             </CardFooter>
           </Card>
