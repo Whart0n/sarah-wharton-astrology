@@ -1,12 +1,8 @@
-// Dummy comment: trigger clean build
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ServiceForm } from "@/components/admin/service-form"
 import { getServiceById } from "@/lib/supabase"
-
-
-
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   try {
@@ -23,7 +19,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-const Page = async ({ params }: { params: { id: string } }) => {
+// Using function declaration instead of arrow function
+export default async function Page({ params }: { params: { id: string } }) {
   // Fetch the service
   let service
   try {
@@ -53,5 +50,3 @@ const Page = async ({ params }: { params: { id: string } }) => {
     </div>
   )
 }
-
-export default Page;
