@@ -25,7 +25,7 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
   try {
     await mailService.send({
       to: params.to,
-      from: process.env.EMAIL_FROM || 'no-reply@astrologywebsite.com',
+      from: process.env.EMAIL_FROM || 'no-reply@sarahwharton.com',
       subject: params.subject,
       text: params.text,
       html: params.html,
@@ -114,7 +114,7 @@ export function getAstrologerBookingNotificationEmail(booking: {
   });
 
   return {
-    to: process.env.EMAIL_FROM || 'astrologer@astrologywebsite.com',
+    to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
     subject: 'New Booking Notification',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -140,7 +140,7 @@ export function getContactFormNotificationEmail(contact: {
   message: string;
 }): EmailParams {
   return {
-    to: process.env.EMAIL_FROM || 'astrologer@astrologywebsite.com',
+    to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
     subject: 'New Contact Form Submission',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

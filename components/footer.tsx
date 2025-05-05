@@ -6,7 +6,7 @@ export function Footer() {
     <footer className="bg-deepBlue text-white/80 py-12">
       <div className="container grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="col-span-1">
-          <h3 className="text-gold font-serif text-2xl mb-4">Cosmic Insight</h3>
+          <h3 className="text-gold font-serif text-2xl mb-4">Sarah Wharton</h3>
           <p className="text-sm">
             Illuminating your path through the stars. Professional astrology readings
             to help you navigate life's journey with clarity and purpose.
@@ -47,7 +47,7 @@ export function Footer() {
         <div className="col-span-1">
           <h4 className="font-medium text-white mb-4">Contact</h4>
           <address className="not-italic text-sm space-y-2">
-            <p>Email: contact@cosmicinsight.com</p>
+            <p>Email: sarah@sarahwharton.com</p>
             <p>Phone: (555) 123-4567</p>
             <p>Address: 123 Celestial Avenue, Starry City</p>
           </address>
@@ -56,7 +56,7 @@ export function Footer() {
         <div className="col-span-1">
           <h4 className="font-medium text-white mb-4">Subscribe</h4>
           <p className="text-sm mb-4">
-            Join our newsletter for monthly horoscopes and cosmic updates.
+            Join my newsletter for monthly horoscopes and cosmic updates.
           </p>
           <div className="flex space-x-2">
             <input
@@ -73,7 +73,7 @@ export function Footer() {
       
       <div className="container mt-12 pt-6 border-t border-deepBlue-light flex flex-col md:flex-row justify-between items-center">
         <p className="text-xs text-white/60">
-          &copy; {new Date().getFullYear()} Cosmic Insight. All rights reserved.
+          &copy; {new Date().getFullYear()} Sarah Wharton. All rights reserved.
         </p>
         <div className="flex space-x-4 mt-4 md:mt-0">
           <SocialIcon icon={<FacebookIcon />} />
