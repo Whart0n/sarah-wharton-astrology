@@ -30,3 +30,4 @@ A full-stack Next.js application for an astrology practice website with booking 
 
 Create a `.env.local` file with the following variables:
 
+# sarah-wharton-astrology
