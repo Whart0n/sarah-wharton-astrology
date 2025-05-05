@@ -4,11 +4,12 @@ import Link from "next/link"
 import { getServiceById } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { BookingForm } from "@/components/booking-form"
+import { NextPage } from 'next'
 
 type BookingServicePageProps = {
   params: { serviceId: string };
-  searchParams?: Record<string, string | string[] | undefined>;
-}
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
 
 export async function generateMetadata({ params }: BookingServicePageProps): Promise<Metadata> {
   try {
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: BookingServicePageProps): Pro
   }
 }
 
-export default async function BookingServicePage({ params }: BookingServicePageProps) {
+const BookingServicePage: NextPage<BookingServicePageProps> = async ({ params }) => {
   // Fetch the service
   let service
   try {
@@ -106,3 +107,5 @@ export default async function BookingServicePage({ params }: BookingServicePageP
     </div>
   )
 }
+
+export default BookingServicePage;

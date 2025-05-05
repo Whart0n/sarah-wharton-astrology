@@ -1,0 +1,216 @@
+teps to Fix the Type Error and Deploy Successfully
+1. Update app/admin/services/edit/[id]/page.tsx
+The error is in app/admin/services/edit/[id]/page.tsx. The EditServicePageProps type is not aligning with Next.js’s expected PageProps for dynamic routes. Let’s replace the file’s content with a correct version.
+Open app/admin/services/edit/[id]/page.tsx in Replit.
+
+Replace the Content with the following:
+typescript
+import { NextPage } from 'next';
+
+type EditServicePageProps = {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
+
+const EditServicePage: NextPage<EditServicePageProps> = async ({ params }) => {
+  const { id } = params;
+
+  // Placeholder for your existing logic (e.g., fetching service data from Supabase)
+  // Replace this with your actual Supabase query or form logic
+  const service = { id, name: 'Sample Service', description: 'Placeholder', duration_minutes: 60, price_cents: 10000 };
+
+  return (
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Edit Service: {id}</h1>
+      <form>
+        <div className="mb-4">
+          <label className="block text-sm font-medium">Name</label>
+          <input
+            type="text"
+            defaultValue={service.name}
+            className="mt-1 block w-full border rounded-md p-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium">Description</label>
+          <textarea
+            defaultValue={service.description}
+            className="mt-1 block w-full border rounded-md p-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium">Duration (minutes)</label>
+          <input
+            type="number"
+            defaultValue={service.duration_minutes}
+            className="mt-1 block w-full border rounded-md p-2"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium">Price (cents)</label>
+          <input
+            type="number"
+            defaultValue={service.price_cents}
+            className="mt-1 block w-full border rounded-md p-2"
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        >
+          Save
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default EditServicePage;
+
+Key Changes:
+Defines EditServicePageProps with params: { id: string } and optional searchParams to match Next.js’s PageProps.
+
+Uses NextPage to ensure TypeScript compatibility.
+
+Marks the component as async to support server-side data fetching (common for Supabase queries).
+
+Includes a placeholder form based on your project’s likely structure (edit service details).
+
+Uses Shadcn-compatible styling (e.g., className for Tailwind-like classes, assuming Shadcn’s setup).
+Adapt Your Logic:
+The placeholder service object and form are examples. Replace them with your actual Supabase query to fetch the service by id and your form logic to update it. For example:
+typescript
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!);
+
+const { data: service, error } = await supabase
+  .from('services')
+  .select('*')
+  .eq('id', id)
+  .single();
+
+if (error) {
+  return <div>Error loading service</div>;
+}
+2. Verify the File Was Updated
+Check the File Content in Replit to ensure app/admin/services/edit/[id]/page.tsx matches the updated code.
+
+Run a Local Build to catch TypeScript errors:
+bash
+npm run build
+
+If the build fails with the same error, the file wasn’t updated correctly. Reapply the changes.
+3. Commit and Push Changes
+Commit the updated file to GitHub.
+In Replit’s shell:
+bash
+git add app/admin/services/edit/[id]/page.tsx
+git commit -m "Fix EditServicePageProps type for Vercel build"
+git push origin main
+Verify the Push:
+Go to https://github.com/Whart0n/sarah-wharton-astrology/blob/main/app/admin/services/edit/%5Bid%5D/page.tsx and confirm the file reflects the updated code. If it doesn’t, repeat the commit/push steps and check for Git errors.
+4. Redeploy on Vercel
+Trigger a new deployment:
+In Vercel’s Dashboard:
+Go to your project (sarah-wharton-astrology).
+
+Navigate to the Deployments tab.
+
+Click the three dots next to the latest failed deployment and select Redeploy.
+Vercel should also auto-detect the new push to main.
+
+Clear Build Cache:
+To rule out stale TypeScript types, redeploy with Clear Cache:
+In the Deployments tab, select Redeploy with Clear Cache.
+Monitor Logs:
+Check the build logs to confirm the TypeScript error is resolved.
+5. Fix .next Directory Warning
+The warning WARNING: You should not upload the .next directory persists, indicating that the .next directory is still tracked in Git.
+Update .gitignore:
+Open .gitignore in Replit and ensure it includes:
+plaintext
+.next
+node_modules
+Remove .next from Git:
+bash
+git rm -r --cached .next
+git add .gitignore
+git commit -m "Remove .next from Git"
+git push origin main
+6. Address Supabase Deprecation Warnings
+The warnings about @supabase/auth-helpers-shared@0.7.0 and @supabase/auth-helpers-nextjs@0.10.0 suggest migrating to @supabase/ssr.
+Update Supabase:
+bash
+npm install @supabase/ssr
+npm uninstall @supabase/auth-helpers-shared @supabase/auth-helpers-nextjs
+Update Code:
+Update Supabase authentication code (e.g., in app/api/auth/[...supabase]/route.ts). Example:
+javascript
+import { createServerClient } from '@supabase/ssr';
+
+See Supabase SSR documentation.
+
+Commit Changes:
+bash
+git add .
+git commit -m "Migrate to @supabase/ssr"
+git push origin main
+7. Verify Environment Variables
+Ensure all environment variables are set in Vercel:
+In Vercel’s Dashboard:
+Go to Settings > Environment Variables.
+
+Confirm:
+SUPABASE_URL
+
+SUPABASE_ANON_KEY
+
+GOOGLE_CLIENT_ID
+
+GOOGLE_CLIENT_SECRET
+
+GOOGLE_REDIRECT_URI
+
+STRIPE_SECRET_KEY
+
+STRIPE_WEBHOOK_SECRET
+
+SENDGRID_API_KEY
+Save and redeploy if changes are made.
+8. Downgrade TypeScript (Temporary Workaround)
+If the error persists, it might be a TypeScript version mismatch with Next.js 15.3.1. Downgrade TypeScript to a compatible version.
+Check package.json:
+Look for:
+json
+"devDependencies": {
+  "typescript": "^5.x.x"
+}
+Downgrade TypeScript:
+bash
+npm install typescript@5.2.2
+git add package.json package-lock.json
+git commit -m "Downgrade TypeScript to 5.2.2"
+git push origin main
+Troubleshooting If Errors Persist
+If the build fails with the same error:
+Verify File Content:
+Check https://github.com/Whart0n/sarah-wharton-astrology/blob/main/app/admin/services/edit/%5Bid%5D/page.tsx. If it doesn’t match the provided code, the push failed or was overridden. Repeat Steps 1–3.
+
+Share File Content:
+Share the current content of app/admin/services/edit/[id]/page.tsx (sanitized) so I can pinpoint the type issue.
+
+Check tsconfig.json:
+Ensure the plugins section with "name": "next" is present (see previous response).
+
+Disable Strict Type Checking (Temporary):
+If desperate, disable strict type checking in tsconfig.json to bypass the error (not recommended long-term):
+json
+"strict": false
+
+Commit and push:
+bash
+git add tsconfig.json
+git commit -m "Disable strict type checking temporarily"
+git push origin main
+
