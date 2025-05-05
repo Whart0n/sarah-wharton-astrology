@@ -1018,6 +1018,9 @@ video {
 .border-t-2 {
   border-top-width: 2px;
 }
+.border-none {
+  border-style: none;
+}
 .border-deepBlue {
   --tw-border-opacity: 1;
   border-color: rgb(10 25 48 / var(--tw-border-opacity));
@@ -1669,6 +1672,10 @@ video {
 
 .hover\:bg-black\/30:hover {
   background-color: rgb(0 0 0 / 0.3);
+}
+
+.hover\:bg-deepBlue\/80:hover {
+  background-color: rgb(10 25 48 / 0.8);
 }
 
 .hover\:text-accent-foreground:hover {
