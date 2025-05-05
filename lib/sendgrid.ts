@@ -22,13 +22,17 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
     return false;
   }
 
+  // Ensure text and html are not undefined
+  const text = params.text || '';
+  const html = params.html || '';
+
   try {
     await mailService.send({
       to: params.to,
       from: process.env.EMAIL_FROM || 'no-reply@sarahwharton.com',
       subject: params.subject,
-      text: params.text,
-      html: params.html,
+      text,
+      html,
     });
     return true;
   } catch (error) {
@@ -67,6 +71,7 @@ export function getClientBookingConfirmationEmail(booking: {
   return {
     to: booking.client_name,
     subject: 'Your Astrology Reading Confirmation',
+    text: `Thank you for booking an astrology reading with Sarah Wharton. Your appointment for ${booking.service_name} has been confirmed for ${formattedDate} at ${formattedStartTime}.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #0a1930;">Booking Confirmation</h2>
@@ -116,6 +121,7 @@ export function getAstrologerBookingNotificationEmail(booking: {
   return {
     to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
     subject: 'New Booking Notification',
+    text: `New booking from ${booking.client_name} (${booking.client_email}) for ${booking.service_name} on ${formattedDate} at ${formattedStartTime}.`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #0a1930;">New Booking Alert</h2>
@@ -142,6 +148,7 @@ export function getContactFormNotificationEmail(contact: {
   return {
     to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
     subject: 'New Contact Form Submission',
+    text: `New contact form submission from ${contact.name} (${contact.email}): ${contact.message}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #0a1930;">New Contact Form Submission</h2>
