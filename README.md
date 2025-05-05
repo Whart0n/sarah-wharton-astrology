@@ -32,3 +32,4 @@ Create a `.env.local` file with the following variables:
 
 # sarah-wharton-astrology
 # sarah-wharton-astrology
+# sarah-wharton-astrology
