@@ -35,7 +35,7 @@ export default async function HomePage() {
       {/* Hero Section */}
       <section className="hero-section text-white">
         <div className="container mx-auto px-4 py-20 md:py-32 flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-serif mb-6 gold-gradient-text">
+          <h1 className="text-4xl md:text-6xl font-serif mb-6 gold-gradient-text drop-shadow-lg">
             Astrology Readings
           </h1>
           <p className="text-lg md:text-xl max-w-2xl mb-10 text-white/80">
@@ -85,7 +85,7 @@ export default async function HomePage() {
               ))
             ) : (
               <div className="col-span-3 text-center py-8">
-                <p className="text-muted-foreground">Services are currently being updated. Please check back soon.</p>
+                <p className="text-muted-foreground"></p>
               </div>
             )}
           </div>

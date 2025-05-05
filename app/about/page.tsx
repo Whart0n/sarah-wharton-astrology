@@ -35,10 +35,9 @@ export default async function AboutPage() {
             </div>
             <div className="md:w-2/3 text-center md:text-left">
               <h1 className="text-4xl md:text-5xl font-serif mb-6 gold-gradient-text">
-                About the Astrologer
+                About Sarah
               </h1>
               <p className="text-lg md:text-xl max-w-3xl mx-auto md:mx-0 text-white/80">
-                Learn about my background and discover my approach to astrology
               </p>
             </div>
           </div>
@@ -49,78 +48,7 @@ export default async function AboutPage() {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {/* Sidebar */}
-            <div className="order-2 md:order-1">
-              <Card className="sticky top-24">
-                <CardContent className="p-6 space-y-6">
-                  <div>
-                    <h3 className="text-xl font-serif text-deepBlue mb-3">Areas of Expertise</h3>
-                    <ul className="space-y-2 text-muted-foreground">
-                      <li className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Natal Chart Analysis
-                      </li>
-                      <li className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Relationship Compatibility
-                      </li>
-                      <li className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Career & Life Path Guidance
-                      </li>
-                      <li className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Timing & Forecasting
-                      </li>
-                      <li className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Spiritual Development
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-serif text-deepBlue mb-3">Credentials</h3>
-                    <ul className="space-y-2 text-muted-foreground">
-                      <li className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Certified Astrologer (NCGR)
-                      </li>
-                      <li className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        10+ Years Professional Experience
-                      </li>
-                      <li className="flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Advanced Studies in Traditional and Modern Techniques
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="pt-4">
-                    <Button asChild variant="gold" className="w-full">
-                      <Link href="/booking">Book a Reading</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+           
 
             {/* MDX Content */}
             <div className="order-1 md:order-2 md:col-span-2">
@@ -129,20 +57,14 @@ export default async function AboutPage() {
                 
                 <div className="star-divider"></div>
                 
-                <h2>My Approach to Astrology</h2>
-                <p>
-                  I believe that astrology is a powerful tool for self-discovery and personal growth. My readings are focused on empowering you to make informed decisions and understand your unique gifts and challenges.
-                </p>
-                <p>
-                  Rather than making predictions that feel set in stone, I work with you to understand the cosmic energies at play in your life and how you can best navigate them. Astrology is not about predetermination, but about understanding the potentials and possibilities available to you.
-                </p>
+            
                 
                 <h3>What to Expect in a Reading</h3>
                 <p>
-                  My sessions are collaborative and conversational. I provide a safe, non-judgmental space for exploration and discovery. Whether you're new to astrology or have been studying your chart for years, I meet you where you are and provide insights that are both accessible and profound.
-                </p>
+                  My sessions are collaborative and conversational. I offer a safe, non-judgmental space for reflection, insight, and discovery. Whether you're completely new to astrology or a longtime student of your chart, I'll meet you where you are and provide insights that are both accessible and profound.
+                </p><br></br>
                 <p>
-                  Each reading includes both analysis of your chart and practical guidance for integrating these insights into your daily life. I'm interested not just in what your chart says, but in how this information can serve your growth and well-being.
+                  Each reading includes detailed chart analysis alongside practical guidance for integrating that insight into your daily life. My goal is not only to interpret your chart, but to help you apply its wisdom in a way that supports your growth and well-being.
                 </p>
                 
                 <div className="not-prose mt-8">
