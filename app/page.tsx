@@ -9,7 +9,7 @@ import { ServiceCard } from "@/components/service-card"
 import { getServices } from "@/lib/supabase"
 
 export const metadata: Metadata = {
-  title: "Cosmic Insight | Professional Astrology Readings",
+  title: "Sarah Wharton | Professional Astrology Readings",
   description: "Discover your cosmic blueprint with professional astrology readings tailored to illuminate your path forward.",
 }
 

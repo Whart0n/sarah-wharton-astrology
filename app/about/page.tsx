@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
 export const metadata: Metadata = {
-  title: "About | Cosmic Insight Astrology",
-  description: "Learn about the astrologer behind Cosmic Insight and their approach to readings.",
+  title: "About | Sarah Wharton Astrology",
+  description: "Learn about Sarah Wharton and her approach to astrology readings.",
 }
 
 export default async function AboutPage() {
@@ -27,7 +27,7 @@ export default async function AboutPage() {
             About the Astrologer
           </h1>
           <p className="text-lg md:text-xl max-w-3xl mx-auto text-white/80">
-            Meet the person behind Cosmic Insight and discover my approach to astrology
+            Learn about my background and discover my approach to astrology
           </p>
         </div>
       </section>
