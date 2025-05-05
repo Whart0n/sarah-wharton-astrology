@@ -4,9 +4,9 @@ import Link from "next/link"
 import { ServiceForm } from "@/components/admin/service-form"
 import { getServiceById } from "@/lib/supabase"
 
-interface EditServicePageProps {
+type EditServicePageProps = {
   params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
 export async function generateMetadata({ params }: EditServicePageProps): Promise<Metadata> {
