@@ -3,14 +3,11 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { ServiceForm } from "@/components/admin/service-form"
 import { getServiceById } from "@/lib/supabase"
-import { NextPage } from 'next'
 
-type EditServicePageProps = {
-  params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
 
-export async function generateMetadata({ params }: EditServicePageProps): Promise<Metadata> {
+
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   try {
     const service = await getServiceById(params.id)
     return {
@@ -25,7 +22,7 @@ export async function generateMetadata({ params }: EditServicePageProps): Promis
   }
 }
 
-const EditServicePage: NextPage<EditServicePageProps> = async ({ params }) => {
+const EditServicePage = async ({ params }: { params: { id: string } }) => {
   // Fetch the service
   let service
   try {
