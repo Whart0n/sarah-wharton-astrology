@@ -1,0 +1,42 @@
+[16:39:47.209] Running build in Washington, D.C., USA (East) – iad1
+[16:39:47.226] Cloning github.com/Whart0n/sarah-wharton-astrology (Branch: main, Commit: ebb84bb)
+[16:39:47.403] Previous build caches not available
+[16:39:55.082] Cloning completed: 7.856s
+[16:39:55.615] Running "vercel build"
+[16:39:57.328] Vercel CLI 41.7.0
+[16:39:57.637] Your application is being built using `next build`. If you need to define a different build step, please create a `vercel-build` script in your `package.json` (e.g. `{ "scripts": { "vercel-build": "npm run prepare && next build" } }`).
+[16:39:57.642] Installing dependencies...
+[16:40:02.149] npm warn deprecated @supabase/auth-helpers-shared@0.7.0: This package is now deprecated - please use the @supabase/ssr package instead.
+[16:40:02.586] npm warn deprecated @supabase/auth-helpers-nextjs@0.10.0: This package is now deprecated - please use the @supabase/ssr package instead.
+[16:40:12.660] 
+[16:40:12.662] added 441 packages in 15s
+[16:40:12.662] 
+[16:40:12.662] 161 packages are looking for funding
+[16:40:12.664]   run `npm fund` for details
+[16:40:12.723] Detected Next.js version: 15.3.1
+[16:40:12.727] Running "npm run vercel-build"
+[16:40:12.858] 
+[16:40:12.859] > workspace@1.0.0 vercel-build
+[16:40:12.859] > next build
+[16:40:12.859] 
+[16:40:13.464] Attention: Next.js now collects completely anonymous telemetry regarding usage.
+[16:40:13.465] This information is used to shape Next.js' roadmap and prioritize features.
+[16:40:13.465] You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[16:40:13.465] https://nextjs.org/telemetry
+[16:40:13.465] 
+[16:40:13.523]    ▲ Next.js 15.3.1
+[16:40:13.524] 
+[16:40:13.623]    Creating an optimized production build ...
+[16:40:47.518]  ✓ Compiled successfully in 33.0s
+[16:40:47.527]    Linting and checking validity of types ...
+[16:41:06.185] Failed to compile.
+[16:41:06.186] 
+[16:41:06.186] app/admin/services/edit/[id]/page.tsx
+[16:41:06.186] Type error: Type 'EditServicePageProps' does not satisfy the constraint 'PageProps'.
+[16:41:06.186]   Types of property 'params' are incompatible.
+[16:41:06.187]     Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+[16:41:06.187] 
+[16:41:06.260] Next.js build worker exited with code: 1 and signal: null
+[16:41:06.304] Error: Command "npm run vercel-build" exited with 1
+[16:41:06.600] 
+[16:41:09.734] Exiting build container
