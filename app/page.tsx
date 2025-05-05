@@ -34,18 +34,18 @@ export default async function HomePage() {
     <div>
       {/* Hero Section */}
       <section className="hero-section text-white">
-        <div className="container mx-auto px-4 py-24 md:py-36 flex flex-col items-center text-center">
-          <h1 className="text-4xl md:text-6xl font-serif mb-6 gold-gradient-text drop-shadow-lg">
-            Illuminate Your Cosmic Journey
+        <div className="container mx-auto px-4 py-20 md:py-32 flex flex-col items-center text-center">
+          <h1 className="text-4xl md:text-6xl font-serif mb-6 gold-gradient-text">
+            Astrology Readings
           </h1>
-          <p className="text-lg md:text-xl max-w-2xl mb-10 text-white drop-shadow-md font-medium">
-            Discover the wisdom of the stars and unlock your true potential with professional astrology readings
+          <p className="text-lg md:text-xl max-w-2xl mb-10 text-white/80">
+            
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button asChild size="lg" variant="gold" className="shadow-lg">
+            <Button asChild size="lg" variant="gold">
               <Link href="/booking">Book a Reading</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-black/30 shadow-lg">
+            <Button asChild size="lg" className="bg-deepBlue text-white border-none hover:bg-deepBlue/80 shadow-lg">
               <Link href="/services">Explore Services</Link>
             </Button>
           </div>
