@@ -1,0 +1,38 @@
+[16:25:25.801] Running build in Washington, D.C., USA (East) – iad1
+[16:25:25.818] Cloning github.com/Whart0n/sarah-wharton-astrology (Branch: main, Commit: 07cfa1e)
+[16:25:25.985] Previous build caches not available
+[16:25:29.699] Cloning completed: 3.880s
+[16:25:30.272] Running "vercel build"
+[16:25:30.645] Vercel CLI 41.7.0
+[16:25:30.958] WARNING: You should not upload the `.next` directory.
+[16:25:30.961] Your application is being built using `next build`. If you need to define a different build step, please create a `vercel-build` script in your `package.json` (e.g. `{ "scripts": { "vercel-build": "npm run prepare && next build" } }`).
+[16:25:30.965] Installing dependencies...
+[16:25:35.181] npm warn deprecated @supabase/auth-helpers-shared@0.7.0: This package is now deprecated - please use the @supabase/ssr package instead.
+[16:25:35.679] npm warn deprecated @supabase/auth-helpers-nextjs@0.10.0: This package is now deprecated - please use the @supabase/ssr package instead.
+[16:25:45.735] 
+[16:25:45.736] added 441 packages in 14s
+[16:25:45.736] 
+[16:25:45.737] 161 packages are looking for funding
+[16:25:45.737]   run `npm fund` for details
+[16:25:45.802] Detected Next.js version: 15.3.1
+[16:25:45.806] Running "npm run vercel-build"
+[16:25:45.923] 
+[16:25:45.924] > workspace@1.0.0 vercel-build
+[16:25:45.924] > next build
+[16:25:45.924] 
+[16:25:46.556]    ▲ Next.js 15.3.1
+[16:25:46.557] 
+[16:25:46.629]    Creating an optimized production build ...
+[16:26:19.158]  ✓ Compiled successfully in 32.0s
+[16:26:19.168]    Linting and checking validity of types ...
+[16:26:36.257] Failed to compile.
+[16:26:36.257] 
+[16:26:36.258] app/admin/services/edit/[id]/page.tsx
+[16:26:36.258] Type error: Type 'EditServicePageProps' does not satisfy the constraint 'PageProps'.
+[16:26:36.258]   Types of property 'params' are incompatible.
+[16:26:36.258]     Type '{ id: string; }' is missing the following properties from type 'Promise<any>': then, catch, finally, [Symbol.toStringTag]
+[16:26:36.258] 
+[16:26:36.356] Next.js build worker exited with code: 1 and signal: null
+[16:26:36.427] Error: Command "npm run vercel-build" exited with 1
+[16:26:36.676] 
+[16:26:39.743] Exiting build container

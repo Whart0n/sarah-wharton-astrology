@@ -5,12 +5,9 @@ import { getServiceById } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { BookingForm } from "@/components/booking-form"
 
-import { PageProps } from 'next/types'
-
-interface BookingServicePageProps extends PageProps {
-  params: {
-    serviceId: string
-  }
+interface BookingServicePageProps {
+  params: { serviceId: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata({ params }: BookingServicePageProps): Promise<Metadata> {

@@ -4,12 +4,9 @@ import Link from "next/link"
 import { ServiceForm } from "@/components/admin/service-form"
 import { getServiceById } from "@/lib/supabase"
 
-import { PageProps } from 'next/types'
-
-interface EditServicePageProps extends PageProps {
-  params: {
-    id: string
-  }
+interface EditServicePageProps {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata({ params }: EditServicePageProps): Promise<Metadata> {
