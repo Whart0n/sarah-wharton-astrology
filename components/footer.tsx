@@ -48,16 +48,11 @@ export function Footer() {
           <h4 className="font-medium text-white mb-4">Contact</h4>
           <address className="not-italic text-sm space-y-2">
             <p>Email: sarah@sarahwharton.com</p>
-            <p>Phone: (555) 123-4567</p>
-            <p>Address: 123 Celestial Avenue, Starry City</p>
           </address>
         </div>
         
         <div className="col-span-1">
           <h4 className="font-medium text-white mb-4">Subscribe</h4>
-          <p className="text-sm mb-4">
-            Join my newsletter for monthly horoscopes and cosmic updates.
-          </p>
           <div className="flex space-x-2">
             <input
               type="email"
