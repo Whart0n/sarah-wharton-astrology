@@ -1,0 +1,50 @@
+Generate a full-stack Next.js application for an astrology practice website using Replit, with the following specifications:
+
+- **Tech Stack**:
+  - Frontend: Next.js with React
+  - UI: Shadcn (for pre-built, customizable components)
+  - Backend: Next.js API routes
+  - Database: Supabase (PostgreSQL) for storing services and bookings
+  - Authentication: Supabase Auth for admin access
+  - Calendar Integration: Google Calendar API for scheduling
+  - Payment Integration: Stripe API for processing payments
+  - Email Notifications: SendGrid (or similar service) for booking confirmations
+
+- **Pages**:
+  - Home: Introduction to the practice, featured services, and a "Book Now" call-to-action (use MDX for editable content)
+  - About: Astrologer’s bio and philosophy (use MDX for editable content)
+  - Services: List of services with descriptions, durations, prices, and "Book Now" buttons
+  - Booking: Interface to select a service, view available time slots (via Google Calendar), enter client details, and pay with Stripe
+  - Contact: Form with fields for name, email, and message
+  - Admin Dashboard (protected): Login required; includes sections to manage services, view bookings, and sync with Google Calendar for availability
+
+- **Features**:
+  - **Booking System**: 
+    - Clients select a service and see available time slots from the astrologer’s Google Calendar
+    - Collect client info (name, email) and process payment via Stripe
+    - Create a calendar event upon successful payment and send confirmation emails to the client and astrologer
+    - Check for calendar conflicts before confirming bookings
+  - **Admin Dashboard**: 
+    - Secure login for the astrologer
+    - Manage services (add, edit, delete) stored in Supabase
+    - View all bookings with details (client info, time, status)
+    - Availability managed directly via Google Calendar integration
+
+- **Design**:
+  - Clean, professional, and responsive layout using Shadcn components
+  - Color scheme: Deep blues and golds
+  - Fonts: Elegant and readable
+  - Draw inspiration from these websites: 
+    - https://www.catherineurban.com/
+    - https://www.mickipellerano.com/
+    - https://www.thestrology.com/
+
+- **Additional Notes**:
+  - Use MDX files for Home and About pages to allow easy content updates
+  - Include placeholders and clear instructions for setting up API keys and integrations (Supabase, Google Calendar, Stripe, SendGrid)
+  - Generate a complete project structure with pages, components, API routes, and a database schema
+  - Database schema suggestion:
+    - Services: id, name, description, duration_minutes, price_cents
+    - Bookings: id, service_id, client_name, client_email, start_time, end_time, calendar_event_id, payment_intent_id, status
+
+Please provide the full codebase with comments explaining the setup process for external services.
