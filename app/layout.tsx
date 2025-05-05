@@ -18,7 +18,7 @@ const raleway = Raleway({
 })
 
 export const metadata: Metadata = {
-  title: 'Cosmic Insight | Professional Astrology Readings',
+  title: 'Sarah Wharton | Professional Astrology Readings',
   description: 'Professional astrology readings and consultations to help guide you through life\'s journey with clarity and purpose.',
   icons: {
     icon: '/favicon.ico',
@@ -37,7 +37,7 @@ export default function RootLayout({
           <header className="border-b sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container flex h-16 items-center justify-between py-4">
               <div className="flex items-center gap-2">
-                <span className="font-serif text-2xl text-deepBlue">Cosmic Insight</span>
+                <span className="font-serif text-2xl text-deepBlue">Sarah Wharton</span>
               </div>
               <MainNav />
             </div>
