@@ -6,8 +6,8 @@ import { formatPrice, formatDuration } from "@/lib/utils"
 import { getServices } from "@/lib/supabase"
 
 export const metadata: Metadata = {
-  title: "Services | Cosmic Insight Astrology",
-  description: "Explore our range of astrology services including natal chart readings, relationship compatibility, and career guidance.",
+  title: "Services | Sarah Wharton Astrology",
+  description: "Explore my range of astrology services including natal chart readings, relationship compatibility, and career guidance.",
 }
 
 export default async function ServicesPage() {
@@ -41,10 +41,10 @@ export default async function ServicesPage() {
             <div className="text-center py-12">
               <h2 className="text-2xl font-serif text-deepBlue mb-4">Services Coming Soon</h2>
               <p className="text-muted-foreground mb-8">
-                We're currently updating our service offerings. Please check back soon or contact us for more information.
+                I'm currently updating my service offerings. Please check back soon or contact me for more information.
               </p>
               <Button asChild variant="deepBlue">
-                <Link href="/contact">Contact Us</Link>
+                <Link href="/contact">Contact Me</Link>
               </Button>
             </div>
           ) : (

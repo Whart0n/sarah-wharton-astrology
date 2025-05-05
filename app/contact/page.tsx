@@ -5,8 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { ContactForm } from "@/components/contact-form"
 
 export const metadata: Metadata = {
-  title: "Contact | Cosmic Insight Astrology",
-  description: "Get in touch with Cosmic Insight for questions about astrology readings or to inquire about services.",
+  title: "Contact | Sarah Wharton Astrology",
+  description: "Get in touch with Sarah for questions about astrology readings or to inquire about services.",
 }
 
 export default function ContactPage() {
@@ -16,7 +16,7 @@ export default function ContactPage() {
       <section className="bg-deepBlue text-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-serif mb-6 gold-gradient-text">
-            Contact Us
+            Contact Me
           </h1>
           <p className="text-lg md:text-xl max-w-3xl mx-auto text-white/80">
             Have questions or need more information? Reach out and I'll get back to you promptly.
@@ -37,8 +37,8 @@ export default function ContactPage() {
                   <CardContent className="p-6">
                     <h3 className="font-medium text-lg mb-2">Email</h3>
                     <p className="text-muted-foreground mb-2">For general inquiries or questions:</p>
-                    <a href="mailto:contact@cosmicinsight.com" className="text-deepBlue hover:text-deepBlue-light">
-                      contact@cosmicinsight.com
+                    <a href="mailto:sarah@sarahwharton.com" className="text-deepBlue hover:text-deepBlue-light">
+                      sarah@sarahwharton.com
                     </a>
                   </CardContent>
                 </Card>
