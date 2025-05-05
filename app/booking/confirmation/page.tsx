@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const metadata: Metadata = {
-  title: "Booking Confirmation | Cosmic Insight Astrology",
+  title: "Booking Confirmation | Sarah Wharton Astrology",
   description: "Confirmation of your astrology reading booking.",
 }
 
@@ -81,7 +81,7 @@ export default function BookingConfirmationPage() {
                 You will receive a confirmation email with all the details shortly. Please check your inbox (and spam folder, just in case).
               </p>
               <p className="text-sm text-muted-foreground mb-6">
-                If you have any questions about your upcoming reading, feel free to contact us.
+                If you have any questions about your upcoming reading, feel free to contact me.
               </p>
             </CardContent>
             <CardFooter className="flex flex-col space-y-2">
@@ -89,7 +89,7 @@ export default function BookingConfirmationPage() {
                 <Link href="/">Return to Home</Link>
               </Button>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/contact">Contact Us</Link>
+                <Link href="/contact">Contact Me</Link>
               </Button>
             </CardFooter>
           </Card>

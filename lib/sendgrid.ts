@@ -77,9 +77,9 @@ export function getClientBookingConfirmationEmail(booking: {
           <p><strong>Date:</strong> ${formattedDate}</p>
           <p><strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
         </div>
-        <p>Please be prepared 5 minutes before your appointment. If you need to reschedule or cancel, please contact us at least 24 hours in advance.</p>
+        <p>Please be prepared 5 minutes before your appointment. If you need to reschedule or cancel, please contact me at least 24 hours in advance.</p>
         <p>Looking forward to your session!</p>
-        <p>Warm regards,<br>Your Astrologer</p>
+        <p>Warm regards,<br>Sarah Wharton</p>
       </div>
     `,
   };
