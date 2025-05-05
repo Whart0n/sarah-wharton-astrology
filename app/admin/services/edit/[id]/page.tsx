@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-const EditServicePage = async ({ params }: { params: { id: string } }) => {
+const Page = async ({ params }: { params: { id: string } }) => {
   // Fetch the service
   let service
   try {
@@ -54,4 +54,4 @@ const EditServicePage = async ({ params }: { params: { id: string } }) => {
   )
 }
 
-export default EditServicePage;
+export default Page;
