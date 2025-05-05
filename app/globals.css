@@ -80,10 +80,26 @@
 
 /* Hero section styles */
 .hero-section {
-  background-color: #0a1930;
-  background-image: radial-gradient(circle at 50% 50%, rgba(20, 40, 80, 0.8) 0%, rgba(10, 25, 48, 1) 100%), var(--stars-bg);
+  background-image: url('/images/hero-background.png');
   background-size: cover;
   background-position: center;
+  position: relative;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark overlay for readability */
+  z-index: 1;
+}
+
+.hero-section > * {
+  position: relative;
+  z-index: 2; /* Place content above the overlay */
 }
 
 /* Custom animations */
