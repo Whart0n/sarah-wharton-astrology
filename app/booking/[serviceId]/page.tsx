@@ -6,12 +6,7 @@ import { Button } from "@/components/ui/button"
 import { BookingForm } from "@/components/booking-form"
 import { NextPage } from 'next'
 
-type BookingServicePageProps = {
-  params: { serviceId: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
-
-export async function generateMetadata({ params }: BookingServicePageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { serviceId: string } }): Promise<Metadata> {
   try {
     const service = await getServiceById(params.serviceId)
     return {
@@ -26,7 +21,7 @@ export async function generateMetadata({ params }: BookingServicePageProps): Pro
   }
 }
 
-const BookingServicePage: NextPage<BookingServicePageProps> = async ({ params }) => {
+const BookingServicePage = async ({ params }: { params: { serviceId: string } }) => {
   // Fetch the service
   let service
   try {
