@@ -5,7 +5,9 @@ import { getServiceById } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { BookingForm } from "@/components/booking-form"
 
-interface BookingServicePageProps {
+import { PageProps } from 'next/types'
+
+interface BookingServicePageProps extends PageProps {
   params: {
     serviceId: string
   }
