@@ -8,7 +8,7 @@ export function Footer() {
         <div className="col-span-1">
           <h3 className="text-gold font-serif text-2xl mb-4">Sarah Wharton</h3>
           <p className="text-sm">
-            Illuminating your path through the stars. Professional astrology readings
+           Professional astrology readings
             to help you navigate life's journey with clarity and purpose.
           </p>
         </div>
@@ -46,9 +46,9 @@ export function Footer() {
         
         <div className="col-span-1">
           <h4 className="font-medium text-white mb-4">Contact</h4>
-          <address className="not-italic text-sm space-y-2">
+          <div className="text-sm space-y-2">
             <p>Email: sarah@sarahwharton.com</p>
-          </address>
+          </div>
         </div>
         
         <div className="col-span-1">
