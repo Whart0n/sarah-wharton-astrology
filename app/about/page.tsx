@@ -22,13 +22,26 @@ export default async function AboutPage() {
     <div>
       {/* Hero Section */}
       <section className="bg-deepBlue text-white py-16 md:py-24">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif mb-6 gold-gradient-text">
-            About the Astrologer
-          </h1>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto text-white/80">
-            Learn about my background and discover my approach to astrology
-          </p>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+            <div className="md:w-1/3">
+              <div className="rounded-full overflow-hidden border-4 border-gold/60 shadow-xl" style={{ maxWidth: '400px' }}>
+                <img 
+                  src="/images/sarah-portrait.png" 
+                  alt="Sarah Wharton, Professional Astrologer" 
+                  className="w-full h-auto"
+                />
+              </div>
+            </div>
+            <div className="md:w-2/3 text-center md:text-left">
+              <h1 className="text-4xl md:text-5xl font-serif mb-6 gold-gradient-text">
+                About the Astrologer
+              </h1>
+              <p className="text-lg md:text-xl max-w-3xl mx-auto md:mx-0 text-white/80">
+                Learn about my background and discover my approach to astrology
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -156,7 +169,7 @@ export default async function AboutPage() {
             <Button asChild variant="gold">
               <Link href="/booking">Book a Reading</Link>
             </Button>
-            <Button asChild variant="outline" className="text-white border-white/30 hover:bg-white/10">
+            <Button asChild className="bg-deepBlue text-white border-none hover:bg-deepBlue/80 shadow-lg">
               <Link href="/contact">Ask a Question</Link>
             </Button>
           </div>
