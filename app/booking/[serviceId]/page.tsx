@@ -15,12 +15,12 @@ export async function generateMetadata({ params }: BookingServicePageProps): Pro
   try {
     const service = await getServiceById(params.serviceId)
     return {
-      title: `Book ${service.name} | Cosmic Insight Astrology`,
+      title: `Book ${service.name} | Sarah Wharton Astrology`,
       description: `Schedule your ${service.name} astrology reading and discover insights to guide your path forward.`,
     }
   } catch (error) {
     return {
-      title: "Book a Reading | Cosmic Insight Astrology",
+      title: "Book a Reading | Sarah Wharton Astrology",
       description: "Schedule your personal astrology reading.",
     }
   }
@@ -100,7 +100,7 @@ export default async function BookingServicePage({ params }: BookingServicePageP
             If you have any questions about the booking process or what to expect from your reading, please don't hesitate to reach out.
           </p>
           <Button asChild variant="outline">
-            <Link href="/contact">Contact Us</Link>
+            <Link href="/contact">Contact Me</Link>
           </Button>
         </div>
       </section>
