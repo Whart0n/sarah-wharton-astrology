@@ -58,7 +58,7 @@ export default function ContactPage() {
                 
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="font-medium text-lg mb-2">Follow Us</h3>
+                    <h3 className="font-medium text-lg mb-2">Follow Me</h3>
                     <p className="text-muted-foreground mb-4">Connect on social media for updates and cosmic insights:</p>
                     <div className="flex space-x-4">
                       <a href="#" className="text-deepBlue hover:text-gold transition-colors">

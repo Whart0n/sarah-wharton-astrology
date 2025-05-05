@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ServiceCard } from "@/components/service-card"
 
 export const metadata: Metadata = {
-  title: "Book a Reading | Cosmic Insight Astrology",
+  title: "Book a Reading | Sarah Wharton Astrology",
   description: "Schedule your personal astrology reading and discover insights to guide your path forward.",
 }
 
@@ -39,7 +39,7 @@ export default async function BookingPage() {
           <div className="mb-10">
             <h2 className="text-2xl font-serif text-deepBlue mb-2">Choose a Service</h2>
             <p className="text-muted-foreground">
-              Browse our services and select the one that resonates with your current needs
+              Browse my services and select the one that resonates with your current needs
             </p>
           </div>
 
@@ -47,10 +47,10 @@ export default async function BookingPage() {
             <Card>
               <CardContent className="py-8 text-center">
                 <p className="text-muted-foreground mb-4">
-                  No services are currently available for booking. Please check back soon or contact us for more information.
+                  No services are currently available for booking. Please check back soon or contact me for more information.
                 </p>
                 <Link href="/contact" className="text-deepBlue hover:text-deepBlue-light underline">
-                  Contact Us
+                  Contact Me
                 </Link>
               </CardContent>
             </Card>
@@ -98,7 +98,7 @@ export default async function BookingPage() {
                     <li>Your place of birth (city, state/province, country)</li>
                   </ul>
                   <p className="text-muted-foreground">
-                    If you don't know your exact birth time, we can still work with what you have, but some aspects of the reading may be less specific.
+                    If you don't know your exact birth time, I can still work with what you have, but some aspects of the reading may be less specific.
                   </p>
                 </CardContent>
               </Card>
@@ -120,7 +120,7 @@ export default async function BookingPage() {
                     <li>Less than 24 hours notice: No refund</li>
                   </ul>
                   <p className="text-muted-foreground">
-                    If you need to reschedule, please contact us at least 24 hours in advance.
+                    If you need to reschedule, please contact me at least 24 hours in advance.
                   </p>
                 </CardContent>
               </Card>
