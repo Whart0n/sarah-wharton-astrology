@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { headers } from "next/headers"
 import { handleWebhookEvent } from "@/lib/stripe"
-import { updateBooking } from "@/lib/supabase"
+import { supabase, updateBooking } from "@/lib/supabase"
 
 export async function POST(request: Request) {
   try {
