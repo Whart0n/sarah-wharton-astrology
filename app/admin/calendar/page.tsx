@@ -104,6 +104,7 @@ export default function AdminCalendarPage() {
                 dateFormat="yyyy-MM-dd"
                 className="border rounded px-2 py-1 w-full mt-1"
                 placeholderText="Select date"
+                calendarStartDay={0}
               />
             </label>
             <label className="block mb-2">
