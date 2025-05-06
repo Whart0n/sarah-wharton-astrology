@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function AdminCalendarPage() {
   const [events, setEvents] = useState([]);
@@ -27,22 +29,44 @@ export default function AdminCalendarPage() {
     fetchEvents();
   }, [refresh]);
 
-  // Add a new slot (event)
-  async function addSlot() {
-    const summary = prompt("Enter a title for the slot (e.g., Available)");
-    const start = prompt("Enter start time (YYYY-MM-DDTHH:MM:SS)");
-    const end = prompt("Enter end time (YYYY-MM-DDTHH:MM:SS)");
-    if (!summary || !start || !end) return;
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [modalSummary, setModalSummary] = useState("Available");
+  const [modalDate, setModalDate] = useState<Date | null>(null);
+  const [modalStart, setModalStart] = useState<Date | null>(null);
+  const [modalEnd, setModalEnd] = useState<Date | null>(null);
+  const [modalError, setModalError] = useState("");
+
+  // Add a new slot (event) via modal
+  async function submitSlot() {
+    setModalError("");
+    if (!modalSummary || !modalDate || !modalStart || !modalEnd) {
+      setModalError("All fields are required.");
+      return;
+    }
+    // Combine date with start/end times
+    const start = new Date(modalDate);
+    start.setHours(modalStart.getHours(), modalStart.getMinutes(), 0, 0);
+    const end = new Date(modalDate);
+    end.setHours(modalEnd.getHours(), modalEnd.getMinutes(), 0, 0);
+    if (end <= start) {
+      setModalError("End time must be after start time.");
+      return;
+    }
     try {
       const res = await fetch("/api/calendar/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ summary, start, end }),
+        body: JSON.stringify({ summary: modalSummary, start: start.toISOString(), end: end.toISOString() }),
       });
       if (!res.ok) throw new Error("Booking failed");
+      setShowModal(false);
+      setModalDate(null);
+      setModalStart(null);
+      setModalEnd(null);
       setRefresh(r => r + 1);
     } catch {
-      alert("Failed to add slot");
+      setModalError("Failed to add slot");
     }
   }
 
@@ -55,9 +79,79 @@ export default function AdminCalendarPage() {
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">Manage Calendar Availability</h1>
-      <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4" onClick={addSlot}>
+      <button className="bg-blue-600 text-white px-4 py-2 rounded mb-4" onClick={() => setShowModal(true)}>
         Add Slot
       </button>
+      {/* Modal for adding slot */}
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
+            <h2 className="text-lg font-bold mb-2">Add Available Slot</h2>
+            <label className="block mb-2">
+              Title:
+              <input
+                type="text"
+                className="border rounded px-2 py-1 w-full mt-1"
+                value={modalSummary}
+                onChange={e => setModalSummary(e.target.value)}
+              />
+            </label>
+            <label className="block mb-2">
+              Date:
+              <DatePicker
+                selected={modalDate}
+                onChange={date => setModalDate(date)}
+                dateFormat="yyyy-MM-dd"
+                className="border rounded px-2 py-1 w-full mt-1"
+                placeholderText="Select date"
+              />
+            </label>
+            <label className="block mb-2">
+              Start Time:
+              <DatePicker
+                selected={modalStart}
+                onChange={date => setModalStart(date)}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                timeCaption="Start Time"
+                dateFormat="HH:mm"
+                className="border rounded px-2 py-1 w-full mt-1"
+                placeholderText="Select start time"
+              />
+            </label>
+            <label className="block mb-2">
+              End Time:
+              <DatePicker
+                selected={modalEnd}
+                onChange={date => setModalEnd(date)}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                timeCaption="End Time"
+                dateFormat="HH:mm"
+                className="border rounded px-2 py-1 w-full mt-1"
+                placeholderText="Select end time"
+              />
+            </label>
+            {modalError && <div className="text-red-600 mb-2">{modalError}</div>}
+            <div className="flex gap-2 mt-4">
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+                onClick={submitSlot}
+              >
+                Save
+              </button>
+              <button
+                className="bg-gray-300 px-4 py-2 rounded"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
