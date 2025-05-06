@@ -124,6 +124,16 @@ export default function AdminLayout({
             >
               Bookings
             </Link>
+            <Link
+              href="/admin/calendar"
+              className={`block py-2 px-3 rounded ${
+                isLinkActive("/admin/calendar")
+                  ? "bg-deepBlue-light"
+                  : "hover:bg-deepBlue-light"
+              }`}
+            >
+              Calendar
+            </Link>
           </nav>
           
           <div className="mt-8 pt-6 border-t border-deepBlue-light">
