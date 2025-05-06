@@ -33,6 +33,7 @@
     "next-mdx-remote": "^4.4.1",
     "postcss": "^8.5.3",
     "react": "^18.2.0",
+    "react-datepicker": "^8.3.0",
     "react-day-picker": "^9.6.7",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.56.2",
