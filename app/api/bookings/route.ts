@@ -50,7 +50,7 @@ export async function GET(request: Request) {
       const recentBookings = recentData.map(booking => ({
         id: booking.id,
         client_name: booking.client_name,
-        service_name: booking.service.name,
+        service_name: booking.service && 'name' in booking.service ? booking.service.name : 'Unknown Service',
         start_time: booking.start_time,
         status: booking.status,
       }))
