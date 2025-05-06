@@ -123,7 +123,7 @@ export default function ServicesPage() {
                     size="sm" 
                     className="flex-1"
                   >
-                    <Link href={`/admin/services/edit/${service.id}`}>
+                    <Link href={`/admin/services/edit-service?id=${service.id}`}>
                       Edit
                     </Link>
                   </Button>
