@@ -1,51 +1,43 @@
 import { NextResponse } from "next/server"
-import { getAvailableTimeSlots } from "@/lib/googleCalendar"
-import { format } from "date-fns"
+import { listEvents } from "@/lib/googleCalendar"
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
-    const dateParam = searchParams.get("date")
-    const durationParam = searchParams.get("duration") || "60" // Default to 60 minutes
+    const startParam = searchParams.get("start")
+    const endParam = searchParams.get("end")
 
-    if (!dateParam) {
+    if (!startParam || !endParam) {
       return NextResponse.json(
-        { error: "Date parameter is required" },
+        { error: "start and end query parameters are required" },
         { status: 400 }
       )
     }
 
-    // Parse date and duration
-    const date = new Date(dateParam)
-    const durationMinutes = parseInt(durationParam)
+    const start = new Date(startParam)
+    const end = new Date(endParam)
 
-    if (isNaN(date.getTime())) {
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       return NextResponse.json(
-        { error: "Invalid date format" },
+        { error: "Invalid start or end date format" },
         { status: 400 }
       )
     }
 
-    if (isNaN(durationMinutes) || durationMinutes <= 0) {
-      return NextResponse.json(
-        { error: "Invalid duration" },
-        { status: 400 }
-      )
-    }
+    // Fetch all events in the given range
+    const events = await listEvents(start, end)
+    const formattedEvents = events.map(ev => ({
+      id: ev.id,
+      summary: ev.summary,
+      start: ev.start?.dateTime || ev.start?.date,
+      end: ev.end?.dateTime || ev.end?.date,
+    }))
 
-    // Get available time slots from Google Calendar
-    const availableSlots = await getAvailableTimeSlots(date, durationMinutes)
-
-    // Format the time slots for display
-    const formattedTimeSlots = availableSlots.map(slot => 
-      format(slot, 'HH:mm')
-    )
-
-    return NextResponse.json({ availableTimeSlots: formattedTimeSlots })
+    return NextResponse.json({ events: formattedEvents })
   } catch (error) {
-    console.error("Error fetching availability:", error)
+    console.error("Error fetching calendar events:", error)
     return NextResponse.json(
-      { error: "Failed to fetch available time slots" },
+      { error: "Failed to fetch calendar events" },
       { status: 500 }
     )
   }
