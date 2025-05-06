@@ -1,22 +1,22 @@
 import { google } from 'googleapis';
 
-// Set up the OAuth2 client
-function getOAuth2Client() {
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET
+// Set up Google service account JWT auth
+function getServiceAccountAuth() {
+  if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON env var is not set');
+  }
+  const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+  return new google.auth.JWT(
+    credentials.client_email,
+    undefined,
+    credentials.private_key,
+    ['https://www.googleapis.com/auth/calendar']
   );
-
-  oauth2Client.setCredentials({
-    refresh_token: process.env.GOOGLE_REFRESH_TOKEN
-  });
-
-  return oauth2Client;
 }
 
-// Get the calendar client
+// Get the calendar client using service account
 function getCalendarClient() {
-  const auth = getOAuth2Client();
+  const auth = getServiceAccountAuth();
   return google.calendar({ version: 'v3', auth });
 }
 
