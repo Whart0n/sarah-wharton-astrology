@@ -80,7 +80,6 @@ export default function ServicesPage() {
 
   return (
     <div className="space-y-6">
-      <div>TEST DEPLOY</div>
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-serif text-deepBlue mb-2">Services</h1>
