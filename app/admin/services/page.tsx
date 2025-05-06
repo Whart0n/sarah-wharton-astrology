@@ -26,6 +26,10 @@ export default function ServicesPage() {
     open: false,
     serviceId: null,
   })
+  // State for Stripe import dialog and results
+  const [importDialog, setImportDialog] = useState(false)
+  const [importLoading, setImportLoading] = useState(false)
+  const [importResult, setImportResult] = useState<any>(null)
 
   // Fetch services
   useEffect(() => {
@@ -76,14 +80,44 @@ export default function ServicesPage() {
 
   return (
     <div className="space-y-6">
+      <div>TEST DEPLOY</div>
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-serif text-deepBlue mb-2">Services</h1>
           <p className="text-muted-foreground">Manage your astrology services</p>
         </div>
-        <Button asChild variant="gold">
-          <Link href="/admin/services/new">Add New Service</Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={async () => {
+              setImportDialog(true)
+              setImportLoading(true)
+              setImportResult(null)
+              try {
+                const res = await fetch("/api/import-stripe-products", { method: "POST" })
+                const data = await res.json()
+                setImportResult(data)
+                // Optionally reload services
+                if (res.ok) {
+                  const response = await fetch("/api/services")
+                  if (response.ok) {
+                    setServices(await response.json())
+                  }
+                }
+              } catch (e: any) {
+                setImportResult({ error: e?.message || "Unknown error" })
+              } finally {
+                setImportLoading(false)
+              }
+            }}
+            disabled={importLoading}
+          >
+            {importLoading ? "Importing..." : "Import Stripe Products"}
+          </Button>
+          <Button asChild variant="gold">
+            <Link href="/admin/services/new">Add New Service</Link>
+          </Button>
+        </div>
       </div>
 
       {error && (
@@ -160,6 +194,52 @@ export default function ServicesPage() {
               onClick={() => deleteDialog.serviceId && handleDeleteService(deleteDialog.serviceId)}
             >
               Delete Service
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Import Stripe Products Dialog */}
+      <Dialog open={importDialog} onOpenChange={setImportDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Import Stripe Products</DialogTitle>
+            <DialogDescription>
+              This will import or update all active Stripe products as services.
+            </DialogDescription>
+          </DialogHeader>
+          {importLoading ? (
+            <div className="py-8 text-center">Importing from Stripe...</div>
+          ) : importResult ? (
+            <div className="space-y-2">
+              {importResult.error && (
+                <div className="text-red-500">Error: {importResult.error}</div>
+              )}
+              {importResult.imported !== undefined && (
+                <div className="text-green-700">Imported: {importResult.imported}</div>
+              )}
+              {importResult.updated !== undefined && (
+                <div className="text-blue-700">Updated: {importResult.updated}</div>
+              )}
+              {importResult.skipped !== undefined && (
+                <div className="text-gray-600">Skipped: {importResult.skipped}</div>
+              )}
+              {Array.isArray(importResult.results) && importResult.results.length > 0 && (
+                <div className="max-h-40 overflow-y-auto border p-2 bg-gray-50 rounded text-xs">
+                  <ul>
+                    {importResult.results.map((r: any, i: number) => (
+                      <li key={i}>
+                        {r.name}: {r.status || r.reason || ""}
+                        {r.error && <span className="text-red-500"> ({r.error})</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setImportDialog(false)}>
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
