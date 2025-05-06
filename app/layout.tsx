@@ -9,12 +9,14 @@ const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-cormorant',
+  display: 'swap', // Use swap to prevent blocking render
 })
 
 const raleway = Raleway({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-raleway',
+  display: 'swap', // Use swap to prevent blocking render
 })
 
 export const metadata: Metadata = {
