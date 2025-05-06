@@ -16,7 +16,7 @@ let stripe: ServerStripe | null = null;
 export const getServerStripe = () => {
   if (!stripe && process.env.STRIPE_SECRET_KEY) {
     stripe = new ServerStripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2022-11-15',
+      apiVersion: '2025-04-30.basil',
     });
   }
   return stripe;
