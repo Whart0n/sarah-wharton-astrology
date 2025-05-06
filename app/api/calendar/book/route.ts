@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
-import fs from "fs";
 
 const calendarId = process.env.GOOGLE_CALENDAR_ID!;
-const credentialsPath = process.env.GOOGLE_SERVICE_ACCOUNT_JSON!;
-const credentials = JSON.parse(fs.readFileSync(credentialsPath, "utf8"));
+const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON!);
 
 const auth = new google.auth.JWT(
   credentials.client_email,
