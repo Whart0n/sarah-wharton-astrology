@@ -69,19 +69,30 @@ export function BookingForm({ service }: BookingFormProps) {
   
   useEffect(() => {
     if (selectedDate) {
-      setIsLoading(true)
-      fetch(`/api/calendar/availability?date=${selectedDate.toISOString()}&duration=${service.duration_minutes}`)
+      setIsLoading(true);
+      // Calculate start and end of the selected day
+      const startOfDay = new Date(selectedDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(selectedDate);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      fetch(`/api/calendar/availability?start=${startOfDay.toISOString()}&end=${endOfDay.toISOString()}`)
         .then(res => res.json())
         .then(data => {
-          setAvailableTimeSlots(data.availableTimeSlots || [])
-          setIsLoading(false)
+          // The new API returns `events` with start/end
+          const slots = (data.events || []).map((ev: any) => {
+            const start = new Date(ev.start);
+            return start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          });
+          setAvailableTimeSlots(slots);
+          setIsLoading(false);
         })
         .catch(error => {
-          console.error("Error fetching time slots:", error)
-          setIsLoading(false)
-        })
+          console.error("Error fetching time slots:", error);
+          setIsLoading(false);
+        });
     }
-  }, [selectedDate, service.duration_minutes])
+  }, [selectedDate]);
 
   // Handle form submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
