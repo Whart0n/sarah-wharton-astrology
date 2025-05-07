@@ -80,10 +80,31 @@ export function BookingForm({ service }: BookingFormProps) {
         .then(res => res.json())
         .then(data => {
           // The new API returns `events` with start/end
-          const slots = (data.events || []).map((ev: any) => {
+          let slots = (data.events || []).map((ev: any) => {
             const start = new Date(ev.start);
             return start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           });
+          // Remove duplicates and sort
+          slots = Array.from(new Set(slots)).sort((a, b) => {
+            // Convert to 24h for sorting
+            const toMinutes = (t: string) => {
+              const [h, m] = t.split(':');
+              const hour = parseInt(h, 10);
+              const min = parseInt(m, 10);
+              return hour * 60 + min;
+            };
+            return toMinutes(a) - toMinutes(b);
+          });
+          // Optionally filter out past times for today
+          if (selectedDate && new Date(selectedDate).toDateString() === new Date().toDateString()) {
+            const now = new Date();
+            slots = slots.filter(timeStr => {
+              const [hour, minute] = timeStr.split(':');
+              const slotDate = new Date(selectedDate);
+              slotDate.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
+              return slotDate > now;
+            });
+          }
           setAvailableTimeSlots(slots);
           setIsLoading(false);
         })
