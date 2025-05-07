@@ -85,7 +85,7 @@ export function BookingForm({ service }: BookingFormProps) {
             return start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
           });
           // Remove duplicates and sort
-          slots = Array.from(new Set(slots)).sort((a, b) => {
+          slots = (Array.from(new Set(slots)) as string[]).sort((a, b) => {
             // Convert to 24h for sorting
             const toMinutes = (t: string) => {
               const [h, m] = t.split(':');
@@ -98,7 +98,7 @@ export function BookingForm({ service }: BookingFormProps) {
           // Optionally filter out past times for today
           if (selectedDate && new Date(selectedDate).toDateString() === new Date().toDateString()) {
             const now = new Date();
-            slots = slots.filter(timeStr => {
+            slots = slots.filter((timeStr: string) => {
               const [hour, minute] = timeStr.split(':');
               const slotDate = new Date(selectedDate);
               slotDate.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
