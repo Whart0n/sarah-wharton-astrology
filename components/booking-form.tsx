@@ -79,22 +79,44 @@ export function BookingForm({ service }: BookingFormProps) {
       fetch(`/api/calendar/availability?start=${startOfDay.toISOString()}&end=${endOfDay.toISOString()}`)
         .then(res => res.json())
         .then(data => {
-          // The new API returns `events` with start/end
-          let slots = (data.events || []).map((ev: any) => {
-            const start = new Date(ev.start);
-            return start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          // --- New slot generation logic ---
+          const serviceDuration = service.duration_minutes;
+          const bufferMinutes = 30;
+          const slotInterval = 30; // minutes
+
+          // Gather all events as availability windows
+          const windows = (data.events || []).map((ev: any) => ({
+            start: new Date(ev.start),
+            end: new Date(ev.end)
+          }));
+
+          // Gather all bookings (if present in data)
+          const bookings = (data.bookings || []).map((bk: any) => ({
+            start: new Date(bk.start),
+            end: new Date(bk.end)
+          }));
+
+          let slots: string[] = [];
+          windows.forEach((window: { start: Date; end: Date }) => {
+            // Latest possible start time so service + buffer fits
+            const latestStart = new Date(window.end.getTime() - (serviceDuration + bufferMinutes) * 60000);
+            let slot = new Date(window.start);
+            while (slot <= latestStart) {
+              const slotEnd = new Date(slot.getTime() + serviceDuration * 60000);
+              const bufferEnd = new Date(slotEnd.getTime() + bufferMinutes * 60000);
+              // Check for overlap with bookings
+              const overlaps = bookings.some((bk: { start: Date; end: Date }) =>
+                (slot < bk.end && bufferEnd > bk.start)
+              );
+              if (!overlaps) {
+                // Format as HH:mm (24h)
+                slots.push(slot.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+              }
+              slot = new Date(slot.getTime() + slotInterval * 60000);
+            }
           });
           // Remove duplicates and sort
-          slots = (Array.from(new Set(slots)) as string[]).sort((a, b) => {
-            // Convert to 24h for sorting
-            const toMinutes = (t: string) => {
-              const [h, m] = t.split(':');
-              const hour = parseInt(h, 10);
-              const min = parseInt(m, 10);
-              return hour * 60 + min;
-            };
-            return toMinutes(a) - toMinutes(b);
-          });
+          slots = Array.from(new Set(slots)).sort();
           // Optionally filter out past times for today
           if (selectedDate && new Date(selectedDate).toDateString() === new Date().toDateString()) {
             const now = new Date();
@@ -113,20 +135,40 @@ export function BookingForm({ service }: BookingFormProps) {
           setIsLoading(false);
         });
     }
-  }, [selectedDate]);
+  }, [selectedDate, service.duration_minutes]);
 
   // Handle form submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log('Submitting form', values)
     setIsLoading(true)
+    // --- Validation ---
+    // Date check
+    if (!values.date || isNaN(new Date(values.date).getTime())) {
+      form.setError('date', { message: 'Please select a valid date for your reading.' })
+      setIsLoading(false)
+      return
+    }
+    // Time check
+    if (!values.time || !/^\d{2}:\d{2}$/.test(values.time)) {
+      form.setError('time', { message: 'Please select a valid time slot.' })
+      setIsLoading(false)
+      return
+    }
+    let startTime: Date, endTime: Date
     try {
-      // Format date/time correctly
       const [hours, minutes] = values.time.split(':').map(Number)
-      const startTime = new Date(values.date)
+      startTime = new Date(values.date)
       startTime.setHours(hours, minutes, 0, 0)
-      
-      const endTime = new Date(startTime)
+      if (isNaN(startTime.getTime())) throw new Error('Invalid start time')
+      endTime = new Date(startTime)
       endTime.setMinutes(endTime.getMinutes() + service.duration_minutes)
-
+      if (isNaN(endTime.getTime())) throw new Error('Invalid end time')
+    } catch (err) {
+      form.setError('time', { message: 'There was a problem with your selected time. Please try again.' })
+      setIsLoading(false)
+      return
+    }
+    try {
       // Create payment intent
       const response = await fetch('/api/payment/create-payment-intent', {
         method: 'POST',
@@ -158,9 +200,8 @@ export function BookingForm({ service }: BookingFormProps) {
         
         setClientSecret(data.clientSecret)
         setPaymentIntentId(data.paymentIntentId)
-        
-        // Move to payment step
         setStep('payment')
+        console.log('Proceeding to payment step')
       } else {
         throw new Error("Failed to create payment intent")
       }
