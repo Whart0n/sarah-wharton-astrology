@@ -192,12 +192,13 @@ export function BookingForm({ service }: BookingFormProps) {
             end_time: endTime.toISOString(),
           }
         }),
-      } else {
-        if (data.error) {
-          form.setError('promoCode', { message: data.error });
-        } else {
-          throw new Error("Failed to create checkout session");
-        }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // handle success (advance step, etc.)
+        // e.g., setStep('payment');
+      } else if (data && data.error) {
+        form.setError('promoCode', { message: data.error });
       }
     } catch (error) {
       console.error("Error processing booking:", error)
