@@ -9,6 +9,13 @@ export default function AdminCalendarPage() {
   const [error, setError] = useState("");
   const [refresh, setRefresh] = useState(0);
 
+  // Debug: log events whenever they change
+  useEffect(() => {
+    if (events.length > 0) {
+      console.log('Admin events:', events);
+    }
+  }, [events]);
+
   // Fetch events from the backend
   useEffect(() => {
     async function fetchEvents() {
@@ -170,7 +177,6 @@ export default function AdminCalendarPage() {
             </tr>
           </thead>
           <tbody>
-            {console.log('Admin events:', events)}
             {events.map((event: any) => {
               let startDisplay = '';
               let endDisplay = '';
