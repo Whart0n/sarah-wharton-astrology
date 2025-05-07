@@ -34,6 +34,10 @@ const formSchema = z.object({
   time: z.string({
     required_error: "Please select a time slot.",
   }),
+  placeOfBirth: z.string().min(2, { message: "Place of birth is required." }),
+  dateOfBirth: z.string().min(1, { message: "Date of birth is required." }),
+  timeOfBirth: z.string().min(1, { message: "Time of birth is required." }),
+  promoCode: z.string().optional(),
 })
 
 interface BookingFormProps {
@@ -61,6 +65,10 @@ export function BookingForm({ service }: BookingFormProps) {
     defaultValues: {
       name: "",
       email: "",
+      placeOfBirth: "",
+      dateOfBirth: "",
+      timeOfBirth: "",
+      promoCode: "",
     },
   })
 
@@ -184,26 +192,12 @@ export function BookingForm({ service }: BookingFormProps) {
             end_time: endTime.toISOString(),
           }
         }),
-      })
-      
-      const data = await response.json()
-      
-      if (data.clientSecret) {
-        // Save the booking data for later use
-        setBookingData({
-          service_id: service.id,
-          client_name: values.name,
-          client_email: values.email,
-          start_time: startTime.toISOString(),
-          end_time: endTime.toISOString(),
-        })
-        
-        setClientSecret(data.clientSecret)
-        setPaymentIntentId(data.paymentIntentId)
-        setStep('payment')
-        console.log('Proceeding to payment step')
       } else {
-        throw new Error("Failed to create payment intent")
+        if (data.error) {
+          form.setError('promoCode', { message: data.error });
+        } else {
+          throw new Error("Failed to create checkout session");
+        }
       }
     } catch (error) {
       console.error("Error processing booking:", error)
@@ -228,41 +222,88 @@ export function BookingForm({ service }: BookingFormProps) {
                 </div>
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <p className="text-muted-foreground">{service.description}</p>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="placeOfBirth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Place of Birth</FormLabel>
+                    <FormControl>
+                      <Input placeholder="City, State, Country" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="dateOfBirth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Date of Birth</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="timeOfBirth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Time of Birth</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="promoCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Promo Code (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter promo code if you have one" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
-          
-          {/* Client information */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Your Information</h3>
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your full name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="Enter your email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
           
           {/* Date selection */}
           <div className="space-y-4">
