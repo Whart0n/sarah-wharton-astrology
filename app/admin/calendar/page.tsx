@@ -16,8 +16,8 @@ export default function AdminCalendarPage() {
       setError("");
       try {
         const now = new Date();
-        const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-        const res = await fetch(`/api/calendar/availability?start=${now.toISOString()}&end=${weekFromNow.toISOString()}`);
+        const monthFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        const res = await fetch(`/api/calendar/availability?start=${now.toISOString()}&end=${monthFromNow.toISOString()}`);
         const data = await res.json();
         setEvents(data.events || []);
       } catch (err) {
@@ -53,6 +53,8 @@ export default function AdminCalendarPage() {
       setModalError("End time must be after start time.");
       return;
     }
+    // Both start and end are always ISO strings with time (not just date)
+    // Backend uses these as dateTime for Google Calendar events
     try {
       const res = await fetch("/api/calendar/book", {
         method: "POST",
@@ -168,21 +170,40 @@ export default function AdminCalendarPage() {
             </tr>
           </thead>
           <tbody>
-            {events.map((event: any) => (
-              <tr key={event.id}>
-                <td className="border px-2 py-1">{event.summary}</td>
-                <td className="border px-2 py-1">{event.start?.dateTime || event.start?.date}</td>
-                <td className="border px-2 py-1">{event.end?.dateTime || event.end?.date}</td>
-                <td className="border px-2 py-1">
-                  <button
-                    className="bg-red-500 text-white px-2 py-1 rounded"
-                    onClick={() => removeSlot(event.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {console.log('Admin events:', events)}
+            {events.map((event: any) => {
+              let startDisplay = '';
+              let endDisplay = '';
+              if (event.start) {
+                try {
+                  startDisplay = new Date(event.start).toLocaleString();
+                } catch {}
+              }
+              if (event.end) {
+                try {
+                  endDisplay = new Date(event.end).toLocaleString();
+                } catch {}
+              }
+              // If both are empty, show raw event
+              if (!startDisplay && !endDisplay) {
+                startDisplay = JSON.stringify(event);
+              }
+              return (
+                <tr key={event.id}>
+                  <td className="border px-2 py-1">{event.summary}</td>
+                  <td className="border px-2 py-1">{startDisplay}</td>
+                  <td className="border px-2 py-1">{endDisplay}</td>
+                  <td className="border px-2 py-1">
+                    <button
+                      className="bg-red-500 text-white px-2 py-1 rounded"
+                      onClick={() => removeSlot(event.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
