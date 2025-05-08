@@ -64,8 +64,8 @@ export async function createCheckoutSession({
   let discounts = [];
   if (promoCode) {
     const promoCodes = await stripe.promotionCodes.list({ code: promoCode, active: true });
-    if (promoCodes.data.length > 0 && promoCodes.data[0].coupon) {
-      discounts.push({ coupon: promoCodes.data[0].coupon.id });
+    if (promoCodes.data.length > 0) {
+      discounts.push({ promotion_code: promoCodes.data[0].id });
     } else {
       throw new Error('Invalid or expired promo code.');
     }
@@ -88,6 +88,7 @@ export async function createCheckoutSession({
     ],
     mode: 'payment',
     discounts,
+    allow_promotion_codes: true, // Enables promo code field at checkout
     metadata,
     success_url: successUrl + '?session_id={CHECKOUT_SESSION_ID}',
     cancel_url: cancelUrl,
