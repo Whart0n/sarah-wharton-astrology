@@ -206,17 +206,11 @@ export function BookingForm({ service }: BookingFormProps) {
       const data = await response.json();
       console.log('[BookingForm] Payment intent data:', data);
       if (response.ok) {
-        setClientSecret(data.clientSecret);
-        setPaymentIntentId(data.paymentIntentId);
-        setBookingData({
-          ...values,
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
-          serviceId: service.id,
-          serviceName: service.name,
-        });
-        console.log('[BookingForm] Advancing to payment step');
-        setStep('payment');
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        // (If you ever switch back to Elements, handle clientSecret here)
       } else if (data && data.error) {
         form.setError('promoCode', { message: data.error });
       }
@@ -394,35 +388,8 @@ export function BookingForm({ service }: BookingFormProps) {
     )
   }
 
-  // Payment step
-  return (
-    <div className="space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-serif text-deepBlue">Complete Your Booking</CardTitle>
-          <CardDescription>
-            <div className="flex justify-between">
-              <span>{service.name}</span>
-              <span className="font-medium text-deepBlue">{formatPrice(service.price_cents)}</span>
-            </div>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {clientSecret ? (
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <CheckoutForm bookingData={bookingData} paymentIntentId={paymentIntentId} serviceName={service.name} />
-            </Elements>
-          ) : (
-            <div className="py-4 text-center">Loading payment form...</div>
-          )}
-        </CardContent>
-      </Card>
-      
-      <Button variant="outline" onClick={() => setStep('details')} className="w-full">
-        Back to Details
-      </Button>
-    </div>
-  )
+  // Payment step is skipped for Stripe Checkout redirect
+  return null;
 }
 
 // Separate component for checkout form inside Stripe Elements
