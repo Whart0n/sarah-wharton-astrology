@@ -178,6 +178,15 @@ export function BookingForm({ service }: BookingFormProps) {
     }
     try {
       // Create payment intent
+      console.log('[BookingForm] Submitting payment intent request:', {
+        amount: service.price_cents,
+        serviceId: service.id,
+        serviceName: service.name,
+        clientName: values.name,
+        clientEmail: values.email,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+      });
       const response = await fetch('/api/payment/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -193,16 +202,28 @@ export function BookingForm({ service }: BookingFormProps) {
           }
         }),
       });
+      console.log('[BookingForm] Payment intent response:', response);
       const data = await response.json();
+      console.log('[BookingForm] Payment intent data:', data);
       if (response.ok) {
-        // handle success (advance step, etc.)
-        // e.g., setStep('payment');
+        setClientSecret(data.clientSecret);
+        setPaymentIntentId(data.paymentIntentId);
+        setBookingData({
+          ...values,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          serviceId: service.id,
+          serviceName: service.name,
+        });
+        console.log('[BookingForm] Advancing to payment step');
+        setStep('payment');
       } else if (data && data.error) {
         form.setError('promoCode', { message: data.error });
       }
     } catch (error) {
-      console.error("Error processing booking:", error)
+      console.error("[BookingForm] Error processing booking:", error)
     } finally {
+      console.log('[BookingForm] Setting isLoading to false (finally block)');
       setIsLoading(false)
     }
   }
