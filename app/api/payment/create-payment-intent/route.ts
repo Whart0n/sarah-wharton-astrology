@@ -6,11 +6,19 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { amount, metadata = {}, promoCode, placeOfBirth, dateOfBirth, timeOfBirth } = body;
 
-    if (!amount) {
+    if (typeof amount !== 'number') {
       return NextResponse.json(
         { error: "Amount is required" },
         { status: 400 }
       );
+    }
+
+    // Handle free bookings
+    if (amount === 0) {
+      // Here you could record the booking as paid/free in your DB if needed
+      const origin = request.headers.get('origin') || 'http://localhost:3000';
+      const confirmationUrl = `${origin}/booking/confirmation?free=true`;
+      return NextResponse.json({ url: confirmationUrl });
     }
 
     // Compose metadata for Stripe
