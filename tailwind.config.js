@@ -17,6 +17,12 @@ module.exports = {
     },
     extend: {
       colors: {
+        tea: '#D9F4C7', // Tea green
+        ash: '#C1D2CC', // Ash gray
+        periwinkle: '#A9AFD1',
+        caramel: '#C08552',
+        hunter: '#3F6C51',
+        darkpurple: '#422040',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -82,6 +88,8 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
       fontFamily: {
+        manrope: ['Manrope', 'sans-serif'],
+        sora: ['Sora', 'sans-serif'],
         serif: ['var(--font-cormorant)', 'serif'],
         sans: ['var(--font-raleway)', 'sans-serif'],
       },
