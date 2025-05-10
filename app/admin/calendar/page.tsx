@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from 'react-multi-date-picker';
+import TimePicker from 'react-multi-date-picker/plugins/time_picker';
+import "react-multi-date-picker/styles/colors/teal.css";
 
 export default function AdminCalendarPage() {
   const [events, setEvents] = useState([]);
@@ -39,43 +40,47 @@ export default function AdminCalendarPage() {
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [modalSummary, setModalSummary] = useState("Available");
-  const [modalDate, setModalDate] = useState<Date | null>(null);
-  const [modalStart, setModalStart] = useState<Date | null>(null);
-  const [modalEnd, setModalEnd] = useState<Date | null>(null);
+  const [selectedDates, setSelectedDates] = useState<any[]>([]); // Multi-date picker values
+  const [timeBlocks, setTimeBlocks] = useState<{ start: string, end: string }[]>([ { start: '', end: '' } ]);
   const [modalError, setModalError] = useState("");
 
-  // Add a new slot (event) via modal
+  // Add multiple slots (events) via modal
   async function submitSlot() {
     setModalError("");
-    if (!modalSummary || !modalDate || !modalStart || !modalEnd) {
-      setModalError("All fields are required.");
+    if (!modalSummary || selectedDates.length === 0 || timeBlocks.some(tb => !tb.start || !tb.end)) {
+      setModalError("Please select dates and fill in all time blocks.");
       return;
     }
-    // Combine date with start/end times
-    const start = new Date(modalDate);
-    start.setHours(modalStart.getHours(), modalStart.getMinutes(), 0, 0);
-    const end = new Date(modalDate);
-    end.setHours(modalEnd.getHours(), modalEnd.getMinutes(), 0, 0);
-    if (end <= start) {
-      setModalError("End time must be after start time.");
-      return;
+    // Prepare all slots
+    const slots = [];
+    for (const date of selectedDates) {
+      for (const block of timeBlocks) {
+        const start = new Date(date);
+        const [startHour, startMinute] = block.start.split(":").map(Number);
+        start.setHours(startHour, startMinute, 0, 0);
+        const end = new Date(date);
+        const [endHour, endMinute] = block.end.split(":").map(Number);
+        end.setHours(endHour, endMinute, 0, 0);
+        if (end <= start) {
+          setModalError("End time must be after start time for all blocks.");
+          return;
+        }
+        slots.push({ summary: modalSummary, start: start.toISOString(), end: end.toISOString() });
+      }
     }
-    // Both start and end are always ISO strings with time (not just date)
-    // Backend uses these as dateTime for Google Calendar events
     try {
       const res = await fetch("/api/calendar/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ summary: modalSummary, start: start.toISOString(), end: end.toISOString() }),
+        body: JSON.stringify({ slots }),
       });
       if (!res.ok) throw new Error("Booking failed");
       setShowModal(false);
-      setModalDate(null);
-      setModalStart(null);
-      setModalEnd(null);
+      setSelectedDates([]);
+      setTimeBlocks([{ start: '', end: '' }]);
       setRefresh(r => r + 1);
     } catch {
-      setModalError("Failed to add slot");
+      setModalError("Failed to add slots");
     }
   }
 
@@ -94,8 +99,8 @@ export default function AdminCalendarPage() {
       {/* Modal for adding slot */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
-            <h2 className="text-lg font-bold mb-2">Add Available Slot</h2>
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-lg relative">
+            <h2 className="text-lg font-bold mb-2">Add Available Slots (Batch)</h2>
             <label className="block mb-2">
               Title:
               <input
@@ -106,51 +111,87 @@ export default function AdminCalendarPage() {
               />
             </label>
             <label className="block mb-2">
-              Date:
+              Dates:
               <DatePicker
-                selected={modalDate}
-                onChange={date => setModalDate(date)}
-                dateFormat="yyyy-MM-dd"
-                className="border rounded px-2 py-1 w-full mt-1"
-                placeholderText="Select date"
-                calendarStartDay={0}
+                multiple
+                value={selectedDates}
+                onChange={setSelectedDates}
+                format="YYYY-MM-DD"
+                className="border rounded px-2 py-1 w-full mt-1 teal"
+                placeholder="Select one or more dates"
               />
             </label>
-            <label className="block mb-2">
-              Start Time:
-              <DatePicker
-                selected={modalStart}
-                onChange={date => setModalStart(date)}
-                showTimeSelect
-                showTimeSelectOnly
-                timeIntervals={15}
-                timeCaption="Start Time"
-                dateFormat="HH:mm"
-                className="border rounded px-2 py-1 w-full mt-1"
-                placeholderText="Select start time"
-              />
-            </label>
-            <label className="block mb-2">
-              End Time:
-              <DatePicker
-                selected={modalEnd}
-                onChange={date => setModalEnd(date)}
-                showTimeSelect
-                showTimeSelectOnly
-                timeIntervals={15}
-                timeCaption="End Time"
-                dateFormat="HH:mm"
-                className="border rounded px-2 py-1 w-full mt-1"
-                placeholderText="Select end time"
-              />
-            </label>
+            <div className="mb-2">
+              <span className="block font-semibold mb-1">Time Blocks (applied to all dates):</span>
+              {timeBlocks.map((block, idx) => (
+                <div key={idx} className="flex gap-2 items-center mb-1">
+                  <input
+                    type="time"
+                    className="border rounded px-2 py-1"
+                    value={block.start}
+                    onChange={e => {
+                      const copy = [...timeBlocks];
+                      copy[idx].start = e.target.value;
+                      setTimeBlocks(copy);
+                    }}
+                  />
+                  <span>-</span>
+                  <input
+                    type="time"
+                    className="border rounded px-2 py-1"
+                    value={block.end}
+                    onChange={e => {
+                      const copy = [...timeBlocks];
+                      copy[idx].end = e.target.value;
+                      setTimeBlocks(copy);
+                    }}
+                  />
+                  {timeBlocks.length > 1 && (
+                    <button
+                      className="text-red-500 ml-2"
+                      onClick={() => setTimeBlocks(timeBlocks.filter((_, i) => i !== idx))}
+                    >Remove</button>
+                  )}
+                </div>
+              ))}
+              <button
+                className="text-blue-600 underline text-sm mt-1"
+                onClick={() => setTimeBlocks([...timeBlocks, { start: '', end: '' }])}
+              >+ Add another block</button>
+            </div>
+            {/* Summary Table */}
+            {selectedDates.length > 0 && timeBlocks.every(tb => tb.start && tb.end) && (
+              <div className="mb-2">
+                <span className="block font-semibold mb-1">Slots to be created:</span>
+                <table className="w-full border text-xs">
+                  <thead>
+                    <tr>
+                      <th className="border px-1 py-0.5">Date</th>
+                      <th className="border px-1 py-0.5">Start</th>
+                      <th className="border px-1 py-0.5">End</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedDates.map(date => (
+                      timeBlocks.map((block, idx) => (
+                        <tr key={date + idx}>
+                          <td className="border px-1 py-0.5">{date.toString()}</td>
+                          <td className="border px-1 py-0.5">{block.start}</td>
+                          <td className="border px-1 py-0.5">{block.end}</td>
+                        </tr>
+                      ))
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
             {modalError && <div className="text-red-600 mb-2">{modalError}</div>}
             <div className="flex gap-2 mt-4">
               <button
                 className="bg-blue-600 text-white px-4 py-2 rounded"
                 onClick={submitSlot}
               >
-                Save
+                Save All
               </button>
               <button
                 className="bg-gray-300 px-4 py-2 rounded"

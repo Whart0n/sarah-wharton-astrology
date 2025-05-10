@@ -1,23 +1,8 @@
-import { Cormorant_Garamond, Raleway } from 'next/font/google'
 import { Metadata } from 'next'
 import { ToastProvider } from '@/components/ui/toast'
 import { MainNav } from '@/components/main-nav'
 import { Footer } from '@/components/footer'
 import './globals.css'
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-cormorant',
-  display: 'swap', // Use swap to prevent blocking render
-})
-
-const raleway = Raleway({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-raleway',
-  display: 'swap', // Use swap to prevent blocking render
-})
 
 export const metadata: Metadata = {
   title: 'Sarah Wharton | Professional Astrology Readings',
@@ -33,13 +18,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${raleway.variable}`}>
-      <body className="min-h-screen bg-background font-sans antialiased">
+    <html lang="en">
+
+      <body className="min-h-screen bg-tea font-manrope antialiased">
         <div className="flex min-h-screen flex-col">
-          <header className="border-b sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <header className="border-b sticky top-0 z-40 bg-tea/95 backdrop-blur supports-[backdrop-filter]:bg-tea/60">
             <div className="container flex h-16 items-center justify-between py-4">
               <div className="flex items-center gap-2">
-                <span className="font-serif text-2xl text-deepBlue">Sarah Wharton</span>
+                <span className="font-sora text-2xl text-hunter">Sarah Wharton</span>
               </div>
               <MainNav />
             </div>
