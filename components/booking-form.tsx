@@ -213,6 +213,9 @@ export function BookingForm({ service }: BookingFormProps) {
             client_email: values.email,
             start_time: startTime.toISOString(),
             end_time: endTime.toISOString(),
+            birthplace: values.placeOfBirth,
+            birthdate: values.dateOfBirth,
+            birthtime: values.timeOfBirth,
           }
         }),
       });
