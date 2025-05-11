@@ -72,6 +72,43 @@ export async function POST(request: Request) {
         }
         break
         
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        console.log('Received checkout.session.completed webhook', session);
+        try {
+          // Get the PaymentIntent ID from the session
+          const paymentIntentId = session.payment_intent;
+          if (!paymentIntentId) {
+            console.error('No paymentIntentId on session');
+            break;
+          }
+
+          // Fetch PaymentIntent from Stripe to get metadata
+          const stripeModule = await import('@/lib/stripe');
+          const paymentIntent = await stripeModule.retrievePaymentIntent(paymentIntentId);
+          const metadata = paymentIntent.metadata || {};
+
+          // Try to find booking by payment_intent_id
+          const { data: bookings } = await supabase
+            .from('bookings')
+            .select('id')
+            .eq('payment_intent_id', paymentIntentId)
+            .limit(1);
+
+          if (bookings && bookings.length > 0) {
+            await updateBooking(bookings[0].id, {
+              status: 'confirmed',
+            });
+          } else {
+            // Optionally, create a booking if not found (if that's your logic)
+            // You can use metadata fields here to insert a new booking
+            console.warn('No booking found for payment_intent_id', paymentIntentId);
+          }
+        } catch (err) {
+          console.error('Error handling checkout.session.completed:', err);
+        }
+        break;
+      }
       default:
         // Unexpected event type
         console.log(`Unhandled event type ${event.type}`)
