@@ -89,7 +89,9 @@ export async function createCheckoutSession({
     mode: 'payment',
     discounts,
     allow_promotion_codes: true, // Enables promo code field at checkout
-    metadata,
+    payment_intent_data: {
+      metadata,
+    },
     success_url: successUrl + '?session_id={CHECKOUT_SESSION_ID}',
     cancel_url: cancelUrl,
   });
