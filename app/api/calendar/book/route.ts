@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Validate all slots
-  const errors = [];
+  const errors: { index: number; error: string }[] = [];
   const results = await Promise.all(slots.map(async (slot, idx) => {
     const { summary, start, end } = slot;
     if (!summary || !start || !end) {
