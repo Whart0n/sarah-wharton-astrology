@@ -184,9 +184,9 @@ export function BookingForm({ service }: BookingFormProps) {
         client_email: values.email,
         start_time: startTime.toISOString(),
         end_time: endTime.toISOString(),
-        placeOfBirth: values.placeOfBirth,
-        dateOfBirth: values.dateOfBirth,
-        timeOfBirth: values.timeOfBirth,
+        birthplace: values.placeOfBirth,
+        birthdate: values.dateOfBirth,
+        birthtime: values.timeOfBirth,
         promoCode: values.promoCode || undefined,
       };
       setBookingData(bookingPayload);
