@@ -78,8 +78,8 @@ export async function POST(request: Request) {
         try {
           // Get the PaymentIntent ID from the session
           const paymentIntentId = session.payment_intent;
-          if (!paymentIntentId) {
-            console.error('No paymentIntentId on session');
+          if (!paymentIntentId || typeof paymentIntentId !== "string") {
+            console.error('No valid paymentIntentId on session:', paymentIntentId);
             break;
           }
 
