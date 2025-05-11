@@ -177,6 +177,20 @@ export function BookingForm({ service }: BookingFormProps) {
       return
     }
     try {
+      // Create booking data with all required fields
+      const bookingPayload = {
+        service_id: service.id,
+        client_name: values.name,
+        client_email: values.email,
+        start_time: startTime.toISOString(),
+        end_time: endTime.toISOString(),
+        placeOfBirth: values.placeOfBirth,
+        dateOfBirth: values.dateOfBirth,
+        timeOfBirth: values.timeOfBirth,
+        promoCode: values.promoCode || undefined,
+      };
+      setBookingData(bookingPayload);
+
       // Create payment intent
       console.log('[BookingForm] Submitting payment intent request:', {
         amount: service.price_cents,
