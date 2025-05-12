@@ -111,8 +111,10 @@ export async function POST(request: Request) {
                 checkout_session_id: session.id
               }
             ])
-            .select()
+            .select('*, service:services(*)')
             .single();
+
+          console.log('Created booking:', newBooking);
 
           if (bookingError) {
             console.error('Error creating booking:', bookingError);
