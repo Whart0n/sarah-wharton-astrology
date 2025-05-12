@@ -201,22 +201,25 @@ export function BookingForm({ service }: BookingFormProps) {
         startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
       });
+      const metadata = {
+        clientName: values.name,
+        clientEmail: values.email,
+        serviceId: service.id,
+        serviceName: service.name,
+        serviceDescription: service.description,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
+        placeOfBirth: values.placeOfBirth,
+        dateOfBirth: values.dateOfBirth,
+        timeOfBirth: values.timeOfBirth,
+        promoCode: values.promoCode || "",
+      };
       const response = await fetch('/api/payment/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: service.price_cents,
-          metadata: {
-            service_id: service.id,
-            service_name: service.name,
-            client_name: values.name,
-            client_email: values.email,
-            start_time: startTime.toISOString(),
-            end_time: endTime.toISOString(),
-            birthplace: values.placeOfBirth,
-            birthdate: values.dateOfBirth,
-            birthtime: values.timeOfBirth,
-          }
+          metadata,
         }),
       });
       console.log('[BookingForm] Payment intent response:', response);
