@@ -6,11 +6,15 @@ import { supabase, updateBooking } from "@/lib/supabase"
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(request: Request) {
+  console.log('Webhook endpoint called');
   try {
     const rawBody = await request.text();
     const headersList = headers();
     const signature = headersList.get('stripe-signature');
 
+    console.log('Stripe signature:', signature?.slice(0, 20) + '...');
+    console.log('Has webhook secret:', !!process.env.STRIPE_WEBHOOK_SECRET);
+    
     if (!signature || !process.env.STRIPE_WEBHOOK_SECRET) {
       console.error('Missing signature or webhook secret');
       return NextResponse.json(
@@ -21,27 +25,134 @@ export async function POST(request: Request) {
 
     let event;
     try {
+      console.log('Constructing webhook event...');
+      console.log('Raw body length:', rawBody.length);
+      console.log('First 100 chars of raw body:', rawBody.slice(0, 100));
+      
       event = stripe.webhooks.constructEvent(
         rawBody,
         signature,
         process.env.STRIPE_WEBHOOK_SECRET
       );
+      
       console.log('Successfully verified webhook signature');
+      console.log('Event type:', event.type);
+      console.log('Event ID:', event.id);
     } catch (err: any) {
       console.error('Error verifying webhook signature:', err);
+      console.error('Error details:', {
+        message: err?.message,
+        stack: err?.stack,
+        name: err?.name
+      });
       return NextResponse.json(
         { error: `Webhook signature verification failed: ${err?.message || 'Unknown error'}` },
         { status: 400 }
       );
     }
 
+    console.log(`Received ${event.type} webhook event`);
+    
     // Handle the event
     switch (event.type) {
-      case 'payment_intent.succeeded':
-        const paymentIntent = event.data.object
+      case 'checkout.session.completed':
+        const session = event.data.object;
+        console.log('Processing checkout.session.completed:', session.id);
         
-        // Update booking status if it exists
-        if (paymentIntent.metadata && paymentIntent.metadata.service_id) {
+        try {
+          // Get the service details
+          const { data: service, error: serviceError } = await supabase
+            .from('services')
+            .select('*')
+            .eq('id', session.metadata.serviceId)
+            .single();
+            
+          if (serviceError) {
+            console.error('Error fetching service:', serviceError);
+            throw serviceError;
+          }
+          
+          // Create the booking
+          const bookingData = {
+            checkout_session_id: session.id,
+            service_id: session.metadata.serviceId,
+            customer_name: session.metadata.clientName,
+            customer_email: session.metadata.clientEmail,
+            start_time: new Date(session.metadata.startTime),
+            end_time: new Date(session.metadata.endTime),
+            birth_date: session.metadata.dateOfBirth,
+            birth_time: session.metadata.timeOfBirth,
+            birth_place: session.metadata.placeOfBirth,
+            status: 'confirmed',
+            amount_paid: session.amount_total,
+            stripe_payment_id: session.payment_intent
+          };
+          
+          console.log('Creating booking with data:', bookingData);
+          
+          const { data: booking, error: bookingError } = await supabase
+            .from('bookings')
+            .insert([bookingData])
+            .select()
+            .single();
+            
+          if (bookingError) {
+            console.error('Error creating booking:', bookingError);
+            throw bookingError;
+          }
+          
+          console.log('Successfully created booking:', booking.id);
+          
+          // Create Google Calendar event
+          try {
+            const eventDescription = `
+Client: ${session.metadata.clientName}
+Email: ${session.metadata.clientEmail}
+Service: ${service.name}
+Birth Date: ${session.metadata.dateOfBirth}
+Birth Time: ${session.metadata.timeOfBirth}
+Birth Place: ${session.metadata.placeOfBirth}
+            `.trim();
+            
+            const { createEvent } = await import('@/lib/googleCalendar');
+            const calendarEvent = await createEvent(
+              `${service.name} - ${session.metadata.clientName}`,
+              eventDescription,
+              new Date(session.metadata.startTime),
+              new Date(session.metadata.endTime),
+              session.metadata.clientEmail
+            );
+            
+            console.log('Created calendar event:', calendarEvent.id);
+            
+            // Update booking with calendar event ID
+            const { error: updateError } = await supabase
+              .from('bookings')
+              .update({ calendar_event_id: calendarEvent.id })
+              .eq('id', booking.id);
+              
+            if (updateError) {
+              console.error('Error updating booking with calendar event:', updateError);
+              throw updateError;
+            }
+            
+            console.log('Successfully updated booking with calendar event ID');
+          } catch (calendarError: any) {
+            console.error('Error creating calendar event:', calendarError);
+            // Don't throw here - we still want to confirm the booking even if calendar fails
+          }
+        } catch (err: any) {
+          console.error('Error processing checkout session:', err);
+          return NextResponse.json(
+            { error: err?.message || 'Unknown error processing checkout session' },
+            { status: 500 }
+          );
+        }
+        break;
+        
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object;
+        console.log('Processing payment_intent.succeeded:', paymentIntent.id);
           try {
             // Find booking by payment_intent_id
             const { data: bookings } = await supabase
