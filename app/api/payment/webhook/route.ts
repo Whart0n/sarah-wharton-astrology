@@ -3,24 +3,37 @@ import { headers } from "next/headers"
 import { handleWebhookEvent } from "@/lib/stripe"
 import { supabase, updateBooking } from "@/lib/supabase"
 
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 export async function POST(request: Request) {
   try {
-    // Get the request body as raw text
-    const rawBody = await request.text()
-    
-    // Get the stripe signature from headers
-    const headersList = headers()
-    const signature = headersList.get('stripe-signature')
-    
-    if (!signature) {
+    const rawBody = await request.text();
+    const headersList = headers();
+    const signature = headersList.get('stripe-signature');
+
+    if (!signature || !process.env.STRIPE_WEBHOOK_SECRET) {
+      console.error('Missing signature or webhook secret');
       return NextResponse.json(
-        { error: "Missing Stripe signature" },
+        { error: 'Missing signature or webhook secret' },
         { status: 400 }
-      )
+      );
     }
 
-    // Verify and construct the event
-    const event = await handleWebhookEvent(signature, Buffer.from(rawBody))
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+      console.log('Successfully verified webhook signature');
+    } catch (err: any) {
+      console.error('Error verifying webhook signature:', err);
+      return NextResponse.json(
+        { error: `Webhook signature verification failed: ${err?.message || 'Unknown error'}` },
+        { status: 400 }
+      );
+    }
 
     // Handle the event
     switch (event.type) {
