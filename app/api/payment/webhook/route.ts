@@ -88,62 +88,83 @@ export async function POST(request: Request) {
           const paymentIntent = await stripeModule.retrievePaymentIntent(paymentIntentId);
           const metadata = paymentIntent.metadata || {};
 
-          // Try to find booking by checkout_session_id
-          const { data: bookings } = await supabase
-            .from('bookings')
-            .select('id')
-            .eq('checkout_session_id', session.id)
-            .limit(1);
+          if (!session.metadata) {
+            console.error('No metadata found in session');
+            break;
+          }
 
-          if (bookings && bookings.length > 0) {
-            await updateBooking(bookings[0].id, {
-              payment_intent_id: paymentIntentId,
-              status: 'confirmed',
-            });
+          // Create the booking using session metadata
+          const { data: newBooking, error: bookingError } = await supabase
+            .from('bookings')
+            .insert([
+              {
+                service_id: session.metadata.serviceId,
+                client_name: session.metadata.clientName,
+                client_email: session.metadata.clientEmail,
+                start_time: session.metadata.startTime,
+                end_time: session.metadata.endTime,
+                birthplace: session.metadata.placeOfBirth,
+                birthdate: session.metadata.dateOfBirth,
+                birthtime: session.metadata.timeOfBirth,
+                payment_intent_id: paymentIntentId,
+                status: 'confirmed',
+                checkout_session_id: session.id
+              }
+            ])
+            .select()
+            .single();
+
+          if (bookingError) {
+            console.error('Error creating booking:', bookingError);
+            break;
+          }
+
+          if (newBooking) {
             // Create Google Calendar event for confirmed booking
             try {
               const { createEvent } = await import('@/lib/googleCalendar');
-              const { getBookingById, updateBooking } = await import('@/lib/supabase');
               console.log('Attempting to create calendar event for booking...');
-              const booking = await getBookingById(bookings[0].id);
-              console.log('Retrieved booking:', booking);
+              console.log('Booking data:', newBooking);
+              const summary = `${newBooking.client_name} - ${newBooking.service?.name || 'Astrology Reading'}`;
+              const description = `Email: ${newBooking.client_email}\nService: ${newBooking.service?.name}\nStart: ${newBooking.start_time}\nEnd: ${newBooking.end_time}` +
+                `\nBirthdate: ${newBooking.birthdate || ''}` +
+                `\nBirthtime: ${newBooking.birthtime || ''}` +
+                `\nBirthplace: ${newBooking.birthplace || ''}`;
               
-              if (booking) {
-                const summary = `${booking.client_name} - ${booking.service?.name || 'Astrology Reading'}`;
-                const description = `Email: ${booking.client_email}\nService: ${booking.service?.name}\nStart: ${booking.start_time}\nEnd: ${booking.end_time}` +
-                  `\nBirthdate: ${booking.birthdate || ''}` +
-                  `\nBirthtime: ${booking.birthtime || ''}` +
-                  `\nBirthplace: ${booking.birthplace || ''}`;
-                
-                console.log('Creating calendar event with:', {
+              console.log('Creating calendar event with:', {
+                summary,
+                description,
+                startTime: new Date(newBooking.start_time),
+                endTime: new Date(newBooking.end_time),
+                attendeeEmail: newBooking.client_email
+              });
+              
+              try {
+                const event = await createEvent(
                   summary,
                   description,
-                  startTime: new Date(booking.start_time),
-                  endTime: new Date(booking.end_time),
-                  attendeeEmail: booking.client_email
-                });
+                  new Date(newBooking.start_time),
+                  new Date(newBooking.end_time),
+                  newBooking.client_email
+                );
+                console.log('Calendar event created:', event);
                 
-                try {
-                  const event = await createEvent(
-                    summary,
-                    description,
-                    new Date(booking.start_time),
-                    new Date(booking.end_time),
-                    booking.client_email
-                  );
-                  console.log('Calendar event created:', event);
-                  
-                  if (event && event.id) {
-                    console.log('Updating booking with calendar event ID:', event.id);
-                    await updateBooking(bookings[0].id, { calendar_event_id: event.id });
-                    console.log('Booking updated successfully with calendar event ID');
+                if (event && event.id) {
+                  const { data: updatedBooking, error: updateError } = await supabase
+                    .from('bookings')
+                    .update({ calendar_event_id: event.id })
+                    .eq('id', newBooking.id)
+                    .select()
+                    .single();
+
+                  if (updateError) {
+                    console.error('Error updating booking with calendar event ID:', updateError);
                   } else {
-                    console.error('Event created but no event.id returned:', event);
+                    console.log('Updated booking with calendar event ID:', updatedBooking);
                   }
-                } catch (eventError) {
-                  console.error('Error details from calendar event creation:', eventError);
-                  throw eventError; // Re-throw to be caught by outer catch block
                 }
+              } catch (error) {
+                console.error('Error creating calendar event:', error);
               }
             } catch (calendarError) {
               console.error('Error creating Google Calendar event:', calendarError);
@@ -153,8 +174,8 @@ export async function POST(request: Request) {
             // You can use metadata fields here to insert a new booking
             console.warn('No booking found for checkout_session_id', session.id);
           }
-        } catch (err) {
-          console.error('Error handling checkout.session.completed:', err);
+        } catch (error) {
+          console.error('Error handling checkout.session.completed:', error);
         }
         break;
       }
@@ -165,10 +186,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Webhook error:', error)
+    console.error('Error in webhook handler:', error);
     return NextResponse.json(
       { error: 'Webhook handler failed' },
       { status: 400 }
-    )
+    );
   }
 }
