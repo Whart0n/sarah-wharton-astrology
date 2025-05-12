@@ -100,6 +100,31 @@ export async function POST(request: Request) {
               payment_intent_id: paymentIntentId,
               status: 'confirmed',
             });
+            // Create Google Calendar event for confirmed booking
+            try {
+              const { createEvent } = await import('@/lib/googleCalendar');
+              const { getBookingById, updateBooking } = await import('@/lib/supabase');
+              const booking = await getBookingById(bookings[0].id);
+              if (booking) {
+                const summary = `${booking.client_name} - ${booking.service?.name || 'Astrology Reading'}`;
+                const description = `Email: ${booking.client_email}\nService: ${booking.service?.name}\nStart: ${booking.start_time}\nEnd: ${booking.end_time}` +
+                  `\nBirthdate: ${booking.birthdate || ''}` +
+                  `\nBirthtime: ${booking.birthtime || ''}` +
+                  `\nBirthplace: ${booking.birthplace || ''}`;
+                const event = await createEvent(
+                  summary,
+                  description,
+                  new Date(booking.start_time),
+                  new Date(booking.end_time),
+                  booking.client_email
+                );
+                if (event && event.id) {
+                  await updateBooking(bookings[0].id, { calendar_event_id: event.id });
+                }
+              }
+            } catch (calendarError) {
+              console.error('Error creating Google Calendar event:', calendarError);
+            }
           } else {
             // Optionally, create a booking if not found (if that's your logic)
             // You can use metadata fields here to insert a new booking

@@ -27,6 +27,9 @@ interface Booking {
   payment_intent_id: string | null
   status: string
   created_at: string
+  birthplace?: string
+  birthdate?: string
+  birthtime?: string
 }
 
 export function BookingList() {
@@ -189,6 +192,15 @@ export function BookingList() {
                   <p className="text-sm text-muted-foreground">
                     Email: {booking.client_email}
                   </p>
+                  {booking.birthdate && (
+                    <p className="text-sm text-muted-foreground">Birthdate: {booking.birthdate}</p>
+                  )}
+                  {booking.birthtime && (
+                    <p className="text-sm text-muted-foreground">Birthtime: {booking.birthtime}</p>
+                  )}
+                  {booking.birthplace && (
+                    <p className="text-sm text-muted-foreground">Birthplace: {booking.birthplace}</p>
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-medium">

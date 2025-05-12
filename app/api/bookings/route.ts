@@ -108,7 +108,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { service_id, client_name, client_email, start_time, end_time, payment_intent_id } = await request.json()
+    const { service_id, client_name, client_email, start_time, end_time, payment_intent_id, birthplace, birthdate, birthtime } = await request.json()
 
     // Validate required fields
     if (!service_id || !client_name || !client_email || !start_time || !end_time) {
@@ -129,7 +129,7 @@ export async function POST(request: Request) {
 
     // Create calendar event
     const summary = `Astrology Reading: ${service.name}`
-    const description = `Client: ${client_name}\nEmail: ${client_email}\nService: ${service.name}\nDuration: ${service.duration_minutes} minutes`
+    const description = `Client: ${client_name}\nEmail: ${client_email}\nService: ${service.name}\nDuration: ${service.duration_minutes} minutes\nBirthdate: ${birthdate || ''}\nBirthtime: ${birthtime || ''}\nBirthplace: ${birthplace || ''}`
     
     let calendarEventId = null
     try {
@@ -159,6 +159,9 @@ export async function POST(request: Request) {
           calendar_event_id: calendarEventId,
           payment_intent_id,
           status: "confirmed", // Set to confirmed since payment is already processed
+          birthplace,
+          birthdate,
+          birthtime,
         },
       ])
       .select()
