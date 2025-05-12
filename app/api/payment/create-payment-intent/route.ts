@@ -62,6 +62,7 @@ export async function POST(request: Request) {
           birthdate: metadata?.dateOfBirth,
           birthtime: metadata?.timeOfBirth,
           payment_intent_id: typeof session.payment_intent === "string" ? session.payment_intent : null,
+          checkout_session_id: typeof session.id === "string" ? session.id : null,
           status: 'pending',
         };
         await createBooking(bookingPayload);
