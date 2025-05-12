@@ -47,6 +47,28 @@ export async function POST(request: Request) {
         productName: metadata?.serviceName || 'Service',
         productDescription: metadata?.serviceDescription || 'Astrology Reading',
       });
+
+      // Insert pending booking row into Supabase
+      try {
+        const { createBooking } = await import('@/lib/supabase');
+        // Compose bookingData from request body and session
+        const bookingPayload = {
+          service_id: metadata?.serviceId,
+          client_name: metadata?.clientName,
+          client_email: metadata?.clientEmail,
+          start_time: metadata?.startTime,
+          end_time: metadata?.endTime,
+          birthplace: metadata?.placeOfBirth,
+          birthdate: metadata?.dateOfBirth,
+          birthtime: metadata?.timeOfBirth,
+          payment_intent_id: session.payment_intent,
+          status: 'pending',
+        };
+        await createBooking(bookingPayload);
+      } catch (bookingError) {
+        console.error('Failed to create pending booking:', bookingError);
+        // Continue even if booking creation fails (user can still pay)
+      }
       return NextResponse.json({ url: session.url });
     } catch (err: any) {
       if (err.message && err.message.includes('Invalid or expired promo code')) {
