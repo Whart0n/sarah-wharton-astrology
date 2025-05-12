@@ -30,15 +30,33 @@ export default function ConfirmationPage({
     const maxTries = 12; // 5 seconds * 12 = 60 seconds total
 
     const checkStatus = async () => {
+      const sessionId = searchParams.get('session_id');
+      console.log('Checking status for session:', sessionId);
+      
       try {
-        const res = await fetch(`/api/check-booking-status?session_id=${searchParams.get('session_id')}`);
+        const res = await fetch(`/api/check-booking-status?session_id=${sessionId}`);
+        if (!res.ok) {
+          console.error('Error response from check-booking-status:', {
+            status: res.status,
+            statusText: res.statusText
+          });
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const data = await res.json();
-        console.log('Fetched booking status:', data.status, 'Try:', tries + 1);
+        console.log('Fetched booking status:', {
+          status: data.status,
+          try: tries + 1,
+          maxTries,
+          error: data.error
+        });
 
         if (data.status === 'confirmed') {
+          console.log('Booking confirmed!');
           setStatus('success');
           clearInterval(interval);
         } else if (data.status === 'error' || data.status === 'payment_failed') {
+          console.error('Booking failed:', data.error || 'Unknown error');
           setStatus('failure');
           clearInterval(interval);
         } else if (data.status === 'pending' && tries >= maxTries) {
@@ -46,6 +64,7 @@ export default function ConfirmationPage({
           setStatus('failure');
           clearInterval(interval);
         } else {
+          console.log('Still pending, will retry...');
           tries++;
         }
       } catch (err) {
