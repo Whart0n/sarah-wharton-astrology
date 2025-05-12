@@ -71,6 +71,12 @@ export async function createCheckoutSession({
     }
   }
 
+  // Clean metadata to ensure all values are strings
+  const cleanMetadata = Object.entries(metadata).reduce((acc, [key, value]) => {
+    acc[key] = String(value || '');
+    return acc;
+  }, {} as Record<string, string>);
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ['card'],
     line_items: [
@@ -88,9 +94,10 @@ export async function createCheckoutSession({
     ],
     mode: 'payment',
     discounts,
-    allow_promotion_codes: true, // Enables promo code field at checkout
+    allow_promotion_codes: true,
+    metadata: cleanMetadata, // Attach metadata to the session
     payment_intent_data: {
-      metadata: metadata,
+      metadata: cleanMetadata, // Also attach to the payment intent
     },
     success_url: successUrl + '?session_id={CHECKOUT_SESSION_ID}',
     cancel_url: cancelUrl,
