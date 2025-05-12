@@ -98,10 +98,32 @@ export function BookingForm({ service }: BookingFormProps) {
           const slotInterval = 30; // minutes
 
           // Gather all busy events from Google Calendar
-          const busyRanges = (data.events || []).map((ev: any) => ({
-            start: new Date(ev.start),
-            end: new Date(ev.end)
-          }));
+          // Ignore all-day events unless they block the entire selected day
+          const busyRanges = (data.events || [])
+            .filter((ev: any) => {
+              if (!ev.start || !ev.end) return false;
+              // If the event has no time component, treat as all-day
+              const isAllDay = !ev.start.includes('T') && !ev.end.includes('T');
+              if (isAllDay) {
+                // Only block the day if the all-day event covers the whole selected day
+                const eventStart = new Date(ev.start);
+                const eventEnd = new Date(ev.end);
+                // All-day events in Google Calendar usually end at 00:00 the next day
+                // So block if the event covers the selected day
+                return (
+                  eventStart <= startOfDay && eventEnd >= endOfDay
+                );
+              }
+              // Otherwise, check if the event is on the selected day
+              const eventDate = new Date(ev.start);
+              return (
+                eventDate >= startOfDay && eventDate <= endOfDay
+              );
+            })
+            .map((ev: any) => ({
+              start: new Date(ev.start),
+              end: new Date(ev.end)
+            }));
 
           // Define the full working window for the day (e.g., 9am to 5pm)
           const businessStart = new Date(startOfDay);
@@ -117,9 +139,13 @@ export function BookingForm({ service }: BookingFormProps) {
             const slotEnd = new Date(slot.getTime() + serviceDuration * 60000);
             const bufferEnd = new Date(slotEnd.getTime() + bufferMinutes * 60000);
             // Check for overlap with any busy Google Calendar event
-            const overlaps = busyRanges.some((ev: { start: Date; end: Date }) =>
-              (slot < ev.end && bufferEnd > ev.start)
-            );
+            const overlaps = busyRanges.some((ev: { start: Date; end: Date }) => {
+              // Only block if the event actually overlaps with this slot on this day
+              return (
+                slot < ev.end && bufferEnd > ev.start &&
+                slot >= startOfDay && slot < endOfDay
+              );
+            });
             if (!overlaps) {
               slots.push(slot.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
             }
