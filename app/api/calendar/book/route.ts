@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 
 const calendarId = process.env.GOOGLE_CALENDAR_ID!;
-const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON!);
+if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+  throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON environment variable not set');
+}
+const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 
 const auth = new google.auth.JWT(
   credentials.client_email,
@@ -14,7 +17,12 @@ const auth = new google.auth.JWT(
 const calendar = google.calendar({ version: "v3", auth });
 
 export async function POST(req: NextRequest) {
-  let body = await req.json();
+  let body;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return NextResponse.json({ error: "Invalid or missing JSON body" }, { status: 400 });
+  }
 
   // Support both single and batch slot creation
   const slots = Array.isArray(body)
