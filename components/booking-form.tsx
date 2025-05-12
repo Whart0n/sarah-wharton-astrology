@@ -84,6 +84,11 @@ export function BookingForm({ service }: BookingFormProps) {
       const endOfDay = new Date(selectedDate);
       endOfDay.setHours(23, 59, 59, 999);
 
+      // Slot generation config (declare once)
+      const serviceDuration = service.duration_minutes;
+      const bufferMinutes = 30;
+      const slotInterval = 30; // minutes
+
       fetch(`/api/calendar/availability?start=${startOfDay.toISOString()}&end=${endOfDay.toISOString()}`)
         .then(res => res.json())
         .then(data => {
@@ -92,37 +97,35 @@ export function BookingForm({ service }: BookingFormProps) {
           const bufferMinutes = 30;
           const slotInterval = 30; // minutes
 
-          // Gather all events as availability windows
-          const windows = (data.events || []).map((ev: any) => ({
+          // Gather all busy events from Google Calendar
+          const busyRanges = (data.events || []).map((ev: any) => ({
             start: new Date(ev.start),
             end: new Date(ev.end)
           }));
 
-          // Gather all bookings (if present in data)
-          const bookings = (data.bookings || []).map((bk: any) => ({
-            start: new Date(bk.start),
-            end: new Date(bk.end)
-          }));
+          // Define the full working window for the day (e.g., 9am to 5pm)
+          const businessStart = new Date(startOfDay);
+          businessStart.setHours(9, 0, 0, 0);
+          const businessEnd = new Date(startOfDay);
+          businessEnd.setHours(17, 0, 0, 0);
 
           let slots: string[] = [];
-          windows.forEach((window: { start: Date; end: Date }) => {
-            // Latest possible start time so service + buffer fits
-            const latestStart = new Date(window.end.getTime() - (serviceDuration + bufferMinutes) * 60000);
-            let slot = new Date(window.start);
-            while (slot <= latestStart) {
-              const slotEnd = new Date(slot.getTime() + serviceDuration * 60000);
-              const bufferEnd = new Date(slotEnd.getTime() + bufferMinutes * 60000);
-              // Check for overlap with bookings
-              const overlaps = bookings.some((bk: { start: Date; end: Date }) =>
-                (slot < bk.end && bufferEnd > bk.start)
-              );
-              if (!overlaps) {
-                // Format as HH:mm (24h)
-                slots.push(slot.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
-              }
-              slot = new Date(slot.getTime() + slotInterval * 60000);
+
+          // Generate slots between businessStart and businessEnd
+          let slot = new Date(businessStart);
+          while (slot.getTime() + (serviceDuration + bufferMinutes) * 60000 <= businessEnd.getTime()) {
+            const slotEnd = new Date(slot.getTime() + serviceDuration * 60000);
+            const bufferEnd = new Date(slotEnd.getTime() + bufferMinutes * 60000);
+            // Check for overlap with any busy Google Calendar event
+            const overlaps = busyRanges.some((ev: { start: Date; end: Date }) =>
+              (slot < ev.end && bufferEnd > ev.start)
+            );
+            if (!overlaps) {
+              slots.push(slot.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
             }
-          });
+            slot = new Date(slot.getTime() + slotInterval * 60000);
+          }
+
           // Remove duplicates and sort
           slots = Array.from(new Set(slots)).sort();
           // Optionally filter out past times for today
