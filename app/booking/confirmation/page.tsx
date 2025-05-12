@@ -1,7 +1,11 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 
-export default function ConfirmationPage() {
+export default function ConfirmationPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
   const [status, setStatus] = useState<'processing' | 'success' | 'failure'>('processing');
   const [tries, setTries] = useState(0);
   const [isFree, setIsFree] = useState(false);
@@ -20,23 +24,29 @@ export default function ConfirmationPage() {
       setStatus('failure');
       return;
     }
+
     let interval: NodeJS.Timeout;
+    let tries = 0;
+    const maxTries = 12; // 5 seconds * 12 = 60 seconds total
+
     const checkStatus = async () => {
       try {
-        const res = await fetch(`/api/check-booking-status?session_id=${sessionId}`);
+        const res = await fetch(`/api/check-booking-status?session_id=${searchParams.get('session_id')}`);
         const data = await res.json();
-        console.log('Fetched booking status:', data.status);
-        if (data.status === 'confirmed' || data.status === 'paid') {
+        console.log('Fetched booking status:', data.status, 'Try:', tries + 1);
+
+        if (data.status === 'confirmed') {
           setStatus('success');
           clearInterval(interval);
-        } else if (data.status === 'payment_failed') {
+        } else if (data.status === 'error' || data.status === 'payment_failed') {
           setStatus('failure');
           clearInterval(interval);
-        } else if (tries >= 5) {
+        } else if (data.status === 'pending' && tries >= maxTries) {
+          console.log('Timeout reached waiting for booking confirmation');
           setStatus('failure');
           clearInterval(interval);
         } else {
-          setTries(t => t + 1);
+          tries++;
         }
       } catch (err) {
         console.error('Error fetching booking status:', err);
@@ -44,11 +54,21 @@ export default function ConfirmationPage() {
         clearInterval(interval);
       }
     };
-    interval = setInterval(checkStatus, 2000);
-    checkStatus(); // Initial call
+
+    if (!searchParams.get('session_id')) {
+      console.error('No session_id found in URL');
+      setStatus('failure');
+      return;
+    }
+
+    // Check status immediately
+    checkStatus();
+
+    // Then check every 5 seconds
+    interval = setInterval(checkStatus, 5000);
+
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tries]);
+  }, [searchParams]);
 
   useEffect(() => {
     console.log('Confirmation page status state changed:', status);

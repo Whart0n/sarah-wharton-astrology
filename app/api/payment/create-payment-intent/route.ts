@@ -48,9 +48,16 @@ export async function POST(request: Request) {
         productDescription: metadata?.serviceDescription || 'Astrology Reading',
       });
 
-      // Insert pending booking row into Supabase
+      // Check for overlapping confirmed bookings
       try {
-        const { createBooking } = await import('@/lib/supabase');
+        const { getBookingsByTimeRange, createBooking } = await import('@/lib/supabase');
+        const startTime = new Date(metadata?.startTime);
+        const endTime = new Date(metadata?.endTime);
+        const overlapping = await getBookingsByTimeRange(startTime, endTime);
+        const hasConflict = overlapping && overlapping.some((b: any) => b.status === 'confirmed');
+        if (hasConflict) {
+          return NextResponse.json({ error: 'This time slot is already booked.' }, { status: 409 });
+        }
         // Compose bookingData from request body and session
         const bookingPayload = {
           service_id: metadata?.serviceId,
