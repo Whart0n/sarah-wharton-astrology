@@ -7,11 +7,11 @@ export async function GET(request: Request) {
   if (!sessionId) {
     return NextResponse.json({ error: 'Missing session_id' }, { status: 400 });
   }
-  // Find booking by payment_intent_id (session_id from Stripe Checkout)
+  // Find booking by checkout_session_id (session_id from Stripe Checkout)
   const { data, error } = await supabase
     .from('bookings')
     .select('status')
-    .eq('payment_intent_id', sessionId)
+    .eq('checkout_session_id', sessionId)
     .single();
 
   if (error || !data) {
