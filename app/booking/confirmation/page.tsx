@@ -24,6 +24,7 @@ export default function ConfirmationPage() {
       try {
         const res = await fetch(`/api/check-booking-status?session_id=${sessionId}`);
         const data = await res.json();
+        console.log('Fetched booking status:', data.status);
         if (data.status === 'confirmed' || data.status === 'paid') {
           setStatus('success');
           clearInterval(interval);
@@ -36,7 +37,8 @@ export default function ConfirmationPage() {
         } else {
           setTries(t => t + 1);
         }
-      } catch {
+      } catch (err) {
+        console.error('Error fetching booking status:', err);
         setStatus('failure');
         clearInterval(interval);
       }
@@ -46,6 +48,10 @@ export default function ConfirmationPage() {
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tries]);
+
+  useEffect(() => {
+    console.log('Confirmation page status state changed:', status);
+  }, [status]);
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-tea px-4">
