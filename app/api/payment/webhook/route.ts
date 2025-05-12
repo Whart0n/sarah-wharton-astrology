@@ -104,22 +104,45 @@ export async function POST(request: Request) {
             try {
               const { createEvent } = await import('@/lib/googleCalendar');
               const { getBookingById, updateBooking } = await import('@/lib/supabase');
+              console.log('Attempting to create calendar event for booking...');
               const booking = await getBookingById(bookings[0].id);
+              console.log('Retrieved booking:', booking);
+              
               if (booking) {
                 const summary = `${booking.client_name} - ${booking.service?.name || 'Astrology Reading'}`;
                 const description = `Email: ${booking.client_email}\nService: ${booking.service?.name}\nStart: ${booking.start_time}\nEnd: ${booking.end_time}` +
                   `\nBirthdate: ${booking.birthdate || ''}` +
                   `\nBirthtime: ${booking.birthtime || ''}` +
                   `\nBirthplace: ${booking.birthplace || ''}`;
-                const event = await createEvent(
+                
+                console.log('Creating calendar event with:', {
                   summary,
                   description,
-                  new Date(booking.start_time),
-                  new Date(booking.end_time),
-                  booking.client_email
-                );
-                if (event && event.id) {
-                  await updateBooking(bookings[0].id, { calendar_event_id: event.id });
+                  startTime: new Date(booking.start_time),
+                  endTime: new Date(booking.end_time),
+                  attendeeEmail: booking.client_email
+                });
+                
+                try {
+                  const event = await createEvent(
+                    summary,
+                    description,
+                    new Date(booking.start_time),
+                    new Date(booking.end_time),
+                    booking.client_email
+                  );
+                  console.log('Calendar event created:', event);
+                  
+                  if (event && event.id) {
+                    console.log('Updating booking with calendar event ID:', event.id);
+                    await updateBooking(bookings[0].id, { calendar_event_id: event.id });
+                    console.log('Booking updated successfully with calendar event ID');
+                  } else {
+                    console.error('Event created but no event.id returned:', event);
+                  }
+                } catch (eventError) {
+                  console.error('Error details from calendar event creation:', eventError);
+                  throw eventError; // Re-throw to be caught by outer catch block
                 }
               }
             } catch (calendarError) {
