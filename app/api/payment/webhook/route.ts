@@ -100,18 +100,154 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     );
   }
 }
-  if (!session?.metadata) {
-    console.error('No metadata found in session');
+
+async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  try {
+    const { data: bookings, error: findError } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('stripe_payment_id', paymentIntent.id);
+
+    if (findError) {
+      console.error('Error fetching booking:', findError);
+      return NextResponse.json(
+        { error: 'Failed to fetch booking' },
+        { status: 500 }
+      );
+    }
+
+    if (!bookings || bookings.length === 0) {
+      console.error('No booking found for payment intent:', paymentIntent.id);
+      return NextResponse.json(
+        { error: 'No booking found' },
+        { status: 404 }
+      );
+    }
+
+    const { error: updateError } = await supabase
+      .from('bookings')
+      .update({ status: 'confirmed' })
+      .eq('stripe_payment_id', paymentIntent.id);
+
+    if (updateError) {
+      console.error('Error updating booking:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to update booking' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (error: any) {
+    console.error('Error handling payment success:', error);
     return NextResponse.json(
-      { error: 'No metadata found in session' },
-      { status: 400 }
+      { error: 'Error handling payment success' },
+      { status: 500 }
     );
   }
+}
 
+async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   try {
-    // Get the service details
-    const { data: service, error: serviceError } = await supabase
-      .from('services')
+    const { data: failedBookings, error: findError } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('stripe_payment_id', paymentIntent.id);
+
+    if (findError) {
+      console.error('Error finding booking:', findError);
+      return NextResponse.json(
+        { error: 'Failed to find booking' },
+        { status: 500 }
+      );
+    }
+
+    if (!failedBookings || failedBookings.length === 0) {
+      console.error('No booking found for payment intent:', paymentIntent.id);
+      return NextResponse.json(
+        { error: 'No booking found' },
+        { status: 404 }
+      );
+    }
+
+    const { error: updateError } = await supabase
+      .from('bookings')
+      .update({ status: 'payment_failed' })
+      .eq('id', failedBookings[0].id);
+
+    if (updateError) {
+      console.error('Error updating booking after payment failure:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to update booking status' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (error: any) {
+    console.error('Error handling payment_intent.payment_failed:', error);
+    return NextResponse.json(
+      { error: 'Error handling payment failure' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.text();
+    const sig = request.headers.get('stripe-signature');
+
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      throw new Error('STRIPE_WEBHOOK_SECRET is not set');
+    }
+    if (!sig) {
+      return NextResponse.json(
+        { error: 'No Stripe signature found' },
+        { status: 400 }
+      );
+    }
+
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        body,
+        sig,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+    } catch (err: any) {
+      console.error('Error verifying webhook signature:', err);
+      return NextResponse.json(
+        { error: `Webhook Error: ${err.message}` },
+        { status: 400 }
+      );
+    }
+
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        return await handleCheckoutSessionCompleted(session);
+      }
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        return await handlePaymentIntentSucceeded(paymentIntent);
+      }
+      case 'payment_intent.payment_failed': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        return await handlePaymentIntentFailed(paymentIntent);
+      }
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+        return NextResponse.json({ received: true });
+    }
+  } catch (error: any) {
+    console.error('Error processing webhook:', error);
+    return NextResponse.json(
+      { error: 'Error processing webhook' },
+      { status: 500 }
+    );
+  }
+}
       .select('*')
       .eq('id', session.metadata.serviceId)
       .single();
@@ -188,136 +324,6 @@ Birth Place: ${session.metadata.placeOfBirth}
         
       if (updateError) {
         console.error('Error updating booking with calendar event:', updateError);
-        // Don't throw here - we still want to confirm the booking even if calendar update fails
-      } else {
-        console.log('Successfully updated booking with calendar event ID');
-      }
-    } catch (calendarError: any) {
-      console.error('Error creating calendar event:', calendarError);
-      // Don't throw here - we still want to confirm the booking even if calendar fails
-    }
-
-    return NextResponse.json({ received: true });
-  } catch (error: any) {
-    console.error('Error handling checkout.session.completed:', error);
-    return NextResponse.json(
-      { error: 'Error handling checkout.session.completed' },
-      { status: 500 }
-    );
-  }
-}
-  try {
-    const metadata = session.metadata;
-    if (!metadata) {
-      console.error('No metadata found in session');
-      return NextResponse.json(
-        { error: 'No metadata found in session' },
-        { status: 400 }
-      );
-    }
-
-    // Get the service details
-    const { data: service, error: serviceError } = await supabase
-      .from('services')
-      .select('*')
-      .eq('id', metadata.serviceId)
-      .single();
-      
-    if (serviceError) {
-      console.error('Error fetching service:', serviceError);
-      return NextResponse.json(
-        { error: 'Failed to fetch service details' },
-        { status: 500 }
-      );
-    }
-    
-    // Create the booking
-    const bookingData = {
-      checkout_session_id: session.id,
-      service_id: metadata.serviceId,
-      customer_name: metadata.clientName,
-      customer_email: metadata.clientEmail,
-      start_time: new Date(metadata.startTime || ''),
-      end_time: new Date(metadata.endTime || ''),
-      birth_date: metadata.dateOfBirth,
-      birth_time: metadata.timeOfBirth,
-      birth_place: metadata.placeOfBirth,
-      status: 'confirmed',
-      amount_paid: session.amount_total,
-      stripe_payment_id: session.payment_intent
-    };
-    
-    console.log('Creating booking with data:', bookingData);
-    
-    const { data: booking, error: bookingError } = await supabase
-      .from('bookings')
-      .insert([bookingData])
-      .select('*, service:services(*)')
-      .single();
-      
-    if (bookingError) {
-      console.error('Error creating booking:', bookingError);
-      return NextResponse.json(
-        { error: 'Failed to create booking' },
-        { status: 500 }
-      );
-    }
-    
-    if (!booking) {
-      console.error('No booking created');
-      return NextResponse.json(
-        { error: 'No booking created' },
-        { status: 500 }
-      );
-    }
-
-    console.log('Successfully created booking:', booking.id);
-    
-    // Create Google Calendar event
-    try {
-      const eventDescription = `
-Client: ${metadata.clientName}
-Email: ${metadata.clientEmail}
-Service: ${service.name}
-Birth Date: ${metadata.dateOfBirth}
-Birth Time: ${metadata.timeOfBirth}
-Birth Place: ${metadata.placeOfBirth}
-      `.trim();
-      
-      const { createEvent } = await import('@/lib/googleCalendar');
-      const calendarEvent = await createEvent(
-        `${service.name} - ${metadata.clientName}`,
-        eventDescription,
-        new Date(metadata.startTime || ''),
-        new Date(metadata.endTime || ''),
-        metadata.clientEmail || ''
-      );
-      
-      console.log('Created calendar event:', calendarEvent.id);
-      
-      // Update booking with calendar event ID
-      const { error: updateError } = await supabase
-        .from('bookings')
-        .update({ calendar_event_id: calendarEvent.id })
-        .eq('id', booking.id);
-        
-      if (updateError) {
-        console.error('Error updating booking with calendar event:', updateError);
-        // Don't throw here - we still want to confirm the booking even if calendar update fails
-      } else {
-        console.log('Successfully updated booking with calendar event ID');
-      }
-    } catch (calendarError: any) {
-      console.error('Error creating calendar event:', calendarError);
-      // Don't throw here - we still want to confirm the booking even if calendar fails
-    }
-
-    return NextResponse.json({ received: true });
-  } catch (error: any) {
-    console.error('Error handling checkout.session.completed:', error);
-    return NextResponse.json(
-      { error: 'Error handling checkout.session.completed' },
-      { status: 500 }
     );
   }
 }
@@ -441,8 +447,96 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     );
   }
 }
+  try {
+    const { data: bookings, error: findError } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('stripe_payment_id', paymentIntent.id);
+
+    if (findError) {
+      console.error('Error fetching booking:', findError);
+      return NextResponse.json(
+        { error: 'Failed to fetch booking' },
+        { status: 500 }
+      );
+    }
+
+    if (!bookings || bookings.length === 0) {
+      console.error('No booking found for payment intent:', paymentIntent.id);
+      return NextResponse.json(
+        { error: 'No booking found' },
+        { status: 404 }
+      );
+    }
+
+    const { error: updateError } = await supabase
+      .from('bookings')
+      .update({ status: 'confirmed' })
+      .eq('stripe_payment_id', paymentIntent.id);
+
+    if (updateError) {
+      console.error('Error updating booking:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to update booking' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (error: any) {
+    console.error('Error handling payment success:', error);
+    return NextResponse.json(
+      { error: 'Error handling payment success' },
+      { status: 500 }
+    );
+  }
+}
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+  try {
+    const { data: failedBookings, error: findError } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('stripe_payment_id', paymentIntent.id);
+
+    if (findError) {
+      console.error('Error finding booking:', findError);
+      return NextResponse.json(
+        { error: 'Failed to find booking' },
+        { status: 500 }
+      );
+    }
+
+    if (!failedBookings || failedBookings.length === 0) {
+      console.error('No booking found for payment intent:', paymentIntent.id);
+      return NextResponse.json(
+        { error: 'No booking found' },
+        { status: 404 }
+      );
+    }
+
+    const { error: updateError } = await supabase
+      .from('bookings')
+      .update({ status: 'payment_failed' })
+      .eq('id', failedBookings[0].id);
+
+    if (updateError) {
+      console.error('Error updating booking after payment failure:', updateError);
+      return NextResponse.json(
+        { error: 'Failed to update booking status' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ received: true });
+  } catch (error: any) {
+    console.error('Error handling payment_intent.payment_failed:', error);
+    return NextResponse.json(
+      { error: 'Error handling payment failure' },
+      { status: 500 }
+    );
+  }
+}
   try {
     const { data: failedBookings, error: findError } = await supabase
       .from('bookings')
