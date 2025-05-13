@@ -368,22 +368,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     );
   }
 }
-      console.error('Error updating booking:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update booking' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ received: true });
-  } catch (error: any) {
-    console.error('Error handling payment success:', error);
-    return NextResponse.json(
-      { error: 'Error handling payment success' },
-      { status: 500 }
-    );
-  }
-}
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   try {
