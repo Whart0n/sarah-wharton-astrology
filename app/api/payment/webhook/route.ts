@@ -414,56 +414,6 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     );
   }
 }
-  try {
-    const { data: failedBookings, error: findError } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('stripe_payment_id', paymentIntent.id);
-
-    if (findError) {
-      console.error('Error finding booking:', findError);
-      return NextResponse.json(
-        { error: 'Failed to find booking' },
-        { status: 500 }
-      );
-    }
-
-    if (!failedBookings || failedBookings.length === 0) {
-      console.error('No booking found for payment intent:', paymentIntent.id);
-      return NextResponse.json(
-        { error: 'No booking found' },
-        { status: 404 }
-      );
-    }
-
-    const { error: updateError } = await supabase
-      .from('bookings')
-      .update({ status: 'payment_failed' })
-      .eq('id', failedBookings[0].id);
-
-    if (updateError) {
-      console.error('Error updating booking after payment failure:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update booking status' },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({ received: true });
-  } catch (error: any) {
-    console.error('Error handling payment_intent.payment_failed:', error);
-    return NextResponse.json(
-      { error: 'Error handling payment failure' },
-      { status: 500 }
-    );
-  }
-}
-  try {
-    const { data: failedBookings, error: findError } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('stripe_payment_id', paymentIntent.id);
-
     if (findError) {
       console.error('Error finding booking:', findError);
       return NextResponse.json(
