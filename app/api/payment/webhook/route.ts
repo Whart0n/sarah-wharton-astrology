@@ -246,86 +246,7 @@ export async function POST(request: Request) {
       { error: 'Error processing webhook' },
       { status: 500 }
     );
-  }
-}
-      .select('*')
-      .eq('id', session.metadata.serviceId)
-      .single();
-      
-    if (serviceError || !service) {
-      console.error('Error fetching service:', serviceError);
-      return NextResponse.json(
-        { error: 'Failed to fetch service details' },
-        { status: 500 }
-      );
     }
-    
-    // Create the booking
-    const bookingData = {
-      checkout_session_id: session.id,
-      service_id: session.metadata.serviceId,
-      customer_name: session.metadata.clientName,
-      customer_email: session.metadata.clientEmail,
-      start_time: new Date(session.metadata.startTime || ''),
-      end_time: new Date(session.metadata.endTime || ''),
-      birth_date: session.metadata.dateOfBirth,
-      birth_time: session.metadata.timeOfBirth,
-      birth_place: session.metadata.placeOfBirth,
-      status: 'confirmed',
-      amount_paid: session.amount_total,
-      stripe_payment_id: session.payment_intent
-    };
-    
-    console.log('Creating booking with data:', bookingData);
-    
-    const { data: booking, error: bookingError } = await supabase
-      .from('bookings')
-      .insert([bookingData])
-      .select('*, service:services(*)')
-      .single();
-      
-    if (bookingError || !booking) {
-      console.error('Error creating booking:', bookingError);
-      return NextResponse.json(
-        { error: 'Failed to create booking' },
-        { status: 500 }
-      );
-    }
-
-    console.log('Successfully created booking:', booking.id);
-    
-    // Create Google Calendar event
-    try {
-      const eventDescription = `
-Client: ${session.metadata.clientName}
-Email: ${session.metadata.clientEmail}
-Service: ${service.name}
-Birth Date: ${session.metadata.dateOfBirth}
-Birth Time: ${session.metadata.timeOfBirth}
-Birth Place: ${session.metadata.placeOfBirth}
-      `.trim();
-      
-      const { createEvent } = await import('@/lib/googleCalendar');
-      const calendarEvent = await createEvent(
-        `${service.name} - ${session.metadata.clientName}`,
-        eventDescription,
-        new Date(session.metadata.startTime || ''),
-        new Date(session.metadata.endTime || ''),
-        session.metadata.clientEmail || ''
-      );
-      
-      console.log('Created calendar event:', calendarEvent.id);
-      
-      // Update booking with calendar event ID
-      const { error: updateError } = await supabase
-        .from('bookings')
-        .update({ calendar_event_id: calendarEvent.id })
-        .eq('id', booking.id);
-        
-      if (updateError) {
-        console.error('Error updating booking with calendar event:', updateError);
-    );
-  }
 }
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
@@ -447,34 +368,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     );
   }
 }
-  try {
-    const { data: bookings, error: findError } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('stripe_payment_id', paymentIntent.id);
-
-    if (findError) {
-      console.error('Error fetching booking:', findError);
-      return NextResponse.json(
-        { error: 'Failed to fetch booking' },
-        { status: 500 }
-      );
-    }
-
-    if (!bookings || bookings.length === 0) {
-      console.error('No booking found for payment intent:', paymentIntent.id);
-      return NextResponse.json(
-        { error: 'No booking found' },
-        { status: 404 }
-      );
-    }
-
-    const { error: updateError } = await supabase
-      .from('bookings')
-      .update({ status: 'confirmed' })
-      .eq('stripe_payment_id', paymentIntent.id);
-
-    if (updateError) {
       console.error('Error updating booking:', updateError);
       return NextResponse.json(
         { error: 'Failed to update booking' },
@@ -793,26 +686,6 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 
     // Handle the event
             );
-          }
-
-          // Get the service details
-          const { data: service, error: serviceError } = await supabase
-            .from('services')
-            .select('*')
-            .eq('id', session.metadata.serviceId)
-            .single();
-            
-          if (serviceError) {
-            console.error('Error fetching service:', serviceError);
-            return NextResponse.json(
-              { error: 'Failed to fetch service details' },
-              { status: 500 }
-            );
-          }
-          
-          // Create the booking
-          const bookingData = {
-            checkout_session_id: session.id,
             service_id: session.metadata.serviceId,
             customer_name: session.metadata.clientName,
             customer_email: session.metadata.clientEmail,
