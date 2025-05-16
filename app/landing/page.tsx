@@ -2,6 +2,7 @@
 import DevPassword from "../components/DevPassword";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
   const [devAuth, setDevAuth] = useState(false);
@@ -12,19 +13,16 @@ export default function LandingPage() {
     }
   }, []);
 
+  const router = useRouter();
+  useEffect(() => {
+    if (devAuth) {
+      router.replace("/");
+    }
+  }, [devAuth, router]);
+
   if (devAuth) {
-    // Main site content placeholder (replace with your real homepage content as needed)
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: '#f5f6f0', color: '#2d1b3b', fontFamily: 'serif' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 700, marginBottom: 18, textAlign: 'center' }}>
-          Welcome to Sarah Wharton Astrology!
-        </h1>
-        <p style={{ fontSize: '1.2rem', marginBottom: 16, textAlign: 'center', maxWidth: 340 }}>
-          The full site is now visible because you entered the correct password.<br />
-          (Replace this placeholder with your real homepage content.)
-        </p>
-      </div>
-    );
+    // Show nothing while redirecting
+    return null;
   }
 
   // Under construction message + password box
