@@ -1,3 +1,4 @@
+"use client";
 import DevPassword from "../components/DevPassword";
 
 import { useEffect, useState } from "react";
