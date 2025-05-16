@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import Cookies from 'js-cookie';
+
 export default function DevPassword() {
   const expectedPassword = "astr0Dev!2025";
   const [password, setPassword] = useState("");
@@ -18,16 +20,28 @@ export default function DevPassword() {
     // eslint-disable-next-line no-console
     console.log("Expected password:", expectedPassword);
     if (password === expectedPassword) {
-      localStorage.setItem("devAuth", "true");
-      router.refresh();
+      Cookies.set('preview_auth', expectedPassword, { path: '/', sameSite: 'lax' });
+      window.location.reload();
     } else {
       setError("Incorrect password");
     }
   };
 
   // Check if already authenticated
-  if (typeof window !== "undefined" && localStorage.getItem("devAuth")) {
-    return null;
+  // Check for cookie
+  if (typeof window !== "undefined" && Cookies.get('preview_auth') === expectedPassword) {
+    // Show logout button for dev/testing
+    return (
+      <button
+        style={{ position: 'fixed', bottom: 6, right: 8, opacity: 0.3, zIndex: 60, fontSize: 12, padding: '2px 10px', borderRadius: 8, border: '1px solid #b5c0b1', background: '#fff', color: '#2d1b3b', cursor: 'pointer' }}
+        onClick={() => {
+          Cookies.remove('preview_auth');
+          window.location.reload();
+        }}
+      >
+        Log out
+      </button>
+    );
   }
 
   return (
