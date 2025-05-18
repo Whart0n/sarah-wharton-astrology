@@ -106,11 +106,23 @@ export async function POST(request: Request) {
             break;
           }
 
-          // Create the booking using session metadata
-          const { data: newBooking, error: bookingError } = await supabase
+          // Check if a booking already exists for this session
+          const { data: existingBooking, error: existingBookingError } = await supabase
             .from('bookings')
-            .insert([
-              {
+            .select('id')
+            .eq('checkout_session_id', session.id)
+            .maybeSingle();
+
+          let newBooking = null;
+          let bookingError = null;
+
+          if (existingBooking) {
+            // Update existing booking to confirmed and update fields
+            const { data: updatedBooking, error: updateError } = await supabase
+              .from('bookings')
+              .update({
+                status: 'confirmed',
+                payment_intent_id: paymentIntentId,
                 service_id: session.metadata.serviceId,
                 client_name: session.metadata.clientName,
                 client_email: session.metadata.clientEmail,
@@ -118,19 +130,42 @@ export async function POST(request: Request) {
                 end_time: session.metadata.endTime,
                 birthplace: session.metadata.placeOfBirth,
                 birthdate: session.metadata.dateOfBirth,
-                birthtime: session.metadata.timeOfBirth,
-                payment_intent_id: paymentIntentId,
-                status: 'confirmed',
-                checkout_session_id: session.id
-              }
-            ])
-            .select('*, service:services(*)')
-            .single();
-
-          console.log('Created booking:', newBooking);
+                birthtime: session.metadata.timeOfBirth
+              })
+              .eq('id', existingBooking.id)
+              .select('*, service:services(*)')
+              .single();
+            newBooking = updatedBooking;
+            bookingError = updateError;
+            console.log('Updated existing booking to confirmed:', newBooking);
+          } else {
+            // Insert new booking as confirmed
+            const { data: insertedBooking, error: insertError } = await supabase
+              .from('bookings')
+              .insert([
+                {
+                  service_id: session.metadata.serviceId,
+                  client_name: session.metadata.clientName,
+                  client_email: session.metadata.clientEmail,
+                  start_time: session.metadata.startTime,
+                  end_time: session.metadata.endTime,
+                  birthplace: session.metadata.placeOfBirth,
+                  birthdate: session.metadata.dateOfBirth,
+                  birthtime: session.metadata.timeOfBirth,
+                  payment_intent_id: paymentIntentId,
+                  status: 'confirmed',
+                  checkout_session_id: session.id
+                }
+              ])
+              .select('*, service:services(*)')
+              .single();
+            newBooking = insertedBooking;
+            bookingError = insertError;
+            console.log('Created new booking as confirmed:', newBooking);
+          }
 
           if (bookingError) {
-            console.error('Error creating booking:', bookingError);
+            console.error('Error creating or updating booking:', bookingError);
             break;
           }
 
