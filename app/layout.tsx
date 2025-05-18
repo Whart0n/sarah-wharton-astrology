@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { ToastProvider } from '@/components/ui/toast'
-import { MainNav } from '@/components/main-nav' // Ensure MainNav no longer links to /services
+import { MainNav } from '@/components/main-nav'
 import { Footer } from '@/components/footer'
 import './globals.css'
 

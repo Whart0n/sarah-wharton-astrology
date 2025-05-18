@@ -21,7 +21,11 @@ export function MainNav() {
       label: "About",
       active: pathname === "/about",
     },
-
+    {
+      href: "/services",
+      label: "Services",
+      active: pathname === "/services" || pathname.startsWith("/service/"),
+    },
     {
       href: "/booking",
       label: "Book a Reading",
