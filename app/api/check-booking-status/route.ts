@@ -39,15 +39,9 @@ export async function GET(request: Request) {
     hasCalendarEvent: !!data.calendar_event_id
   });
 
-  // Only return success if we have both a confirmed status AND a calendar event
-  if (data.status === 'confirmed' && data.calendar_event_id) {
-    return NextResponse.json({ status: 'confirmed' });
-  }
-
-  // If confirmed but no calendar event yet, still pending
+  // Return confirmed as soon as the booking status is confirmed, regardless of calendar event
   if (data.status === 'confirmed') {
-    console.log('Booking confirmed but waiting for calendar event creation');
-    return NextResponse.json({ status: 'pending' });
+    return NextResponse.json({ status: 'confirmed' });
   }
 
   return NextResponse.json({ status: data.status });
