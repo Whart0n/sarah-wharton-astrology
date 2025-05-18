@@ -101,9 +101,24 @@ export async function POST(request: Request) {
           const paymentIntent = await stripeModule.retrievePaymentIntent(paymentIntentId);
           const metadata = paymentIntent.metadata || {};
 
-          if (!session.metadata) {
-            console.error('No metadata found in session');
-            break;
+          // Log all received metadata for debugging
+          console.log('Session metadata:', session.metadata);
+
+          // Check for required metadata fields
+          const requiredFields = [
+            "serviceId",
+            "clientName",
+            "clientEmail",
+            "startTime",
+            "endTime",
+            "placeOfBirth",
+            "dateOfBirth",
+            "timeOfBirth"
+          ];
+          const missing = requiredFields.filter(key => !session.metadata || !session.metadata[key]);
+          if (missing.length > 0) {
+            console.error('Missing required metadata fields:', missing);
+            return NextResponse.json({ error: "Missing required metadata fields", missing }, { status: 400 });
           }
 
           // Check if a booking already exists for this session
