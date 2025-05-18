@@ -39,6 +39,7 @@ export async function GET(request: Request) {
     const { data, error } = await supabase
       .from("services")
       .select("*")
+      .eq("active", true)
       .order("price_cents", { ascending: true })
 
     if (error) {
