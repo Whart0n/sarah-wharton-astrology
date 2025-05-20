@@ -121,9 +121,7 @@ export async function createEvent(
         dateTime: endTime.toISOString(),
         timeZone: 'America/New_York', // Adjust as needed
       },
-      attendees: [
-        { email: attendeeEmail },
-      ],
+
       reminders: {
         useDefault: false,
         overrides: [
