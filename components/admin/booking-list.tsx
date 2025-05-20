@@ -32,6 +32,42 @@ interface Booking {
   birthtime?: string
 }
 
+import { useState as useLocalState } from "react";
+
+function AddToCalendarButton({ bookingId, onSuccess, onError }: { bookingId: string, onSuccess: (eventId: string) => void, onError: (err: string) => void }) {
+  const [loading, setLoading] = useLocalState(false);
+  const [success, setSuccess] = useLocalState(false);
+  const [error, setError] = useLocalState<string | null>(null);
+
+  const handleAdd = async () => {
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+    try {
+      const res = await fetch("/api/bookings/calendar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: bookingId })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to add to calendar");
+      setSuccess(true);
+      onSuccess(data.eventId);
+    } catch (err: any) {
+      setError(err.message || "Failed to add to calendar");
+      onError(err.message || "Failed to add to calendar");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Button variant="secondary" size="sm" onClick={handleAdd} disabled={loading}>
+      {loading ? "Adding..." : success ? "Added!" : "Add to Google Calendar"}
+    </Button>
+  );
+}
+
 export function BookingList() {
   const router = useRouter()
   const [bookings, setBookings] = useState<Booking[]>([])
@@ -264,6 +300,12 @@ export function BookingList() {
                         View in Calendar
                       </Link>
                     </Button>
+                  )}
+                  {/* Add to Google Calendar Button */}
+                  {!booking.calendar_event_id && booking.status !== "cancelled" && (
+                    <AddToCalendarButton bookingId={booking.id} onSuccess={(eventId) => {
+                      setBookings(prev => prev.map(b => b.id === booking.id ? { ...b, calendar_event_id: eventId } : b));
+                    }} onError={setError} />
                   )}
                 </div>
               </CardContent>

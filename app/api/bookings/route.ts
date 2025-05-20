@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { supabase, supabaseAdmin } from "@/lib/supabase"
-import { createEvent, updateEvent, deleteEvent } from "@/lib/googleCalendar"
+import { deleteEvent } from "@/lib/googleCalendar"
 import { getClientBookingConfirmationEmail, getAstrologerBookingNotificationEmail, sendEmail } from "@/lib/sendgrid"
 import { getServiceById } from "@/lib/supabase"
 
@@ -127,26 +127,7 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create calendar event
-    const summary = `Astrology Reading: ${service.name}`
-    const description = `Client: ${client_name}\nEmail: ${client_email}\nService: ${service.name}\nDuration: ${service.duration_minutes} minutes\nBirthdate: ${birthdate || ''}\nBirthtime: ${birthtime || ''}\nBirthplace: ${birthplace || ''}`
-    
-    let calendarEventId = null
-    try {
-      const eventResult = await createEvent(
-        summary,
-        description,
-        new Date(start_time),
-        new Date(end_time),
-        client_email
-      )
-      calendarEventId = eventResult.id
-    } catch (calendarError) {
-      console.error("Failed to create calendar event:", calendarError)
-      // Continue without calendar integration if it fails
-    }
-
-    // Create booking record
+    // Insert booking into database
     const { data, error } = await supabase
       .from("bookings")
       .insert([
@@ -156,12 +137,12 @@ export async function POST(request: Request) {
           client_email,
           start_time,
           end_time,
-          calendar_event_id: calendarEventId,
           payment_intent_id,
-          status: "confirmed", // Set to confirmed since payment is already processed
           birthplace,
           birthdate,
           birthtime,
+          status: "confirmed",
+          created_at: new Date().toISOString(),
         },
       ])
       .select()
