@@ -149,15 +149,6 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      // If calendar event was created but booking failed, try to delete the calendar event
-      if (calendarEventId) {
-        try {
-          await deleteEvent(calendarEventId)
-        } catch (deleteError) {
-          console.error("Failed to delete calendar event after booking error:", deleteError)
-        }
-      }
-      
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
