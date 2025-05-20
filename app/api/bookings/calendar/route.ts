@@ -24,32 +24,28 @@ export async function POST(request: Request) {
     }
 
     // Prepare Google Calendar event data
-    const event = {
-      summary: `${booking.service?.name || "Astrology Reading"} with ${booking.client_name}`,
-      description: `Client: ${booking.client_name}\nEmail: ${booking.client_email}\nService: ${booking.service?.name}`,
-      start: { dateTime: booking.start_time },
-      end: { dateTime: booking.end_time },
-      attendees: [
-        { email: booking.client_email, displayName: booking.client_name }
-      ],
-    }
+    const summary = `${booking.service?.name || "Astrology Reading"} with ${booking.client_name}`;
+    const description = `Client: ${booking.client_name}\nEmail: ${booking.client_email}\nService: ${booking.service?.name}`;
+    const startTime = new Date(booking.start_time);
+    const endTime = new Date(booking.end_time);
+    const attendeeEmail = booking.client_email;
 
     // Create event in Google Calendar
-    const eventId = await createEvent(event)
-    if (!eventId) {
+    const event = await createEvent(summary, description, startTime, endTime, attendeeEmail);
+    if (!event || !event.id) {
       return NextResponse.json({ error: "Failed to create Google Calendar event" }, { status: 500 })
     }
 
     // Update booking with calendar_event_id
     const { error: updateError } = await supabase
       .from("bookings")
-      .update({ calendar_event_id: eventId })
+      .update({ calendar_event_id: event.id })
       .eq("id", id)
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true, eventId })
+    return NextResponse.json({ success: true, eventId: event.id })
   } catch (err) {
     console.error("Error adding booking to calendar:", err)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
