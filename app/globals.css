@@ -6,65 +6,41 @@
 
 @layer base {
   :root {
-    --background: 220 33% 98%;
-    --foreground: 222.2 84% 4.9%;
+    /* New color palette */
+    --desert-sand: 24 54% 78%;  /* #e5c0a7 */
+    --powder-blue: 214 40% 75%; /* #a6bcd9 */
+    --wheat: 34 66% 84%;        /* #f1dabb */
+    --rose-quartz: 300 7% 59%;  /* #9e909e */
+    --cool-gray: 234 9% 54%;    /* #808294 */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Keep original colors for hero section */
+    --tea: 92 70% 88%;          /* #D9F4C7 */
+    --muted-teal: 162 18% 77%;  /* #C1D2CC */
+    --lavender-blue: 231 22% 74%; /* #A9AFD1 */
+    --tan: 29 44% 55%;          /* #C08552 */
+    --hunter: 148 27% 33%;      /* #3F6C51 */
+    --plum: 320 36% 19%;        /* #422040 */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* System colors - updated with new palette */
+    --background: 34 66% 95%;   /* wheat-50 */
+    --foreground: 234 9% 30%;   /* cool-gray-300 */
 
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 214 40% 75%;     /* powder-blue */
+    --primary-foreground: 214 40% 15%; /* powder-blue-900 */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 24 54% 78%;    /* desert-sand */
+    --secondary-foreground: 24 54% 15%; /* desert-sand-900 */
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 300 7% 59%;       /* rose-quartz */
+    --accent-foreground: 300 7% 95%; /* rose-quartz-50 */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;          /* White */
+    --card-foreground: 234 9% 30%; /* cool-gray-300 */
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221 83% 53%;
-
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --border: 214 40% 85%;      /* powder-blue-200 */
+    --input: 214 40% 85%;       /* powder-blue-200 */
+    --ring: 24 54% 78%;         /* desert-sand */
+    --radius: 0.75rem;
   }
 }
 
@@ -73,14 +49,124 @@
     @apply border-border;
   }
   body {
-    font-family: 'Manrope', 'sans-serif';
-    @apply bg-background text-foreground font-manrope;
+    font-family: 'Sora', 'sans-serif';
+    @apply bg-wheat-800 text-cool-gray-300 font-sora;
+    letter-spacing: 0.01em;
+    line-height: 1.7;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Sora', 'sans-serif';
-    @apply font-sora;
+    font-family: 'Manrope', 'sans-serif';
+    @apply font-manrope text-rose-quartz-400;
+    letter-spacing: 0.01em;
   }
 }
+
+/* New color palette utility classes */
+.bg-desert { background-color: #e5c0a7; }
+.bg-powder { background-color: #a6bcd9; }
+.bg-wheat-bg { background-color: #f1dabb; }
+.bg-rose { background-color: #9e909e; }
+.bg-cool { background-color: #808294; }
+.bg-white-overlay { background-color: rgba(255, 255, 255, 0.85); }
+.text-plum { color: #422040; }
+.text-tan { color: #C08552; }
+
+/* Hero section with background image */
+.hero-container {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  min-height: 600px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+  color: white;
+}
+
+/* Modern buttons with new color palette */
+.btn-primary-new {
+  background-color: #a6bcd9; /* powder_blue */
+  color: #ffffff;
+  font-family: 'Sora', sans-serif;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary-new:hover {
+  background-color: #7094c2; /* powder_blue-400 */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline-new {
+  background-color: transparent;
+  color: #9e909e; /* rose_quartz */
+  border: 2px solid #e5c0a7; /* desert_sand */
+  font-family: 'Sora', sans-serif;
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-new:hover {
+  background-color: #f5e6dc; /* desert_sand-800 */
+  transform: translateY(-2px);
+}
+
+.bg-tea { background-color: hsl(var(--tea)); }
+.bg-muted-teal { background-color: hsl(var(--muted-teal)); }
+.bg-lavender-blue { background-color: hsl(var(--lavender-blue)); }
+.bg-tan { background-color: hsl(var(--tan)); }
+.bg-hunter { background-color: hsl(var(--hunter)); }
+.bg-plum { background-color: hsl(var(--plum)); }
+.text-hunter { color: hsl(var(--hunter)); }
+.text-plum { color: hsl(var(--plum)); }
+
+.btn-primary {
+  @apply rounded-full px-6 py-2 font-manrope bg-hunter text-white shadow-md transition hover:bg-hunter/90;
+}
+.btn-accent {
+  @apply rounded-full px-6 py-2 font-manrope bg-caramel text-white shadow-md transition hover:bg-caramel;
+}
+.btn-outline {
+  @apply rounded-full px-6 py-2 font-manrope border border-hunter text-hunter bg-white hover:bg-tea;
+}
+
+/* Spacing and whitespace utilities */
+.section {
+  @apply py-16 md:py-24;
+}
+
+.container {
+  @apply mx-auto px-4 max-w-7xl;
+}
+
 
 /* Hero section styles */
 .hero-section {
@@ -124,7 +210,7 @@
 }
 
 /* Gold gradient text */
-.gold-gradient-text {
+./* Removed gold-gradient-text class: gradients not used in new design */ {
   background: linear-gradient(to right, #d9ad26, #f5e5b5, #d9ad26);
   -webkit-background-clip: text;
   background-clip: text;

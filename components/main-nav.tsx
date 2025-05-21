@@ -43,8 +43,8 @@ export function MainNav() {
             key={route.href}
             href={route.href}
             className={cn(
-              "text-md transition-colors hover:text-gold",
-              route.active ? "text-gold" : "text-muted-foreground"
+              "text-sm uppercase tracking-widest font-serif transition-all hover:text-cool-gray-100 hover:underline",
+              route.active ? "text-cool-gray-100" : "text-cool-gray-200"
             )}
           >
             {route.label}
@@ -74,8 +74,8 @@ export function MainNav() {
                 key={route.href}
                 href={route.href}
                 className={cn(
-                  "text-md transition-colors hover:text-gold py-2",
-                  route.active ? "text-gold" : "text-muted-foreground"
+                  "text-sm uppercase tracking-widest font-serif transition-all hover:text-plum hover:underline py-2",
+                  route.active ? "text-plum" : "text-plum/80"
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
