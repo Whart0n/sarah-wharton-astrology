@@ -81,7 +81,7 @@ export async function POST(request: Request) {
 
     // Send the email
     await sendEmail({
-      to: typedBooking.client_email,
+      to: booking.client_email as string,
       subject,
       html,
     });

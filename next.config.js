@@ -3,8 +3,8 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
   experimental: {
     mdxRs: true,
-    transpilePackages: ['debug'], // Add this line
   },
+  transpilePackages: ['debug'], // Moved here
   async headers() {
     return [
       {
