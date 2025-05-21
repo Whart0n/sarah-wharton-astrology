@@ -46,7 +46,7 @@ const BookingServicePage = async ({ params }: { params: { serviceId: string } })
       </section>
 
       {/* Booking Form */}
-      <section className="py-12 bg-wheat-100">
+      <section className="py-12 bg-wheat-800">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="mb-8">
