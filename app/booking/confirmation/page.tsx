@@ -27,7 +27,7 @@ export default function ConfirmationPage({
 
     let interval: NodeJS.Timeout;
     let tries = 0;
-    const maxTries = 12; // 5 seconds * 12 = 60 seconds total
+    const maxTries = 30; // Try 30 times (60 seconds) * 12 = 60 seconds total
 
     const checkStatus = async () => {
       try {
@@ -75,9 +75,9 @@ export default function ConfirmationPage({
   }, [status]);
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-tea px-4">
-      <div className="max-w-lg w-full bg-white rounded-xl shadow-lg p-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-hunter font-sora">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-wheat-50 px-4">
+      <div className="max-w-lg w-full bg-desert-sand-50 rounded-xl shadow-lg p-8 text-center">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-rose-quartz-400 font-sora">
           {status === 'success'
             ? 'Booking Confirmed!'
             : status === 'failure'
@@ -85,12 +85,12 @@ export default function ConfirmationPage({
             : 'Processing Payment...'}
         </h1>
         {status === 'processing' && (
-          <p className="text-lg text-caramel font-manrope mb-2">
+          <p className="text-lg text-cool-gray-400 font-manrope mb-2">
             We’re confirming your payment. Please wait...
           </p>
         )}
         {status === 'success' && (
-          <p className="text-lg text-hunter font-manrope mb-2">
+          <p className="text-lg text-rose-quartz-400 font-manrope mb-2">
             {isFree
               ? 'Your free booking has been confirmed. No payment was required.'
               : 'Thank you for your payment! Your booking is confirmed.'}
@@ -101,7 +101,7 @@ export default function ConfirmationPage({
             We could not confirm your payment. Please contact support if you were charged.
           </p>
         )}
-        <a href="/" className="inline-block mt-8 px-6 py-2 rounded bg-hunter text-white font-manrope hover:bg-darkpurple transition">
+        <a href="/" className="inline-block mt-8 px-6 py-2 rounded bg-powder-blue-500 text-white font-manrope hover:bg-powder-blue-600 transition">
           Return Home
         </a>
       </div>
