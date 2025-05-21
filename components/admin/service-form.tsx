@@ -194,7 +194,7 @@ export function ServiceForm({ service }: ServiceFormProps) {
         )}
         
         <div className="flex space-x-2">
-          <Button type="submit" variant="gold" disabled={isSubmitting}>
+          <Button type="submit" variant="default" disabled={isSubmitting}>
             {isSubmitting 
               ? "Saving..." 
               : service 

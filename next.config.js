@@ -4,7 +4,7 @@ const nextConfig = {
   experimental: {
     mdxRs: true,
   },
-  transpilePackages: ['debug'], // Moved here
+  transpilePackages: ['debug', 'https-proxy-agent', 'gaxios'], // Moved here and expanded
   async headers() {
     return [
       {
