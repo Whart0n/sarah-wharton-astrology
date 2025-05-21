@@ -124,7 +124,7 @@ export async function POST(request: Request) {
           // Check if a booking already exists for this session
           const { data: existingBooking, error: existingBookingError } = await supabase
             .from('bookings')
-            .select('id')
+            .select('*, service:services(*)') // Fetch all fields including status and related service
             .eq('checkout_session_id', session.id)
             .maybeSingle();
 
@@ -132,30 +132,47 @@ export async function POST(request: Request) {
           let bookingError = null;
 
           if (existingBooking) {
-            // Update existing booking to confirmed and update fields
-            const { data: updatedBooking, error: updateError } = await supabase
-              .from('bookings')
-              .update({
-                status: 'confirmed',
-                payment_intent_id: paymentIntentId,
-                service_id: session.metadata.serviceId,
-                client_name: session.metadata.clientName,
-                client_email: session.metadata.clientEmail,
-                start_time: session.metadata.startTime,
-                end_time: session.metadata.endTime,
-                birthplace: session.metadata.placeOfBirth,
-                birthdate: session.metadata.dateOfBirth,
-                birthtime: session.metadata.timeOfBirth
-              })
-              .eq('id', existingBooking.id)
-              .select('*, service:services(*)')
-              .single();
-            newBooking = updatedBooking;
-            bookingError = updateError;
-            console.log('Updated existing booking to confirmed:', newBooking);
+            // Booking found by checkout_session_id
+            if (existingBooking.status !== 'confirmed') {
+              console.log(`Existing booking ${existingBooking.id} found with status '${existingBooking.status}'. Attempting to update to 'confirmed'.`);
+              const { data: updatedData, error: updateError } = await supabase
+                .from('bookings')
+                .update({
+                  status: 'confirmed',
+                  payment_intent_id: paymentIntentId,
+                  // Ensure all other relevant metadata from Stripe session is updated
+                  service_id: session.metadata.serviceId,
+                  client_name: session.metadata.clientName,
+                  client_email: session.metadata.clientEmail,
+                  start_time: session.metadata.startTime,
+                  end_time: session.metadata.endTime,
+                  birthplace: session.metadata.placeOfBirth,
+                  birthdate: session.metadata.dateOfBirth,
+                  birthtime: session.metadata.timeOfBirth
+                  // checkout_session_id is already set and used for lookup
+                })
+                .eq('id', existingBooking.id)
+                .select('*, service:services(*)') // Reselect to get all fields including joined service
+                .single();
+
+              if (updateError) {
+                console.error(`Error updating booking ${existingBooking.id} to confirmed. Previous status: ${existingBooking.status}. Error:`, updateError);
+                bookingError = updateError;
+                // If update fails, newBooking should still be the existingBooking to allow calendar event creation attempt, or at least logging
+                newBooking = existingBooking; 
+              } else {
+                newBooking = updatedData;
+                console.log(`Successfully updated booking ${existingBooking.id} to confirmed. New data:`, newBooking);
+              }
+            } else {
+              // Booking was already confirmed
+              console.log(`Booking ${existingBooking.id} was already confirmed. No status update needed. Ensuring newBooking is set.`);
+              newBooking = existingBooking; // Use the already confirmed booking data
+            }
           } else {
-            // Insert new booking as confirmed
-            const { data: insertedBooking, error: insertError } = await supabase
+            // No existing booking found by checkout_session_id, create a new one
+            console.log(`No existing booking found for checkout_session_id ${session.id}. Creating new booking as confirmed.`);
+            const { data: insertedData, error: insertError } = await supabase
               .from('bookings')
               .insert([
                 {
@@ -167,16 +184,21 @@ export async function POST(request: Request) {
                   birthplace: session.metadata.placeOfBirth,
                   birthdate: session.metadata.dateOfBirth,
                   birthtime: session.metadata.timeOfBirth,
-                  payment_intent_id: paymentIntentId,
+                  payment_intent_id: paymentIntentId, // from fetched PaymentIntent
                   status: 'confirmed',
-                  checkout_session_id: session.id
+                  checkout_session_id: session.id // from webhook event
                 }
               ])
               .select('*, service:services(*)')
               .single();
-            newBooking = insertedBooking;
-            bookingError = insertError;
-            console.log('Created new booking as confirmed:', newBooking);
+
+            if (insertError) {
+              console.error('Error inserting new confirmed booking:', insertError);
+              bookingError = insertError;
+            } else {
+              newBooking = insertedData;
+              console.log('Successfully created new confirmed booking:', newBooking);
+            }
           }
 
           if (bookingError) {

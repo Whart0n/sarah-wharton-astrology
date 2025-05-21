@@ -34,9 +34,9 @@ const BookingServicePage = async ({ params }: { params: { serviceId: string } })
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-deepBlue text-white py-12 md:py-16">
+      <section className="bg-rose-quartz-500 text-white py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl md:text-4xl font-serif mb-4 gold-gradient-text">
+          <h1 className="text-3xl md:text-4xl font-serif mb-4 text-white">
             Book Your {service.name}
           </h1>
           <p className="text-lg max-w-3xl mx-auto text-white/80">
@@ -46,12 +46,12 @@ const BookingServicePage = async ({ params }: { params: { serviceId: string } })
       </section>
 
       {/* Booking Form */}
-      <section className="py-12 bg-background">
+      <section className="py-12 bg-wheat-100">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="mb-8">
-              <Link href="/booking" className="text-deepBlue hover:text-deepBlue-light flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Link href="/booking" className="text-rose-quartz-500 hover:text-rose-quartz-400 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-rose-quartz-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 Back to Services
@@ -60,23 +60,23 @@ const BookingServicePage = async ({ params }: { params: { serviceId: string } })
 
             <BookingForm service={service} />
 
-            <div className="mt-12 bg-muted/30 p-6 rounded-lg">
+            <div className="mt-12 bg-desert-sand-100/50 p-6 rounded-lg">
               <h3 className="text-lg font-medium mb-4">Important Information</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-deepBlue flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-rose-quartz-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>Readings are conducted via video call. You'll receive connection details after booking.</span>
                 </li>
                 <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-deepBlue flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-rose-quartz-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>Please be prepared with your birth details: date, exact time, and location of birth.</span>
                 </li>
                 <li className="flex items-start">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-deepBlue flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-rose-quartz-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span>Cancellations with less than 24 hours notice are non-refundable.</span>
@@ -88,9 +88,9 @@ const BookingServicePage = async ({ params }: { params: { serviceId: string } })
       </section>
 
       {/* Questions Section */}
-      <section className="py-12 bg-muted/30">
+      <section className="py-12 bg-wheat-200">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-serif text-deepBlue mb-4">Have Questions?</h2>
+          <h2 className="text-2xl font-serif text-rose-quartz-500 mb-4">Have Questions?</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
             If you have any questions about the booking process or what to expect from your reading, please don't hesitate to reach out.
           </p>

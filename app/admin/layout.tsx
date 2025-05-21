@@ -72,7 +72,7 @@ export default function AdminLayout({
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-deepBlue"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-powder-blue-500"></div>
       </div>
     )
   }
@@ -89,7 +89,7 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen grid grid-cols-12 bg-muted/30">
       {/* Sidebar */}
-      <div className="col-span-12 md:col-span-3 lg:col-span-2 bg-deepBlue text-white">
+      <div className="col-span-12 md:col-span-3 lg:col-span-2 bg-rose-quartz-500 text-white">
         <div className="p-6">
           <h1 className="text-xl font-serif mb-6">Admin Dashboard</h1>
           
@@ -98,8 +98,8 @@ export default function AdminLayout({
               href="/admin"
               className={`block py-2 px-3 rounded ${
                 isLinkActive("/admin") && !isLinkActive("/admin/services") && !isLinkActive("/admin/bookings")
-                  ? "bg-deepBlue-light"
-                  : "hover:bg-deepBlue-light"
+                  ? "bg-rose-quartz-600"
+                  : "hover:bg-rose-quartz-600"
               }`}
             >
               Overview
@@ -108,8 +108,8 @@ export default function AdminLayout({
               href="/admin/services"
               className={`block py-2 px-3 rounded ${
                 isLinkActive("/admin/services")
-                  ? "bg-deepBlue-light"
-                  : "hover:bg-deepBlue-light"
+                  ? "bg-rose-quartz-600"
+                  : "hover:bg-rose-quartz-600"
               }`}
             >
               Services
@@ -118,8 +118,8 @@ export default function AdminLayout({
               href="/admin/bookings"
               className={`block py-2 px-3 rounded ${
                 isLinkActive("/admin/bookings")
-                  ? "bg-deepBlue-light"
-                  : "hover:bg-deepBlue-light"
+                  ? "bg-rose-quartz-600"
+                  : "hover:bg-rose-quartz-600"
               }`}
             >
               Bookings
@@ -128,19 +128,19 @@ export default function AdminLayout({
               href="/admin/calendar"
               className={`block py-2 px-3 rounded ${
                 isLinkActive("/admin/calendar")
-                  ? "bg-deepBlue-light"
-                  : "hover:bg-deepBlue-light"
+                  ? "bg-rose-quartz-600"
+                  : "hover:bg-rose-quartz-600"
               }`}
             >
               Calendar
             </Link>
           </nav>
           
-          <div className="mt-8 pt-6 border-t border-deepBlue-light">
+          <div className="mt-8 pt-6 border-t border-rose-quartz-400">
             <Button 
               variant="outline" 
               size="sm" 
-              className="w-full text-white border-white/20 hover:bg-deepBlue-light"
+              className="w-full text-white border-white/20 hover:bg-rose-quartz-600"
               onClick={handleLogout}
             >
               Logout

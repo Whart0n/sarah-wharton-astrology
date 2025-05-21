@@ -78,14 +78,14 @@ export function ContactForm() {
   return (
     <div className="space-y-6">
       {isSuccess ? (
-        <div className="bg-green-50 p-4 rounded-md border border-green-200">
-          <h3 className="text-green-800 font-medium mb-2">Message Sent Successfully!</h3>
-          <p className="text-green-700">
+        <div className="bg-powder-blue-50 p-4 rounded-md border border-powder-blue-200">
+          <h3 className="text-powder-blue-700 font-medium mb-2">Message Sent Successfully!</h3>
+          <p className="text-powder-blue-600">
             Thank you for reaching out. I'll get back to you as soon as possible.
           </p>
           <Button
             variant="link"
-            className="mt-2 p-0 text-green-800"
+            className="mt-2 p-0 text-powder-blue-700"
             onClick={() => setIsSuccess(false)}
           >
             Send another message
@@ -150,7 +150,7 @@ export function ContactForm() {
               </div>
             )}
             
-            <Button type="submit" variant="gold" disabled={isSubmitting}>
+            <Button type="submit" variant="desert" disabled={isSubmitting}>
               {isSubmitting ? "Sending..." : "Send Message"}
             </Button>
           </form>

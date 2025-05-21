@@ -93,7 +93,7 @@ export default function LoginPage() {
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-deepBlue"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-powder-blue-500"></div>
       </div>
     )
   }
@@ -103,7 +103,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-serif text-deepBlue">Admin Login</CardTitle>
+            <CardTitle className="text-2xl font-serif text-rose-quartz-400">Admin Login</CardTitle>
             <CardDescription>Log in to access your dashboard</CardDescription>
           </CardHeader>
           <CardContent>
@@ -142,14 +142,14 @@ export default function LoginPage() {
                   </div>
                 )}
                 
-                <Button type="submit" variant="gold" className="w-full" disabled={isLoading}>
+                <Button type="submit" variant="desert" className="w-full" disabled={isLoading}>
                   {isLoading ? "Logging in..." : "Log In"}
                 </Button>
               </form>
             </Form>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-deepBlue">
+            <Link href="/" className="text-sm text-muted-foreground hover:text-powder-blue-500">
               Return to Website
             </Link>
           </CardFooter>

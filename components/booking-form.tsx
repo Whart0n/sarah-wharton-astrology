@@ -387,7 +387,7 @@ export function BookingForm({ service }: BookingFormProps) {
                           <Button
                             key={timeSlot}
                             type="button"
-                            variant={field.value === timeSlot ? "deepBlue" : "outline"}
+                            variant={field.value === timeSlot ? "powder" : "outline"}
                             onClick={() => field.onChange(timeSlot)}
                             className="text-sm"
                           >
@@ -403,7 +403,7 @@ export function BookingForm({ service }: BookingFormProps) {
             )}
           </div>
 
-          <Button type="submit" variant="gold" className="w-full" disabled={isLoading}>
+          <Button type="submit" variant="desert" className="w-full" disabled={isLoading}>
             {isLoading ? "Processing..." : "Proceed to Payment"}
           </Button>
         </form>
@@ -496,7 +496,7 @@ function CheckoutForm({
       
       <Button 
         type="submit" 
-        variant="gold" 
+        variant="desert" 
         className="w-full" 
         disabled={!stripe || isLoading}
       >

@@ -79,6 +79,7 @@ export function BookingList() {
     open: false,
     bookingId: null,
   })
+  const [emailStatus, setEmailStatus] = useState<{ [bookingId: string]: { loading: boolean; message: string; error: boolean } }>({});
 
   // Fetch bookings
   useEffect(() => {
@@ -110,6 +111,46 @@ export function BookingList() {
       setFilteredBookings(bookings.filter(booking => booking.status === filter))
     }
   }, [filter, bookings])
+
+  const handleSendConfirmationEmail = async (bookingId: string) => {
+    setEmailStatus(prev => ({ ...prev, [bookingId]: { loading: true, message: '', error: false } }));
+    try {
+      const response = await fetch('/api/admin/send-confirmation-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send confirmation email');
+      }
+      setEmailStatus(prev => ({ ...prev, [bookingId]: { loading: false, message: data.message || 'Email sent!', error: false } }));
+      
+      // If the API route confirms the booking status was updated, reflect it locally
+      if (data.statusUpdated) {
+           setBookings(prevBookings =>
+              prevBookings.map(b =>
+                b.id === bookingId ? { ...b, status: "confirmed" } : b
+              )
+            )
+      }
+      // Clear the message after a few seconds
+      setTimeout(() => setEmailStatus(prev => {
+        const updatedStatus = { ...prev };
+        delete updatedStatus[bookingId]; // Or set message to ''
+        return updatedStatus;
+      }), 5000);
+
+    } catch (err: any) {
+      console.error('Error sending confirmation email:', err);
+      setEmailStatus(prev => ({ ...prev, [bookingId]: { loading: false, message: err.message || 'Error sending email', error: true } }));
+      setTimeout(() => setEmailStatus(prev => {
+        const updatedStatus = { ...prev };
+        delete updatedStatus[bookingId];
+        return updatedStatus;
+      }), 5000);
+    }
+  };
 
   // Cancel booking
   const handleCancelBooking = async (id: string) => {
@@ -259,36 +300,23 @@ export function BookingList() {
                       Cancel Booking
                     </Button>
                   )}
-                  {booking.status === "pending" && (
-                    <Button 
-                      variant="gold" 
-                      size="sm"
-                      onClick={async () => {
-                        try {
-                          const response = await fetch(`/api/bookings?id=${booking.id}`, {
-                            method: "PATCH",
-                            headers: {
-                              "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ status: "confirmed" }),
-                          })
-                          if (!response.ok) throw new Error("Failed to confirm booking")
-                          
-                          // Update local state
-                          setBookings(prevBookings =>
-                            prevBookings.map(b =>
-                              b.id === booking.id ? { ...b, status: "confirmed" } : b
-                            )
-                          )
-                          router.refresh()
-                        } catch (err) {
-                          console.error("Error confirming booking:", err)
-                          setError(err instanceof Error ? err.message : "Failed to confirm booking")
-                        }
-                      }}
-                    >
-                      Confirm
-                    </Button>
+                  {/* Send Confirmation Email Button */}
+                  {(booking.status === "pending" || booking.status === "confirmed") && (
+                    <div className="flex flex-col items-start space-y-1">
+                      <Button
+                        variant="secondary" 
+                        size="sm"
+                        onClick={() => handleSendConfirmationEmail(booking.id)}
+                        disabled={emailStatus[booking.id]?.loading}
+                      >
+                        {emailStatus[booking.id]?.loading ? "Sending Email..." : "Send Confirmation Email"}
+                      </Button>
+                      {emailStatus[booking.id]?.message && (
+                        <p className={`text-xs ${emailStatus[booking.id]?.error ? 'text-red-600' : 'text-green-600'}`}>
+                          {emailStatus[booking.id]?.message}
+                        </p>
+                      )}
+                    </div>
                   )}
                   {booking.calendar_event_id && (
                     <Button 

@@ -25,10 +25,10 @@ export function ServiceCard({
   return (
     <Card className={`h-full flex flex-col transition-all hover:shadow-md ${className}`}>
       <CardHeader>
-        <CardTitle className="font-serif text-deepBlue">{name}</CardTitle>
+        <CardTitle className="font-serif text-rose-quartz-400">{name}</CardTitle>
         <CardDescription className="flex items-center justify-between">
           <span>{formatDuration(duration_minutes)}</span>
-          <span className="font-medium text-deepBlue">{formatPrice(price_cents)}</span>
+          <span className="font-medium text-powder-blue-500">{formatPrice(price_cents)}</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
@@ -39,7 +39,7 @@ export function ServiceCard({
         </p>
       </CardContent>
       <CardFooter className="flex gap-2 pt-2">
-        <Button asChild variant="gold" className="w-full">
+        <Button asChild variant="desert" className="w-full">
           <Link href={`/booking/${id}`}>Book Now</Link>
         </Button>
         {detailsLink && (

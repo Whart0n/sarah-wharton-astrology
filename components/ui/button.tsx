@@ -16,10 +16,13 @@ const buttonVariants = cva(
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-powder-blue-100 hover:text-powder-blue-700",
         link: "text-primary underline-offset-4 hover:underline",
-        gold: "bg-gold text-white hover:bg-gold-dark",
-        deepBlue: "bg-deepBlue text-white hover:bg-deepBlue-light",
+        desert: "bg-desert-sand-400 text-white hover:bg-desert-sand-500",
+        powder: "bg-powder-blue-500 text-white hover:bg-powder-blue-600",
+        wheat: "bg-wheat-600 text-white hover:bg-wheat-700",
+        rose: "bg-rose-quartz-400 text-white hover:bg-rose-quartz-500",
+        cool: "bg-cool-gray-400 text-white hover:bg-cool-gray-500",
       },
       size: {
         default: "h-10 px-4 py-2",
