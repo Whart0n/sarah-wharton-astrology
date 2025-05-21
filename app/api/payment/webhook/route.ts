@@ -113,10 +113,27 @@ export async function POST(request: Request) {
             "dateOfBirth",
             "timeOfBirth"
           ];
-          const missing = requiredFields.filter(key => !session.metadata || !session.metadata[key]);
-          if (missing.length > 0) {
-            console.error('Missing required metadata fields:', missing);
-            return NextResponse.json({ error: "Missing required metadata fields", missing }, { status: 400 });
+          console.log('Webhook: Raw session.metadata object from event:', JSON.stringify(session.metadata, null, 2));
+
+          const trulyMissingFields = [];
+          for (const field of requiredFields) {
+            // Log the exact key from requiredFields we are checking
+            console.log(`Webhook: Checking field: '${field}'`);
+            // Log the value found in session.metadata for this key
+            const value = session.metadata ? session.metadata[field] : undefined;
+            console.log(`Webhook: Value for '${field}':`, value, `(Type: ${typeof value})`);
+
+            if (!session.metadata || typeof session.metadata[field] === 'undefined' || session.metadata[field] === null || session.metadata[field] === '') {
+              console.warn(`Webhook: Field '${field}' is considered missing or empty. Value: [${value}]`);
+              trulyMissingFields.push(field);
+            } else {
+              console.log(`Webhook: Field '${field}' is present and non-empty.`);
+            }
+          }
+
+          if (trulyMissingFields.length > 0) {
+            console.error('Webhook: Final list of missing or empty required metadata fields:', trulyMissingFields);
+            return NextResponse.json({ error: "Missing required metadata fields", missing: trulyMissingFields }, { status: 400 });
           }
 
           // Check if a booking already exists for this session
