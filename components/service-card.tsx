@@ -28,7 +28,7 @@ export function ServiceCard({
         <CardTitle className="font-serif text-rose-quartz-400">{name}</CardTitle>
         <CardDescription className="flex items-center justify-between">
           <span>{formatDuration(duration_minutes)}</span>
-          <span className="font-medium text-powder-blue-500">{formatPrice(price_cents)}</span>
+          <span className="font-medium text-muted-foreground">{formatPrice(price_cents)}</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">

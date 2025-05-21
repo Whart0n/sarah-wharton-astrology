@@ -60,7 +60,7 @@ const BookingServicePage = async ({ params }: { params: { serviceId: string } })
 
             <BookingForm service={service} />
 
-            <div className="mt-12 bg-desert-sand-100/50 p-6 rounded-lg">
+            <div className="mt-12 bg-blush-light p-6 rounded-lg">
               <h3 className="text-lg font-medium mb-4">Important Information</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-start">
@@ -88,7 +88,7 @@ const BookingServicePage = async ({ params }: { params: { serviceId: string } })
       </section>
 
       {/* Questions Section */}
-      <section className="py-12 bg-wheat-200">
+      <section className="py-12 bg-blush-light">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-serif text-rose-quartz-500 mb-4">Have Questions?</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-6">

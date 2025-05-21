@@ -363,7 +363,10 @@ export function BookingForm({ service }: BookingFormProps) {
                       today.setHours(0, 0, 0, 0)
                       return date < today || date.getDay() === 0 || date.getDay() === 6
                     }}
-                    className="rounded-md border"
+                    classNames={{
+                      selected: "bg-deepBlue text-white",
+                    }}
+                    className="rounded-md border [&_div[data-radix-calendar-heading-item]]:justify-center"
                   />
                   <FormMessage />
                 </FormItem>
