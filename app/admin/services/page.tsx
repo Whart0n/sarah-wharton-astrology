@@ -113,7 +113,7 @@ export default function ServicesPage() {
           >
             {importLoading ? "Importing..." : "Import Stripe Products"}
           </Button>
-          <Button asChild variant="gold">
+          <Button asChild variant="secondary">
             <Link href="/admin/services/new">Add New Service</Link>
           </Button>
         </div>
@@ -129,7 +129,7 @@ export default function ServicesPage() {
         <Card>
           <CardContent className="p-6 text-center">
             <p className="text-muted-foreground mb-4">No services found. Create your first service to get started.</p>
-            <Button asChild variant="deepBlue">
+            <Button asChild variant="default">
               <Link href="/admin/services/new">Create Service</Link>
             </Button>
           </CardContent>
