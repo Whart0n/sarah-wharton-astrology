@@ -96,10 +96,8 @@ export async function POST(request: Request) {
             break;
           }
 
-          // Fetch PaymentIntent from Stripe to get metadata
-          const stripeModule = await import('@/lib/stripe');
-          const paymentIntent = await stripeModule.retrievePaymentIntent(paymentIntentId);
-          const metadata = paymentIntent.metadata || {};
+          // Use metadata directly from the session object
+          const metadata = session.metadata || {};
 
           // Log all received metadata for debugging
           console.log('Session metadata:', session.metadata);

@@ -31,7 +31,7 @@ export default function ConfirmationPage({
 
     const checkStatus = async () => {
       try {
-        const res = await fetch(`/api/check-booking-status?session_id=${searchParams.get('session_id')}`);
+        const res = await fetch(`/api/check-booking-status?session_id=${sessionId}`);
         const data = await res.json();
         console.log('Fetched booking status:', data.status, 'Try:', tries + 1);
 
@@ -55,7 +55,7 @@ export default function ConfirmationPage({
       }
     };
 
-    if (!searchParams.get('session_id')) {
+    if (!sessionId) {
       console.error('No session_id found in URL');
       setStatus('failure');
       return;
