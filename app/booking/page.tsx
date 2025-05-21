@@ -22,40 +22,42 @@ export default async function BookingPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-deepBlue text-white py-16 md:py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif mb-6 gold-gradient-text">
-            Book Your Reading
-          </h1>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto text-white/80">
-            Select a service below to begin your journey of cosmic discovery
-          </p>
+      <section className="relative py-20 md:py-28 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-manrope font-bold text-rose-quartz-400 mb-6 tracking-tight">
+              Book Your Reading
+            </h1>
+            <p className="text-xl md:text-2xl text-cool-gray-400 mb-8 max-w-3xl mx-auto font-sora">
+              Select a service below to begin your journey of cosmic discovery
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Services Selection */}
-      <section className="py-16 bg-background">
+      <section className="py-16 bg-wheat-800">
         <div className="container mx-auto px-4">
-          <div className="mb-10">
-            <h2 className="text-2xl font-serif text-deepBlue mb-2">Choose a Service</h2>
-            <p className="text-muted-foreground">
+          <div className="mb-10 text-center">
+            <h2 className="text-2xl font-serif text-rose-quartz-400 mb-2">Choose a Service</h2>
+            <p className="text-cool-gray-400">
               Browse my services and select the one that resonates with your current needs
             </p>
           </div>
 
           {services.length === 0 ? (
-            <Card>
+            <Card className="bg-white border border-blush/30 shadow-sm">
               <CardContent className="py-8 text-center">
                 <p className="text-muted-foreground mb-4">
                   No services are currently available for booking. Please check back soon or contact me for more information.
                 </p>
-                <Link href="/contact" className="text-deepBlue hover:text-deepBlue-light underline">
+                <Link href="/contact" className="text-plum hover:text-plum/70 underline">
                   Contact Me
                 </Link>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {services.map((service) => (
                 <ServiceCard
                   key={service.id}
@@ -65,6 +67,7 @@ export default async function BookingPage() {
                   duration_minutes={service.duration_minutes}
                   price_cents={service.price_cents}
                   detailsLink={false}
+                  className="bg-desert-sand-50 p-8 border border-desert-sand-200 hover:shadow-md transition rounded-lg"
                 />
               ))}
             </div>
@@ -73,20 +76,20 @@ export default async function BookingPage() {
       </section>
 
       {/* Booking Information */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 bg-powder-blue-800">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
-              <h2 className="text-2xl font-serif text-deepBlue mb-2">Booking Information</h2>
-              <p className="text-muted-foreground">
+              <h2 className="text-2xl font-serif text-rose-quartz-400 mb-2">Booking Information</h2>
+              <p className="text-cool-gray-300">
                 Important details to know before scheduling your reading
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card>
+              <Card className="bg-desert-sand-50 border border-desert-sand-200 shadow-md">
                 <CardHeader>
-                  <CardTitle className="text-lg">What to Provide</CardTitle>
+                  <CardTitle className="text-lg font-serif text-rose-quartz-400">What to Provide</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">
@@ -103,9 +106,9 @@ export default async function BookingPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-desert-sand-50 border border-desert-sand-200 shadow-md">
                 <CardHeader>
-                  <CardTitle className="text-lg">Booking & Payment Policy</CardTitle>
+                  <CardTitle className="text-lg font-serif text-rose-quartz-400">Scheduling Process</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-muted-foreground">
@@ -128,7 +131,7 @@ export default async function BookingPage() {
 
             <Card className="mt-8">
               <CardHeader>
-                <CardTitle className="text-lg">What to Expect</CardTitle>
+                <CardTitle className="text-lg font-serif text-plum">What to Expect</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-muted-foreground">

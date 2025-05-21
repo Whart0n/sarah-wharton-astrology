@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Sora:wght@400;700&display=swap');
+
+:root {
+  :root {
+    --background: 0 0% 100%; /* White */
+    --foreground: 0 0% 15%;
+
+    /* New color palette */
+    --desert: 22 58% 78%;     /* #e5c0a7 */
+    --powder: 214 40% 75%;    /* #a6bcd9 */
+    --wheat: 34 66% 84%;      /* #f1dabb */
+    --rose: 300 7% 59%;       /* #9e909e */
+    --cool: 234 9% 54%;       /* #808294 */
+
+    /* Semantic colors using new palette */
+    --primary: 22 58% 60%;    /* Darker desert */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 214 40% 75%;  /* Powder blue */
+    --secondary-foreground: 0 0% 15%;
+
+    --accent: 300 7% 59%;     /* Rose quartz */
+    --accent-foreground: 0 0% 100%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
+
+    --border: 34 20% 90%;     /* Light wheat */
+}
+
+* {
+  border-color: hsla(var(--border));
+}
+    line-height: 1.7;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Manrope', 'sans-serif';
+    font-weight: 500;
+    color: hsl(300, 7%, 30%);
+    letter-spacing: 0.01em;
+  }
+}
+
+/* Color utilities */
+.bg-desert { background-color: hsl(22, 58%, 65%); }
+.bg-powder { background-color: hsl(214, 40%, 75%); }
+.bg-wheat { background-color: hsl(34, 66%, 84%); }
+.bg-rose { background-color: hsl(300, 7%, 59%); }
+.bg-cool { background-color: hsl(234, 9%, 54%); }
+
+.text-desert { color: hsl(22, 58%, 35%); }
+.text-powder { color: hsl(214, 40%, 35%); }
+.text-wheat { color: hsl(34, 66%, 44%); }
+.text-rose { color: hsl(300, 7%, 39%); }
+.text-cool { color: hsl(234, 9%, 34%); }
+
+/* Hero section with background image */
+.hero-container {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  min-height: 600px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+  color: white;
+}
+
+/* Elegant buttons */
+.btn-elegant {
+  background-color: #e8c4c4;
+  color: #422040;
+  font-family: 'Playfair Display', serif;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 0;
+  font-size: 16px;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.btn-elegant:hover {
+  background-color: #d8b4b4;
+  transform: translateY(-2px);
+}
+
+.btn-elegant-outline {
+  background-color: transparent;
+  color: #422040;
+  border: 1px solid #e8c4c4;
+  font-family: 'Playfair Display', serif;
+  padding: 12px 30px;
+  border-radius: 0;
+  font-size: 16px;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.btn-elegant-outline:hover {
+  background-color: #f5e8e8;
+  transform: translateY(-2px);
+}
+
+.bg-tea { background-color: hsl(var(--tea)); }
+.bg-muted-teal { background-color: hsl(var(--muted-teal)); }
+.bg-lavender-blue { background-color: hsl(var(--lavender-blue)); }
+.bg-tan { background-color: hsl(var(--tan)); }
+.bg-hunter { background-color: hsl(var(--hunter)); }
+.bg-plum { background-color: hsl(var(--plum)); }
+.text-hunter { color: hsl(var(--hunter)); }
+.text-plum { color: hsl(var(--plum)); }
+
+.btn-primary {
+  @apply rounded-full px-6 py-2 font-manrope bg-hunter text-white shadow-md transition hover:bg-hunter/90;
+}
+.btn-accent {
+  @apply rounded-full px-6 py-2 font-manrope bg-caramel text-white shadow-md transition hover:bg-caramel;
+}
+.btn-outline {
+  @apply rounded-full px-6 py-2 font-manrope border border-hunter text-hunter bg-white hover:bg-tea;
+}
+
+/* Spacing and whitespace utilities */
+.section {
+  @apply py-16 md:py-24;
+}
+
+.container {
+  @apply mx-auto px-4 max-w-7xl;
+}
+
+
+/* Hero section styles */
+.hero-section {
+  background-image: url('/images/hero-background.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark overlay for readability */
+  z-index: 1;
+}
+
+.hero-section > * {
+  position: relative;
+  z-index: 2; /* Place content above the overlay */
+}
+
+/* Custom animations */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Gold gradient text removed as it's not part of the new design */
+
+/* Divider */
+.star-divider {
+  position: relative;
+  height: 1px;
+  background-color: rgba(217, 173, 38, 0.3);
+  margin: 2rem 0;
+}
+
+.star-divider::after {
+  content: "★";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 0 1rem;
+  color: #d9ad26;
+}
+
+/* Card hover effect */
+.card-hover-effect {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}

@@ -10,6 +10,7 @@ interface ServiceCardProps {
   duration_minutes: number
   price_cents: number
   detailsLink?: boolean
+  className?: string
 }
 
 export function ServiceCard({
@@ -18,10 +19,11 @@ export function ServiceCard({
   description,
   duration_minutes,
   price_cents,
-  detailsLink = true
+  detailsLink = true,
+  className = ""
 }: ServiceCardProps) {
   return (
-    <Card className="h-full flex flex-col transition-all hover:shadow-md">
+    <Card className={`h-full flex flex-col transition-all hover:shadow-md ${className}`}>
       <CardHeader>
         <CardTitle className="font-serif text-deepBlue">{name}</CardTitle>
         <CardDescription className="flex items-center justify-between">

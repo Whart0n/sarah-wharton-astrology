@@ -23,51 +23,57 @@ export default async function ServicesPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-deepBlue text-white py-16 md:py-24">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif mb-6 gold-gradient-text">
-            Astrology Services
-          </h1>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto text-white/80">
-            Discover the perfect reading to illuminate your path and provide cosmic guidance
-          </p>
+      <section className="relative py-20 md:py-28 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-manrope font-bold text-accent-plum mb-6 tracking-tight">
+              Astrology Services
+            </h1>
+            <p className="text-xl md:text-2xl text-accent-plum/80 mb-8 max-w-3xl mx-auto font-sora">
+              Discover the perfect reading to illuminate your path and provide cosmic guidance
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Services List */}
-      <section className="py-16 md:py-24 bg-background">
+      <section className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4">
           {services.length === 0 ? (
             <div className="text-center py-12">
-              <h2 className="text-2xl font-serif text-deepBlue mb-4">Services Coming Soon</h2>
-              <p className="text-muted-foreground mb-8">
+              <h2 className="text-2xl font-serif text-plum mb-4">Services Coming Soon</h2>
+              <p className="text-plum/70 mb-8">
                 I'm currently updating my service offerings. Please check back soon or contact me for more information.
               </p>
-              <Button asChild variant="deepBlue">
-                <Link href="/contact">Contact Me</Link>
-              </Button>
+              <Link href="/contact">
+                <button className="btn-elegant">
+                  CONTACT ME
+                </button>
+              </Link>
             </div>
           ) : (
             <div className="space-y-16">
               {services.map((service) => (
                 <div key={service.id} id={service.id} className="scroll-mt-24">
-                  <Card className="overflow-hidden">
-                    <CardHeader className="bg-deepBlue-light/10">
-                      <CardTitle className="text-2xl font-serif text-deepBlue">{service.name}</CardTitle>
+                  <Card className="overflow-hidden bg-white border border-blush/30 shadow-sm">
+                    <CardHeader className="bg-blush-light">
+                      <CardTitle className="text-2xl font-serif text-plum">{service.name}</CardTitle>
                       <CardDescription className="flex justify-between items-center">
-                        <span className="text-base">{formatDuration(service.duration_minutes)}</span>
-                        <span className="text-lg font-medium text-deepBlue">{formatPrice(service.price_cents)}</span>
+                        <span className="text-base text-plum/70">{formatDuration(service.duration_minutes)}</span>
+                        <span className="text-lg font-medium text-plum">{formatPrice(service.price_cents)}</span>
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-6">
                       <div className="prose prose-slate max-w-none">
-                        <p>{service.description}</p>
+                        <p className="text-plum/70">{service.description}</p>
                       </div>
                     </CardContent>
-                    <CardFooter className="bg-muted/30 py-4 px-6">
-                      <Button asChild variant="gold">
-                        <Link href={`/booking/${service.id}`}>Book Now</Link>
-                      </Button>
+                    <CardFooter className="bg-white py-4 px-6 border-t border-blush/20">
+                      <Link href={`/booking/${service.id}`}>
+                        <button className="btn-elegant">
+                          BOOK NOW
+                        </button>
+                      </Link>
                     </CardFooter>
                   </Card>
                 </div>
@@ -78,55 +84,55 @@ export default async function ServicesPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16 bg-blush-light">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif text-deepBlue mb-4">Frequently Asked Questions</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <h2 className="text-3xl font-serif text-plum mb-4">Frequently Asked Questions</h2>
+            <p className="text-plum/70 max-w-2xl mx-auto">
               Common questions about astrology readings and what to expect
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card>
+            <Card className="bg-white border border-blush/30 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-lg">What information do I need to provide for a reading?</CardTitle>
+                <CardTitle className="text-lg font-serif text-plum">What information do I need to provide for a reading?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-plum/70">
                   For most readings, you'll need to provide your date of birth, exact time of birth, and location of birth. This information allows me to calculate your unique birth chart with precision.
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-blush/30 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-lg">What if I don't know my exact birth time?</CardTitle>
+                <CardTitle className="text-lg font-serif text-plum">What if I don't know my exact birth time?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-plum/70">
                   While a precise birth time offers the most accurate reading, we can still work with approximate times or unknown birth times. Some techniques, like rectification, can help narrow down your birth time, or we can focus on aspects of your chart that don't rely on the exact time.
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-blush/30 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-lg">How are readings conducted?</CardTitle>
+                <CardTitle className="text-lg font-serif text-plum">How are readings conducted?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-plum/70">
                   Readings are conducted via video call (Zoom), and you'll receive a recording afterward for reference. Each session includes time for questions and discussion to ensure you get the most from your reading.
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-blush/30 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-lg">How should I prepare for my reading?</CardTitle>
+                <CardTitle className="text-lg font-serif text-plum">How should I prepare for my reading?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
+                <p className="text-plum/70">
                   Consider what questions or areas of life you'd like to focus on. Coming prepared with specific questions can help us make the most of our time together. However, it's also perfectly fine to come with an open mind and no specific agenda.
                 </p>
               </CardContent>
@@ -136,17 +142,19 @@ export default async function ServicesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-deepBlue text-white">
+      <section className="py-16 bg-white border-t border-blush/20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-serif mb-6 gold-gradient-text">
+          <h2 className="text-3xl font-serif mb-6 text-plum">
             Ready to Begin Your Cosmic Journey?
           </h2>
-          <p className="text-lg max-w-2xl mx-auto mb-8 text-white/80">
+          <p className="text-lg max-w-2xl mx-auto mb-8 text-plum/70">
             Book your reading today and discover what the stars have in store for you
           </p>
-          <Button asChild size="lg" variant="gold">
-            <Link href="/booking">Book a Reading</Link>
-          </Button>
+          <Link href="/booking">
+            <button className="btn-elegant">
+              BOOK A READING
+            </button>
+          </Link>
         </div>
       </section>
     </div>

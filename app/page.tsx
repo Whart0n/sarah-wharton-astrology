@@ -128,7 +128,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-4xl mx-auto">
             {services.length > 0 ? (
               services.map((service) => (
                 <div key={service.id} className="bg-desert-sand-50 p-8 border border-desert-sand-200 hover:shadow-md transition rounded-lg">
