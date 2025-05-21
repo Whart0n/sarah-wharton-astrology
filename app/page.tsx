@@ -131,15 +131,15 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {services.length > 0 ? (
               services.map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  id={service.id}
-                  name={service.name}
-                  description={service.description}
-                  duration_minutes={service.duration_minutes}
-                  price_cents={service.price_cents}
-                  className="bg-amber-50 p-8 border border-amber-200 hover:shadow-md transition rounded-lg"
-                />
+                <div key={service.id} className="bg-amber-50 p-8 border border-amber-200 hover:shadow-md transition rounded-lg">
+                  <ServiceCard
+                    id={service.id}
+                    name={service.name}
+                    description={service.description}
+                    duration_minutes={service.duration_minutes}
+                    price_cents={service.price_cents}
+                  />
+                </div>
               ))
             ) : (
               <div className="col-span-3 text-center py-8">
