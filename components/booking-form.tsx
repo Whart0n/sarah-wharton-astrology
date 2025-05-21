@@ -16,6 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatPrice, formatDuration } from "@/lib/utils"
+import { TIMEZONES } from "@/components/timezones"
 
 // Load stripe outside of component render to avoid recreating stripe object on every render
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
@@ -51,6 +52,10 @@ interface BookingFormProps {
 }
 
 export function BookingForm({ service }: BookingFormProps) {
+  // Timezone state
+  const browserTz = typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+  const [timezone, setTimezone] = useState(browserTz);
+
   const router = useRouter()
   const [step, setStep] = useState<'details' | 'payment'>('details')
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([])
@@ -92,6 +97,10 @@ export function BookingForm({ service }: BookingFormProps) {
       fetch(`/api/calendar/availability?start=${startOfDay.toISOString()}&end=${endOfDay.toISOString()}`)
         .then(res => res.json())
         .then(data => {
+            // Log selected date and fetched events for debugging
+            console.log(`[Availability Check] Selected Date: ${selectedDate.toISOString()}`);
+            console.log(`[Availability Check] Fetched Events for ${selectedDate.toLocaleDateString()}:`, JSON.stringify(data.events, null, 2));
+
           // --- New slot generation logic ---
           const serviceDuration = service.duration_minutes;
           const bufferMinutes = 30;
@@ -353,6 +362,19 @@ export function BookingForm({ service }: BookingFormProps) {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Date</FormLabel>
+          <div className="mb-2 flex flex-col md:flex-row md:items-center gap-2">
+            <label htmlFor="tz-select" className="text-sm font-medium">Timezone:</label>
+            <select
+              id="tz-select"
+              className="border rounded px-2 py-1 text-sm"
+              value={timezone}
+              onChange={e => setTimezone(e.target.value)}
+            >
+              {TIMEZONES.map((tz) => (
+                <option key={tz.value} value={tz.value}>{tz.label}</option>
+              ))}
+            </select>
+          </div>
                   <Calendar
                     mode="single"
                     selected={field.value}
@@ -386,17 +408,26 @@ export function BookingForm({ service }: BookingFormProps) {
                       ) : availableTimeSlots.length === 0 ? (
                         <div className="col-span-3 py-4 text-center">No available time slots for this date</div>
                       ) : (
-                        availableTimeSlots.map((timeSlot) => (
-                          <Button
-                            key={timeSlot}
-                            type="button"
-                            variant={field.value === timeSlot ? "powder" : "outline"}
-                            onClick={() => field.onChange(timeSlot)}
-                            className="text-sm"
-                          >
-                            {timeSlot}
-                          </Button>
-                        ))
+                        availableTimeSlots.map((timeSlot) => {
+  // Parse slot as UTC time
+  const [hour, minute] = timeSlot.split(":");
+  const slotDate = new Date(selectedDate);
+  slotDate.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
+  // Convert to selected timezone
+  const options = { hour: 'numeric' as const, minute: '2-digit' as const, hour12: true, timeZone: timezone };
+  const label = slotDate.toLocaleTimeString([], options);
+  return (
+    <Button
+      key={timeSlot}
+      type="button"
+      variant={field.value === timeSlot ? "powder" : "outline"}
+      onClick={() => field.onChange(timeSlot)}
+      className="text-sm"
+    >
+      {label}
+    </Button>
+  );
+})
                       )}
                     </div>
                     <FormMessage />
