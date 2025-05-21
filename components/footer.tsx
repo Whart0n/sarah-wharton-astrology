@@ -3,41 +3,41 @@ import { Button } from "@/components/ui/button"
 
 export function Footer() {
   return (
-    <footer className="bg-purple-200 text-gray-800 py-12">
+    <footer className="bg-rose-quartz-500 text-cool-gray-100 py-12">
       <div className="container grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="col-span-1">
-          <h3 className="text-gray-800 font-serif text-2xl mb-4">Sarah Wharton Astrology</h3>
-          <p className="text-sm text-gray-700">
+          <h3 className="text-cool-gray-100 font-serif text-2xl mb-4">Sarah Wharton Astrology</h3>
+          <p className="text-sm text-cool-gray-200">
            Professional astrology readings
             to help you navigate life's journey with clarity and purpose.
           </p>
         </div>
         
         <div className="col-span-1">
-          <h4 className="font-serif text-gray-800 mb-4">Quick Links</h4>
+          <h4 className="font-serif text-cool-gray-100 mb-4">Quick Links</h4>
           <ul className="space-y-2">
             <li>
-              <Link href="/" className="text-sm text-gray-700 hover:text-gray-900 hover:underline transition-colors">
+              <Link href="/" className="text-sm text-cool-gray-200 hover:text-white hover:underline transition-colors">
                 Home
               </Link>
             </li>
             <li>
-              <Link href="/about" className="text-sm text-gray-700 hover:text-gray-900 hover:underline transition-colors">
+              <Link href="/about" className="text-sm text-cool-gray-200 hover:text-white hover:underline transition-colors">
                 About
               </Link>
             </li>
             <li>
-              <Link href="/services" className="text-sm text-gray-700 hover:text-gray-900 hover:underline transition-colors">
+              <Link href="/services" className="text-sm text-cool-gray-200 hover:text-white hover:underline transition-colors">
                 Services
               </Link>
             </li>
             <li>
-              <Link href="/booking" className="text-sm text-gray-700 hover:text-gray-900 hover:underline transition-colors">
+              <Link href="/booking" className="text-sm text-cool-gray-200 hover:text-white hover:underline transition-colors">
                 Book a Reading
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="text-sm text-gray-700 hover:text-gray-900 hover:underline transition-colors">
+              <Link href="/contact" className="text-sm text-cool-gray-200 hover:text-white hover:underline transition-colors">
                 Contact
               </Link>
             </li>
@@ -45,8 +45,8 @@ export function Footer() {
         </div>
         
         <div className="col-span-1">
-          <h4 className="font-serif text-gray-800 mb-4">Contact</h4>
-          <div className="text-sm space-y-2 text-gray-700">
+          <h4 className="font-serif text-cool-gray-100 mb-4">Contact</h4>
+          <div className="text-sm space-y-2 text-cool-gray-200">
             <p>Email: sarah@sarahwharton.com</p>
           </div>
         </div>

@@ -43,8 +43,8 @@ export function MainNav() {
             key={route.href}
             href={route.href}
             className={cn(
-              "text-sm uppercase tracking-widest font-serif transition-all hover:text-gray-900 hover:underline",
-              route.active ? "text-gray-900" : "text-gray-700"
+              "text-sm uppercase tracking-widest font-serif transition-all hover:text-cool-gray-100 hover:underline",
+              route.active ? "text-cool-gray-100" : "text-cool-gray-200"
             )}
           >
             {route.label}

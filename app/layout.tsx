@@ -20,12 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
 
-      <body className="min-h-screen bg-amber-50 font-sora antialiased">
+      <body className="min-h-screen bg-wheat-800 font-sora antialiased">
         <div className="flex min-h-screen flex-col">
-          <header className="sticky top-0 z-40 bg-amber-200">
+          <header className="sticky top-0 z-40 bg-desert-sand-500">
             <div className="container flex h-16 items-center justify-between py-2">
               <div className="flex items-center gap-2">
-                <span className="font-serif text-2xl text-gray-700">Sarah Wharton Astrology</span>
+                <span className="font-serif text-2xl text-cool-gray-200">Sarah Wharton Astrology</span>
               </div>
               <MainNav />
             </div>

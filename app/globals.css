@@ -50,13 +50,13 @@
   }
   body {
     font-family: 'Sora', 'sans-serif';
-    @apply bg-white text-gray-800 font-sora;
+    @apply bg-wheat-800 text-cool-gray-300 font-sora;
     letter-spacing: 0.01em;
     line-height: 1.7;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Manrope', 'sans-serif';
-    @apply font-manrope text-gray-900;
+    @apply font-manrope text-rose-quartz-400;
     letter-spacing: 0.01em;
   }
 }

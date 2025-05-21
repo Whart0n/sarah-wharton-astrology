@@ -17,6 +17,68 @@ module.exports = {
     },
     extend: {
       colors: {
+        // New color palette
+        'desert-sand': {
+          DEFAULT: '#e5c0a7',
+          100: '#3d2312',
+          200: '#7b4725',
+          300: '#b86a37',
+          400: '#d3956b',
+          500: '#e5c0a7',
+          600: '#eacdba',
+          700: '#f0dacb',
+          800: '#f5e6dc',
+          900: '#faf3ee'
+        },
+        'powder-blue': {
+          DEFAULT: '#a6bcd9',
+          100: '#172436',
+          200: '#2e486b',
+          300: '#456da1',
+          400: '#7094c2',
+          500: '#a6bcd9',
+          600: '#b8c9e0',
+          700: '#c9d7e8',
+          800: '#dbe4f0',
+          900: '#edf2f7'
+        },
+        'wheat': {
+          DEFAULT: '#f1dabb',
+          100: '#472f0f',
+          200: '#8e5d1d',
+          300: '#d48c2d',
+          400: '#e3b374',
+          500: '#f1dabb',
+          600: '#f4e1c9',
+          700: '#f7e9d6',
+          800: '#f9f0e4',
+          900: '#fcf8f1'
+        },
+        'rose-quartz': {
+          DEFAULT: '#9e909e',
+          100: '#201c20',
+          200: '#403840',
+          300: '#615461',
+          400: '#817081',
+          500: '#9e909e',
+          600: '#b1a6b1',
+          700: '#c5bcc5',
+          800: '#d8d2d8',
+          900: '#ece9ec'
+        },
+        'cool-gray': {
+          DEFAULT: '#808294',
+          100: '#191a1e',
+          200: '#32333c',
+          300: '#4b4d5a',
+          400: '#646678',
+          500: '#808294',
+          600: '#999aaa',
+          700: '#b2b4bf',
+          800: '#cccdd4',
+          900: '#e5e6ea'
+        },
+        // Keep original colors for compatibility
         tea: '#D9F4C7', // Tea green
         ash: '#C1D2CC', // Ash gray
         periwinkle: '#A9AFD1',
