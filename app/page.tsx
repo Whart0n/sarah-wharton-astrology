@@ -78,14 +78,14 @@ export default async function HomePage() {
 
 
       {/* MDX Content Section */}
-      <section className="py-16 md:py-24 bg-wheat-800">
+      <section className="py-16 md:py-24 bg-amber-50">
         <div className="container mx-auto px-4">
           <div className="prose prose-slate max-w-5xl mx-auto md:prose-lg">
             <MDXRemote 
               source={mdxContent} 
               components={{
                 h1: (props: any) => (
-                  <h1 className="text-4xl font-bold text-rose-quartz-400 mb-6" {...props} />
+                  <h1 className="text-4xl font-bold text-purple-700 mb-6" {...props} />
                 ),
                 img: (props: any) => (
                   <div className="float-right ml-8 mb-6 mt-4 w-80 md:w-96">
@@ -111,19 +111,19 @@ export default async function HomePage() {
       {/* White Section Separator */}
       <section className="py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-serif text-powder-blue-500 mb-6">Personalized Readings</h2>
-          <p className="text-lg text-cool-gray-400 max-w-2xl mx-auto font-sora">
+          <h2 className="text-3xl md:text-4xl font-serif text-blue-500 mb-6">Personalized Readings</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto font-sora">
             Each reading is carefully crafted to address your unique questions and cosmic influences
           </p>
         </div>
       </section>
 
       {/* Featured Services */}
-      <section className="py-20 md:py-28 bg-powder-blue-800">
+      <section className="py-20 md:py-28 bg-blue-100">
         <div className="container">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-serif text-rose-quartz-400 mb-4">Featured Services</h2>
-            <p className="text-lg text-cool-gray-300 max-w-2xl mx-auto font-sora">
+            <h2 className="text-3xl md:text-4xl font-serif text-purple-700 mb-4">Featured Services</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto font-sora">
               Discover the perfect astrological reading to guide you on your journey
             </p>
           </div>
@@ -138,7 +138,7 @@ export default async function HomePage() {
                   description={service.description}
                   duration_minutes={service.duration_minutes}
                   price_cents={service.price_cents}
-                  className="bg-desert-sand-50 p-8 border border-desert-sand-200 hover:shadow-md transition rounded-lg"
+                  className="bg-amber-50 p-8 border border-amber-200 hover:shadow-md transition rounded-lg"
                 />
               ))
             ) : (
@@ -150,7 +150,7 @@ export default async function HomePage() {
 
           <div className="text-center mt-14">
             <Link href="/services">
-              <button className="bg-transparent border-2 border-desert-sand-400 text-desert-sand-400 hover:bg-desert-sand-50 font-sora px-8 py-3 rounded-md transition-all transform hover:-translate-y-1">
+              <button className="bg-transparent border-2 border-amber-400 text-amber-600 hover:bg-amber-50 font-sora px-8 py-3 rounded-md transition-all transform hover:-translate-y-1">
                 VIEW ALL SERVICES
               </button>
             </Link>
@@ -169,7 +169,7 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-desert-sand-400 p-8 rounded-lg shadow-lg border-2 border-desert-sand-300 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+            <div className="bg-amber-300 p-8 rounded-lg shadow-lg border-2 border-amber-200 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="mb-4 border-b-2 border-white pb-2">
                 <h3 className="text-xl font-serif font-bold text-white">Transformative Experience</h3>
                 <p className="text-white font-sora font-medium">Jessica M.</p>
@@ -179,7 +179,7 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="bg-powder-blue-600 p-8 rounded-lg shadow-lg border-2 border-powder-blue-500 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+            <div className="bg-blue-300 p-8 rounded-lg shadow-lg border-2 border-blue-200 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="mb-4 border-b-2 border-white pb-2">
                 <h3 className="text-xl font-serif font-bold text-white">Remarkably Accurate</h3>
                 <p className="text-white font-sora font-medium">Michael T.</p>
@@ -189,7 +189,7 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="bg-rose-quartz-600 p-8 rounded-lg shadow-lg border-2 border-rose-quartz-500 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
+            <div className="bg-purple-300 p-8 rounded-lg shadow-lg border-2 border-purple-200 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="mb-4 border-b-2 border-white pb-2">
                 <h3 className="text-xl font-serif font-bold text-white">Career Clarity</h3>
                 <p className="text-white font-sora font-medium">Sarah L.</p>
@@ -203,16 +203,16 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 md:py-28 bg-white border-t border-desert-sand-200">
+      <section className="py-20 md:py-28 bg-white border-t border-amber-200">
         <div className="container text-center">
-          <h2 className="text-3xl md:text-4xl font-serif text-rose-quartz-400 mb-6">
+          <h2 className="text-3xl md:text-4xl font-serif text-purple-700 mb-6">
             Begin Your Cosmic Journey Today
           </h2>
-          <p className="text-lg max-w-2xl mx-auto mb-10 text-cool-gray-400 font-sora">
+          <p className="text-lg max-w-2xl mx-auto mb-10 text-gray-600 font-sora">
             Unlock the wisdom of the stars and discover insights that will illuminate your path forward
           </p>
           <Link href="/booking">
-            <button className="bg-powder-blue-500 hover:bg-powder-blue-600 text-white font-sora px-8 py-3 rounded-md transition-all transform hover:-translate-y-1 shadow-md">
+            <button className="bg-blue-400 hover:bg-blue-500 text-white font-sora px-8 py-3 rounded-md transition-all transform hover:-translate-y-1 shadow-md">
               BOOK YOUR READING
             </button>
           </Link>
