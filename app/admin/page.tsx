@@ -208,7 +208,7 @@ export default function AdminDashboard() {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-4">
-          <Button asChild variant="gold">
+          <Button asChild variant="secondary">
             <Link href="/admin/services/new">Add New Service</Link>
           </Button>
           <Button asChild variant="outline">
