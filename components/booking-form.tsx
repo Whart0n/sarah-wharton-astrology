@@ -383,12 +383,12 @@ export function BookingForm({ service }: BookingFormProps) {
                       // Disable dates in the past and weekends
                       const today = new Date()
                       today.setHours(0, 0, 0, 0)
-                      return date < today || date.getDay() === 0 || date.getDay() === 6
+                      return date < today
                     }}
                     classNames={{
                       selected: "bg-deepBlue text-white",
                     }}
-                    className="rounded-md border [&_div[data-radix-calendar-heading-item]]:justify-center"
+                    className="rounded-md border"
                   />
                   <FormMessage />
                 </FormItem>

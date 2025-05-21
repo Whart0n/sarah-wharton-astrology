@@ -32,12 +32,12 @@ function Calendar({
         nav_button_next: "absolute right-1",
         table: "w-full border-collapse space-y-1",
         head_row: "grid grid-cols-7",
-        head_cell: "text-cool-gray-400 rounded-md w-14 h-14 font-normal text-base flex items-center justify-center",
+        head_cell: "text-cool-gray-400 rounded-md h-14 font-normal text-base flex items-center justify-center",
         row: "grid grid-cols-7 w-full mt-2",
-        cell: "h-14 w-14 text-center text-base p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-powder-blue-200/50 [&:has([aria-selected])]:bg-powder-blue-200 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        cell: "h-14 text-center text-base p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-powder-blue-200/50 [&:has([aria-selected])]:bg-powder-blue-200 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-14 w-14 p-0 font-normal aria-selected:opacity-100"
+          "h-14 w-full p-0 font-normal aria-selected:opacity-100"
         ),
         day_range_end: "day-range-end",
         day_selected:
