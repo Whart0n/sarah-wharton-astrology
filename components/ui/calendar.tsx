@@ -14,41 +14,70 @@ function Calendar({
   ...props
 }: CalendarProps) {
   return (
-    <DayPicker
-      showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
-      classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
-        caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
-        nav: "space-x-1 flex items-center",
-        nav_button: cn(
-          buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-        ),
-        nav_button_previous: "absolute left-1",
-        nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex w-full justify-between",
-        head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem] flex items-center justify-center",
-        row: "flex w-full justify-between mt-2",
-        cell: "relative p-0 flex items-center justify-center text-sm focus-within:relative focus-within:z-20",
-        day: cn(
-          buttonVariants({ variant: "ghost" }),
-          "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
-        ),
-        day_selected:
-          "bg-deepBlue text-white hover:bg-deepBlue hover:text-white focus:bg-deepBlue focus:text-white",
-        day_today: "bg-accent text-accent-foreground",
-        day_outside: "text-muted-foreground opacity-50",
-        day_disabled: "text-muted-foreground opacity-50",
-        day_range_middle: "aria-selected:bg-accent",
-        day_hidden: "invisible",
-        ...classNames,
-      }}
-      {...props}
-    />
+    <div className="calendar-container w-full">
+      <style jsx global>{`
+        .calendar-container .rdp {
+          width: 100%;
+        }
+        .calendar-container .rdp-months {
+          width: 100%;
+        }
+        .calendar-container .rdp-month {
+          width: 100%;
+        }
+        .calendar-container .rdp-table {
+          width: 100%;
+          table-layout: fixed;
+        }
+        .calendar-container .rdp-head_cell {
+          text-align: center;
+          font-weight: 500;
+          padding-bottom: 10px;
+        }
+        .calendar-container .rdp-cell {
+          text-align: center;
+          padding: 0;
+          height: 40px;
+        }
+        .calendar-container .rdp-button {
+          width: 40px;
+          height: 40px;
+          font-size: 1rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto;
+        }
+        .calendar-container .rdp-day_selected {
+          background-color: #0f4c81;
+          color: white;
+        }
+        .calendar-container .rdp-day_selected:hover {
+          background-color: #0f4c81;
+          color: white;
+        }
+      `}</style>
+      <DayPicker
+        showOutsideDays={showOutsideDays}
+        className={cn("p-3", className)}
+        classNames={{
+          months: "space-y-4",
+          month: "",
+          caption: "flex justify-center pt-1 relative items-center",
+          caption_label: "text-sm font-medium",
+          nav: "space-x-1 flex items-center",
+          nav_button: cn(
+            buttonVariants({ variant: "outline" }),
+            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+          ),
+          nav_button_previous: "absolute left-1",
+          nav_button_next: "absolute right-1",
+          day_selected: "bg-deepBlue text-white hover:bg-deepBlue",
+          ...classNames,
+        }}
+        {...props}
+      />
+    </div>
   )
 }
 Calendar.displayName = "Calendar"
