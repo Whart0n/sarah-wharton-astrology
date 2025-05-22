@@ -14,6 +14,8 @@ export interface EmailParams {
   subject: string;
   text?: string;
   html?: string;
+  templateId?: string;
+  dynamicTemplateData?: Record<string, any>;
 }
 
 export async function sendEmail(params: EmailParams): Promise<boolean> {
@@ -22,21 +24,51 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
     return false;
   }
 
-  // Ensure text and html are not undefined
-  const text = params.text || '';
-  const html = params.html || '';
-
   try {
-    await mailService.send({
+    // Log the email being sent for debugging
+    console.log('Sending email to:', params.to);
+    console.log('Email subject:', params.subject);
+    
+    // Prepare the email data
+    const emailData: any = {
       to: params.to,
       from: process.env.EMAIL_FROM || 'no-reply@sarahwharton.com',
       subject: params.subject,
-      text,
-      html,
-    });
+    };
+    
+    // If using a template, add template ID and dynamic data
+    if (params.templateId) {
+      console.log('Using template ID:', params.templateId);
+      emailData.templateId = params.templateId;
+      
+      if (params.dynamicTemplateData) {
+        console.log('With dynamic template data:', JSON.stringify(params.dynamicTemplateData));
+        emailData.dynamicTemplateData = params.dynamicTemplateData;
+      }
+    } else {
+      // Fallback to text/html content if no template
+      // Ensure text and html are valid non-empty strings
+      const text = params.text && typeof params.text === 'string' && params.text.trim().length > 0 
+        ? params.text 
+        : 'No text content provided';
+        
+      const html = params.html && typeof params.html === 'string' && params.html.trim().length > 0 
+        ? params.html 
+        : '<p>No HTML content provided</p>';
+      
+      emailData.text = text;
+      emailData.html = html;
+      console.log('Using inline content. Text length:', text.length, 'HTML length:', html.length);
+    }
+    
+    await mailService.send(emailData);
+    console.log('Email sent successfully');
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('SendGrid email error:', error);
+    if (error?.response?.body?.errors) {
+      console.error('SendGrid error details:', JSON.stringify(error.response.body.errors, null, 2));
+    }
     return false;
   }
 }
@@ -70,27 +102,50 @@ export function getClientBookingConfirmationEmail(booking: {
     hour12: true,
   });
 
-  return {
-    to: booking.client_email, // Fixed: Use email address instead of name
-    subject: 'Your Astrology Reading Confirmation',
-    text: `Thank you for booking an astrology reading with Sarah Wharton. Your appointment for ${booking.service_name} has been confirmed for ${formattedDate} at ${formattedStartTime}.`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #0a1930;">Booking Confirmation</h2>
-        <p>Dear ${booking.client_name},</p>
-        <p>Thank you for booking an astrology reading. Your appointment has been confirmed.</p>
-        <div style="background-color: #f7f7f7; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p><strong>Service:</strong> ${booking.service_name}</p>
-          <p><strong>Date:</strong> ${formattedDate}</p>
-          <p><strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
-          ${booking.zoom_link ? `<p><strong>Zoom Link:</strong> <a href="${booking.zoom_link}">${booking.zoom_link}</a></p>` : ''}
+  // Use SendGrid dynamic template
+  const BOOKING_TEMPLATE_ID = process.env.SENDGRID_BOOKING_TEMPLATE_ID || process.env.SENDGRID_CLIENT_BOOKING_TEMPLATE_ID;
+  
+  if (BOOKING_TEMPLATE_ID) {
+    // Use the dynamic template
+    return {
+      to: booking.client_email,
+      subject: 'Your Astrology Reading Confirmation',
+      templateId: BOOKING_TEMPLATE_ID,
+      dynamicTemplateData: {
+        client_name: booking.client_name,
+        service_name: booking.service_name,
+        date: formattedDate,
+        start_time: formattedStartTime,
+        end_time: formattedEndTime,
+        zoom_link: booking.zoom_link || '',
+        has_zoom_link: !!booking.zoom_link,
+      },
+    };
+  } else {
+    // Fallback to inline content if no template ID is set
+    console.warn('SENDGRID_BOOKING_TEMPLATE_ID not set, using inline email content');
+    return {
+      to: booking.client_email,
+      subject: 'Your Astrology Reading Confirmation',
+      text: `Thank you for booking an astrology reading with Sarah Wharton. Your appointment for ${booking.service_name} has been confirmed for ${formattedDate} at ${formattedStartTime}.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #0a1930;">Booking Confirmation</h2>
+          <p>Dear ${booking.client_name},</p>
+          <p>Thank you for booking an astrology reading. Your appointment has been confirmed.</p>
+          <div style="background-color: #f7f7f7; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Service:</strong> ${booking.service_name}</p>
+            <p><strong>Date:</strong> ${formattedDate}</p>
+            <p><strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
+            ${booking.zoom_link ? `<p><strong>Zoom Link:</strong> <a href="${booking.zoom_link}">${booking.zoom_link}</a></p>` : ''}
+          </div>
+          <p>Please be prepared 5 minutes before your appointment. If you need to reschedule or cancel, please contact me at least 24 hours in advance.</p>
+          <p>Looking forward to your session!</p>
+          <p>Warm regards,<br>Sarah Wharton</p>
         </div>
-        <p>Please be prepared 5 minutes before your appointment. If you need to reschedule or cancel, please contact me at least 24 hours in advance.</p>
-        <p>Looking forward to your session!</p>
-        <p>Warm regards,<br>Sarah Wharton</p>
-      </div>
-    `,
-  };
+      `,
+    };
+  }
 }
 
 // Template for booking notification to astrologer
@@ -122,26 +177,50 @@ export function getAstrologerBookingNotificationEmail(booking: {
     hour12: true,
   });
 
-  return {
-    to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
-    subject: 'New Booking Notification',
-    text: `New booking from ${booking.client_name} (${booking.client_email}) for ${booking.service_name} on ${formattedDate} at ${formattedStartTime}.`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #0a1930;">New Booking Alert</h2>
-        <p>You have a new booking!</p>
-        <div style="background-color: #f7f7f7; padding: 20px; border-radius: 5px; margin: 20px 0;">
-          <p><strong>Client:</strong> ${booking.client_name}</p>
-          <p><strong>Email:</strong> ${booking.client_email}</p>
-          <p><strong>Service:</strong> ${booking.service_name}</p>
-          <p><strong>Date:</strong> ${formattedDate}</p>
-          <p><strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
-          ${booking.zoom_link ? `<p><strong>Zoom Link:</strong> <a href="${booking.zoom_link}">${booking.zoom_link}</a></p>` : ''}
+  // Use SendGrid dynamic template
+  const BOOKING_TEMPLATE_ID = process.env.SENDGRID_BOOKING_TEMPLATE_ID || process.env.SENDGRID_CLIENT_BOOKING_TEMPLATE_ID;
+  
+  if (BOOKING_TEMPLATE_ID) {
+    // Use the dynamic template
+    return {
+      to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
+      subject: 'New Booking Notification',
+      templateId: BOOKING_TEMPLATE_ID,
+      dynamicTemplateData: {
+        client_name: booking.client_name,
+        client_email: booking.client_email,
+        service_name: booking.service_name,
+        date: formattedDate,
+        start_time: formattedStartTime,
+        end_time: formattedEndTime,
+        zoom_link: booking.zoom_link || '',
+        has_zoom_link: !!booking.zoom_link,
+      },
+    };
+  } else {
+    // Fallback to inline content if no template ID is set
+    console.warn('SENDGRID_BOOKING_TEMPLATE_ID not set, using inline email content');
+    return {
+      to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
+      subject: 'New Booking Notification',
+      text: `New booking from ${booking.client_name} (${booking.client_email}) for ${booking.service_name} on ${formattedDate} at ${formattedStartTime}.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #0a1930;">New Booking Alert</h2>
+          <p>You have a new booking!</p>
+          <div style="background-color: #f7f7f7; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Client:</strong> ${booking.client_name}</p>
+            <p><strong>Email:</strong> ${booking.client_email}</p>
+            <p><strong>Service:</strong> ${booking.service_name}</p>
+            <p><strong>Date:</strong> ${formattedDate}</p>
+            <p><strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
+            ${booking.zoom_link ? `<p><strong>Zoom Link:</strong> <a href="${booking.zoom_link}">${booking.zoom_link}</a></p>` : ''}
+          </div>
+          <p>This appointment has been added to your calendar.</p>
         </div>
-        <p>This appointment has been added to your calendar.</p>
-      </div>
-    `,
-  };
+      `,
+    };
+  }
 }
 
 // Template for contact form submission

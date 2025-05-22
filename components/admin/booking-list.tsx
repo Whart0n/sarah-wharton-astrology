@@ -290,6 +290,14 @@ export function BookingList() {
                   <p className="text-sm text-muted-foreground">
                     Booked At: {format(new Date(booking.created_at), "MMM d, yyyy, h:mm a")}
                   </p>
+                  {booking.zoom_link && (
+                    <p className="text-sm text-blue-600 mt-2">
+                      <span className="font-medium">Zoom:</span>{' '}
+                      <a href={booking.zoom_link} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-800">
+                        {booking.zoom_link.substring(0, 40)}...
+                      </a>
+                    </p>
+                  )}
                 </div>
                 <div className="col-span-1 md:col-span-2 flex space-x-2 mt-2">
                   {booking.status !== "cancelled" && (
@@ -327,6 +335,20 @@ export function BookingList() {
                     >
                       <Link href={`https://calendar.google.com/calendar/event?eid=${btoa(booking.calendar_event_id).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')}`} target="_blank">
                         View in Calendar
+                      </Link>
+                    </Button>
+                  )}
+                  
+                  {/* Zoom Meeting Link Button */}
+                  {booking.zoom_link && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      asChild
+                      className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
+                    >
+                      <Link href={booking.zoom_link} target="_blank">
+                        Join Zoom Meeting
                       </Link>
                     </Button>
                   )}
