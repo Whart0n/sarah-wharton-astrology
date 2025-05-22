@@ -37,7 +37,7 @@ export default async function AboutPage() {
             {/* Full-size Image */}
             <div className="lg:w-1/2 relative h-[500px] w-full rounded-lg overflow-hidden shadow-xl">
               <Image 
-                src="/images/sarah-portrait.png" 
+                src="/images/about.jpg" 
                 alt="Sarah Wharton, Professional Astrologer" 
                 fill
                 className="object-cover object-center"

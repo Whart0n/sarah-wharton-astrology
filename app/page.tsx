@@ -38,7 +38,7 @@ export default async function HomePage() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/images/about.jpg" 
+            src="/images/sarah-portrait.png" 
             alt="Sarah Wharton, Professional Astrologer"
             fill
             className="object-cover object-center"
