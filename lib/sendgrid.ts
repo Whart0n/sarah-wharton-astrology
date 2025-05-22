@@ -29,11 +29,13 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
     console.log('Sending email to:', params.to);
     console.log('Email subject:', params.subject);
     
-    // Prepare the email data
+    // Prepare the email data with required fields
     const emailData: any = {
       to: params.to,
       from: process.env.EMAIL_FROM || 'no-reply@sarahwharton.com',
-      subject: params.subject,
+      subject: params.subject || 'Notification from Sarah Wharton Astrology',
+      text: params.text || 'Please view this email in an HTML-compatible email client.',
+      html: params.html || '<p>Please view this email in an HTML-compatible email client.</p>',
     };
     
     // If using a template, add template ID and dynamic data
@@ -45,9 +47,6 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
         console.log('With dynamic template data:', JSON.stringify(params.dynamicTemplateData));
         emailData.dynamicTemplateData = params.dynamicTemplateData;
       }
-      
-      // Even with a template, we need to provide at least a minimal text/plain content
-      emailData.text = params.text || 'Please view this email in an HTML-compatible email client.';
     } else {
       // Fallback to text/html content if no template
       // Ensure text and html are valid non-empty strings

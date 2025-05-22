@@ -90,13 +90,27 @@ export async function createZoomMeeting({
     // Use environment variable host email if available, otherwise fall back to provided email
     const host_email = ZOOM_HOST_EMAIL || providedHostEmail;
     
+    if (!host_email) {
+      const errorMsg = 'No host email provided and ZOOM_HOST_EMAIL not set in environment';
+      console.error('[Zoom] Error:', errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    // Log the exact values being used (without exposing sensitive data)
     console.log('[Zoom] Creating meeting with details:', {
       topic,
       start_time,
+      start_time_iso: new Date(start_time).toISOString(),
       duration,
       timezone,
       host_email: `${host_email.substring(0, 3)}...@...${host_email.split('@')[1]?.slice(-3) || ''}`,
       has_agenda: !!agenda,
+      env_vars: {
+        hasAccountId: !!ZOOM_ACCOUNT_ID,
+        hasClientId: !!ZOOM_CLIENT_ID,
+        hasClientSecret: !!ZOOM_CLIENT_SECRET,
+        hostEmailSet: !!ZOOM_HOST_EMAIL,
+      }
     });
 
     const accessToken = await getZoomAccessToken();

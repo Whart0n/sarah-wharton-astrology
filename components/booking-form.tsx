@@ -473,16 +473,10 @@ export function BookingForm({ service }: BookingFormProps) {
                       disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
                       initialFocus
                       className="rounded-md border p-0 self-center"
-                      styles={{
-                        day_selected: { 
-                          backgroundColor: 'hsl(var(--primary))', 
-                          color: 'hsl(var(--primary-foreground))',
-                          fontWeight: 'bold'
-                        },
-                        day_today: { 
-                          backgroundColor: 'hsl(var(--accent))', 
-                          color: 'hsl(var(--accent-foreground))'
-                        }
+                      classNames={{
+                        day_selected: 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+                        day_today: 'bg-accent text-accent-foreground',
+                        day: 'h-9 w-9 p-0 font-normal aria-selected:opacity-100',
                       }}
                     />
                     <FormMessage className="mt-2" />

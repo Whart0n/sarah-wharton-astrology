@@ -14,86 +14,72 @@ function Calendar({
   ...props
 }: CalendarProps) {
   return (
-    <div className="calendar-container w-full h-full flex flex-col">
-      <style jsx global>{`
-        .calendar-container .rdp {
-          margin: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-        }
-        .calendar-container .rdp-months {
-          flex: 1;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-        }
-        .calendar-container .rdp-month {
-          flex: 1;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-        }
-        .calendar-container .rdp-caption {
-          margin-bottom: 1rem;
-        }
-        .calendar-container .rdp-table {
-          width: 100%;
-          table-layout: fixed;
-          border-collapse: collapse;
-          flex: 1;
-        }
-        .calendar-container .rdp-head_cell {
-          text-align: center;
-          font-weight: 500;
-          padding: 0.5rem 0;
-          font-size: 0.875rem;
-          color: #6b7280;
-        }
-        .calendar-container .rdp-cell {
-          text-align: center;
-          padding: 0.25rem;
-          height: 2.5rem;
-        }
-        .calendar-container .rdp-button {
-          width: 100%;
-          height: 100%;
-          max-width: 2.5rem;
-          max-height: 2.5rem;
-          margin: 0 auto;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 0.375rem;
-          transition: all 0.15s ease;
-        }
-        .calendar-container .rdp-button:hover:not([disabled]) {
-          background-color: #f3f4f6;
-        }
-        .calendar-container .rdp-day_selected, 
-        .calendar-container .rdp-day_selected:hover {
-          background-color: #0f4c81;
-          color: white;
-        }
-      `}</style>
+    <div className="w-full">
       <DayPicker
         showOutsideDays={showOutsideDays}
-        className={cn("p-3", className)}
+        className={cn("p-3 w-full", className)}
         classNames={{
-          months: "space-y-4",
-          month: "",
+          months: "w-full m-0",
+          month: "space-y-4 w-full",
           caption: "flex justify-center pt-1 relative items-center",
           caption_label: "text-sm font-medium",
-          nav: "space-x-1 flex items-center",
+          nav: "flex items-center",
           nav_button: cn(
             buttonVariants({ variant: "outline" }),
             "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
           ),
           nav_button_previous: "absolute left-1",
           nav_button_next: "absolute right-1",
-          // day_selected styling is now handled by global JSX style
+          table: "w-full border-collapse space-y-1",
+          head_row: "flex w-full",
+          head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+          row: "flex w-full mt-2",
+          cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+          day: cn(
+            buttonVariants({ variant: "ghost" }),
+            "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground"
+          ),
+          day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+          day_today: "bg-accent text-accent-foreground",
+          day_outside: "text-muted-foreground opacity-50",
+          day_disabled: "text-muted-foreground opacity-50",
+          day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+          day_hidden: "invisible",
           ...classNames,
+        }}
+        components={{
+          IconPrevious: () => (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          ),
+          IconNext: () => (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          ),
         }}
         {...props}
       />
