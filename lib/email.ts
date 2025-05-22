@@ -11,6 +11,8 @@ interface EmailOptions {
   subject: string;
   html: string;
   text?: string; // Optional plain text version
+  templateId?: string;
+  dynamicTemplateData?: Record<string, any>;
 }
 
 export async function sendEmail({
