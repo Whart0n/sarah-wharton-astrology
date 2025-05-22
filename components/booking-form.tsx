@@ -39,6 +39,7 @@ const formSchema = z.object({
   dateOfBirth: z.string().min(1, { message: "Date of birth is required." }),
   timeOfBirth: z.string().min(1, { message: "Time of birth is required." }),
   promoCode: z.string().optional(),
+  focusArea: z.string().max(1000, { message: "Please keep your focus area under 1000 characters." }).optional(),
 })
 
 interface BookingFormProps {
@@ -74,6 +75,7 @@ export function BookingForm({ service }: BookingFormProps) {
       dateOfBirth: "",
       timeOfBirth: "",
       promoCode: "",
+      focusArea: "",
     },
   })
 
@@ -354,42 +356,46 @@ export function BookingForm({ service }: BookingFormProps) {
           </Card>
           
           {/* Date selection */}
-          <div className="space-y-4">
+          <div className="space-y-4 flex-1 flex flex-col">
             <h3 className="text-lg font-medium">Select Date & Time</h3>
             <FormField
               control={form.control}
               name="date"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem className="flex flex-col flex-1">
                   <FormLabel>Date</FormLabel>
-          <div className="mb-2 flex flex-col md:flex-row md:items-center gap-2">
-            <label htmlFor="tz-select" className="text-sm font-medium">Timezone:</label>
-            <select
-              id="tz-select"
-              className="border rounded px-2 py-1 text-sm"
-              value={timezone}
-              onChange={e => setTimezone(e.target.value)}
-            >
-              {TIMEZONES.map((tz) => (
-                <option key={tz.value} value={tz.value}>{tz.label}</option>
-              ))}
-            </select>
-          </div>
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) => {
-                      // Disable dates in the past and weekends
-                      const today = new Date()
-                      today.setHours(0, 0, 0, 0)
-                      return date < today
-                    }}
-                    classNames={{
-                      selected: "bg-deepBlue text-white",
-                    }}
-                    className="rounded-md border"
-                  />
+                  <div className="mb-2 flex flex-col md:flex-row md:items-center gap-2">
+                    <label htmlFor="tz-select" className="text-sm font-medium">Timezone:</label>
+                    <select
+                      id="tz-select"
+                      className="border rounded px-2 py-1 text-sm"
+                      value={timezone}
+                      onChange={e => setTimezone(e.target.value)}
+                    >
+                      {TIMEZONES.map((tz) => (
+                        <option key={tz.value} value={tz.value}>{tz.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex-1 flex flex-col min-h-[300px]">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => {
+                        const today = new Date()
+                        today.setHours(0, 0, 0, 0)
+                        return date < today
+                      }}
+                      classNames={{
+                        selected: "bg-deepBlue text-white",
+                        months: "flex-1 flex flex-col",
+                        month: "flex-1 flex flex-col",
+                        table: "flex-1",
+                      }}
+                      className="flex-1 rounded-md border p-2 flex flex-col"
+                    />
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -436,6 +442,26 @@ export function BookingForm({ service }: BookingFormProps) {
               />
             )}
           </div>
+
+          <FormField
+            control={form.control}
+            name="focusArea"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>What would you like to focus on?</FormLabel>
+                <FormControl>
+                  <textarea
+                    {...field}
+                    rows={3}
+                    maxLength={1000}
+                    className="border rounded px-3 py-2 w-full resize-y min-h-[80px]"
+                    placeholder="Let me know if you have a specific question or area of life you'd like to focus on during your reading (optional)."
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <Button type="submit" variant="desert" className="w-full" disabled={isLoading}>
             {isLoading ? "Processing..." : "Proceed to Payment"}

@@ -192,7 +192,7 @@ export default async function HomePage() {
             <div className="bg-rose-quartz-600 p-8 rounded-lg shadow-lg border-2 border-rose-quartz-500 transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
               <div className="mb-4 border-b-2 border-white pb-2">
                 <h3 className="text-xl font-serif font-bold text-white">Career Clarity</h3>
-                <p className="text-white font-sora font-medium">Sarah L.</p>
+                <p className="text-white font-sora font-medium">Alicia D.</p>
               </div>
               <p className="text-white font-sora leading-relaxed">
                 "The career astrology consultation came at the perfect time. I was at a crossroads professionally, and the reading provided clarity on which path aligned best with my cosmic blueprint. Six months later, I'm thriving in my new direction."

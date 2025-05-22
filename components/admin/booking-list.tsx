@@ -287,7 +287,7 @@ export function BookingList() {
                     Time: {formatTime(new Date(booking.start_time))} - {formatTime(new Date(booking.end_time))}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Booked on: {format(new Date(booking.created_at), "MMM d, yyyy")}
+                    Booked At: {format(new Date(booking.created_at), "MMM d, yyyy, h:mm a")}
                   </p>
                 </div>
                 <div className="col-span-1 md:col-span-2 flex space-x-2 mt-2">
