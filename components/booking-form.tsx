@@ -131,21 +131,29 @@ export function BookingForm({ service }: BookingFormProps) {
         }
         
         // Process Google Calendar events
-        const googleEvents = (googleCalendarData.events || []).map((ev: any): CalendarEvent => {
+        const googleEvents = (googleCalendarData.events || []).map((ev: any) => {
           // Parse start and end dates correctly from the response
           const start = new Date(ev.start?.dateTime || ev.start?.date);
           const end = new Date(ev.end?.dateTime || ev.end?.date);
           
+          // Make sure dates are properly parsed
+          if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            console.error(`[Availability Check] Invalid date in Google event:`, ev);
+            return null;
+          }
+          
           // Only add to busy ranges if this is NOT an availability slot
-          // Available slots have summary 'Available' and colorId '2'
+          // Available slots have summary 'Available' or colorId '2'
           const isAvailabilitySlot = (ev.summary === 'Available' || ev.colorId === '2');
+          
+          console.log(`[Availability Check] Processed Google event: ${ev.summary}, Start: ${start.toISOString()}, End: ${end.toISOString()}, IsAvailable: ${isAvailabilitySlot}`);
           
           return {
             start,
             end,
             isAvailabilitySlot
-          };
-        });
+          } as CalendarEvent;
+        }).filter((ev: any): ev is CalendarEvent => ev !== null);
         
         // Filter out availability slots from busy ranges
         const busyGoogleEvents = googleEvents.filter((ev: CalendarEvent) => !ev.isAvailabilitySlot);
@@ -196,13 +204,45 @@ export function BookingForm({ service }: BookingFormProps) {
               const slotWithBufferEnd = new Date(slotStart.getTime() + (serviceDuration + bufferMinutes) * 60000);
               
               // Check if this potential slot overlaps with any busy time
-              const overlaps = busyRanges.some((busyEvent: { start: Date; end: Date }) =>
-                // Check if [slotStart, slotWithBufferEnd) intersects with [busyEvent.start, busyEvent.end)
-                (slotStart.getTime() < busyEvent.end.getTime() && slotWithBufferEnd.getTime() > busyEvent.start.getTime())
-              );
+              let overlaps = false;
+              
+              // Log detailed information about the slot being checked
+              const slotStartStr = slotStart.toISOString();
+              const slotEndStr = slotWithBufferEnd.toISOString();
+              console.log(`[Availability Check] Checking slot: ${slotStartStr} to ${slotEndStr}`);
+              
+              // Check each busy range for overlaps
+              for (const busyEvent of busyRanges) {
+                // Make sure busyEvent dates are valid
+                if (!busyEvent.start || !busyEvent.end || 
+                    isNaN(busyEvent.start.getTime()) || isNaN(busyEvent.end.getTime())) {
+                  console.warn('[Availability Check] Invalid busy event:', busyEvent);
+                  continue; // Skip invalid events
+                }
+                
+                // Check if slots are on the same day - this is critical
+                const sameDay = slotStart.toDateString() === busyEvent.start.toDateString();
+                if (!sameDay) {
+                  // Skip busy events from different days
+                  continue;
+                }
+                
+                // Check if this slot overlaps with a busy event
+                // Only mark as overlapping if the slot's start time is between the busy event's start and end time
+                // OR if the busy event starts during our slot
+                if ((slotStart.getTime() >= busyEvent.start.getTime() && slotStart.getTime() < busyEvent.end.getTime()) ||
+                    (busyEvent.start.getTime() >= slotStart.getTime() && busyEvent.start.getTime() < slotWithBufferEnd.getTime())) {
+                  
+                  console.log(`[Availability Check] Overlap detected with busy event: ${busyEvent.start.toISOString()} to ${busyEvent.end.toISOString()}`);
+                  overlaps = true;
+                  break;
+                }
+              }
               
               if (!overlaps) {
-                slots.push(slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+                const timeSlot = slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+                console.log(`[Availability Check] Adding available time slot: ${timeSlot}`);
+                slots.push(timeSlot);
               }
               
               // Move to next potential slot (30-minute intervals)
@@ -228,13 +268,45 @@ export function BookingForm({ service }: BookingFormProps) {
             // Interval to check for conflicts: [slotStart, slotStart + serviceDuration + bufferMinutes)
             const slotWithBufferEnd = new Date(slotStart.getTime() + (serviceDuration + bufferMinutes) * 60000);
             
-            const overlaps = busyRanges.some((busyEvent: { start: Date; end: Date }) =>
-              // Check if [slotStart, slotWithBufferEnd) intersects with [busyEvent.start, busyEvent.end)
-              (slotStart.getTime() < busyEvent.end.getTime() && slotWithBufferEnd.getTime() > busyEvent.start.getTime())
-            );
+            let overlaps = false;
+            
+            // Log detailed information about the slot being checked
+            const slotStartStr = slotStart.toISOString();
+            const slotEndStr = slotWithBufferEnd.toISOString();
+            console.log(`[Availability Check] Checking business hours slot: ${slotStartStr} to ${slotEndStr}`);
+            
+            // Check each busy range for overlaps
+            for (const busyEvent of busyRanges) {
+              // Make sure busyEvent dates are valid
+              if (!busyEvent.start || !busyEvent.end || 
+                  isNaN(busyEvent.start.getTime()) || isNaN(busyEvent.end.getTime())) {
+                console.warn('[Availability Check] Invalid busy event:', busyEvent);
+                continue; // Skip invalid events
+              }
+              
+              // Check if slots are on the same day - this is critical
+              const sameDay = slotStart.toDateString() === busyEvent.start.toDateString();
+              if (!sameDay) {
+                // Skip busy events from different days
+                continue;
+              }
+              
+              // Check if this slot overlaps with a busy event
+              // Only mark as overlapping if the slot's start time is between the busy event's start and end time
+              // OR if the busy event starts during our slot
+              if ((slotStart.getTime() >= busyEvent.start.getTime() && slotStart.getTime() < busyEvent.end.getTime()) ||
+                  (busyEvent.start.getTime() >= slotStart.getTime() && busyEvent.start.getTime() < slotWithBufferEnd.getTime())) {
+                
+                console.log(`[Availability Check] Overlap detected with busy event: ${busyEvent.start.toISOString()} to ${busyEvent.end.toISOString()}`);
+                overlaps = true;
+                break;
+              }
+            }
             
             if (!overlaps) {
-              slots.push(slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+              const timeSlot = slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+              console.log(`[Availability Check] Adding available business hours slot: ${timeSlot}`);
+              slots.push(timeSlot);
             }
             
             currentSlotTime = new Date(currentSlotTime.getTime() + slotInterval * 60000);
