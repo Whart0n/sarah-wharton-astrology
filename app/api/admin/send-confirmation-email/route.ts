@@ -12,6 +12,7 @@ interface BookingForEmail {
   service: {
     name: string;
   };
+  zoom_link?: string;
 }
 
 export async function POST(request: Request) {
@@ -42,8 +43,9 @@ export async function POST(request: Request) {
         client_email,
         start_time,
         status,
+        zoom_link,
         service:services (name)
-      `)
+      `
       .eq('id', bookingId)
       .single(); // Use .single() if bookingId is unique and expected to return one row
 
@@ -71,19 +73,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Error processing booking service details. Name not found.' }, { status: 500 });
     }
 
-    // Prepare email content using directly accessed and validated properties
-    const { subject, html } = getBookingConfirmationEmailContent({
-      client_name: booking.client_name as string,
-      service_name: serviceNameForEmail, // Use the safely extracted service name
-      start_time: booking.start_time as string,
-      // Add other details to getBookingConfirmationEmailContent if needed
+    // Prepare dynamic template data for SendGrid
+    const startDate = new Date(booking.start_time as string);
+    const booking_date = startDate.toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+    const booking_time = startDate.toLocaleTimeString('en-US', {
+      hour: 'numeric', minute: '2-digit', hour12: true
+    });
+    const dynamicTemplateData = {
+      client_name: booking.client_name as string,
+      service_name: serviceNameForEmail,
+      booking_date,
+      booking_time,
+      zoom_link: booking.zoom_link || '',
+    };
 
-    // Send the email
+    // Send the email using SendGrid dynamic template
     await sendEmail({
       to: booking.client_email as string,
-      subject,
-      html,
+      subject: 'Your Booking Confirmation',
+      html: '', // Not used for dynamic templates
+      text: '', // Not used for dynamic templates
+      templateId: 'd-f63c675b82824b509e553189f71ff82e',
+      dynamicTemplateData,
     });
 
     let statusUpdated = false;

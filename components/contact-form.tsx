@@ -78,14 +78,14 @@ export function ContactForm() {
   return (
     <div className="space-y-6">
       {isSuccess ? (
-        <div className="bg-powder-blue-50 p-4 rounded-md border border-powder-blue-200">
-          <h3 className="text-powder-blue-700 font-medium mb-2">Message Sent Successfully!</h3>
-          <p className="text-powder-blue-600">
+        <div className="bg-gray-50 p-6 rounded-md border border-gray-200">
+          <h3 className="text-gray-900 font-semibold text-lg mb-3">Message Sent Successfully!</h3>
+          <p className="text-gray-700">
             Thank you for reaching out. I'll get back to you as soon as possible.
           </p>
           <Button
             variant="link"
-            className="mt-2 p-0 text-powder-blue-700"
+            className="mt-3 p-0 text-gray-900 hover:text-gray-700 font-medium"
             onClick={() => setIsSuccess(false)}
           >
             Send another message
