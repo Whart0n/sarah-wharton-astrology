@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { DayPicker } from "react-day-picker"
-
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
@@ -17,7 +16,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-3 w-full", className)}
+      className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
@@ -31,29 +30,22 @@ function Calendar({
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
         table: "w-full border-collapse space-y-1",
-        head_row: "grid grid-cols-7",
-        head_cell: "w-full text-cool-gray-400 rounded-md h-14 font-normal text-base flex items-center justify-center",
-        row: "grid grid-cols-7 w-full mt-2",
-        cell: "w-full h-14 text-base p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-powder-blue-200/50 [&:has([aria-selected])]:bg-powder-blue-200 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        head_row: "flex",
+        head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem] text-center",
+        row: "flex w-full mt-2",
+        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-full w-full p-0 font-normal aria-selected:opacity-100 flex items-center justify-center"
+          "h-8 w-8 p-0 font-normal aria-selected:opacity-100"
         ),
-        day_range_end: "day-range-end",
         day_selected:
-          "bg-powder-blue-500 text-white hover:bg-powder-blue-600 hover:text-white focus:bg-powder-blue-600 focus:text-white",
-        day_today: "bg-rose-quartz-200 text-rose-quartz-700",
-        day_outside:
-          "day-outside text-cool-gray-300 opacity-50 aria-selected:bg-powder-blue-100/50 aria-selected:text-cool-gray-400 aria-selected:opacity-30",
-        day_disabled: "text-cool-gray-300 opacity-50",
-        day_range_middle:
-          "aria-selected:bg-powder-blue-200 aria-selected:text-powder-blue-700",
+          "bg-deepBlue text-white hover:bg-deepBlue hover:text-white focus:bg-deepBlue focus:text-white",
+        day_today: "bg-accent text-accent-foreground",
+        day_outside: "text-muted-foreground opacity-50",
+        day_disabled: "text-muted-foreground opacity-50",
+        day_range_middle: "aria-selected:bg-accent",
         day_hidden: "invisible",
         ...classNames,
-      }}
-      components={{
-        // Removed custom navigation icons to use default ones
-        // This avoids TypeScript errors with react-day-picker component types
       }}
       {...props}
     />
