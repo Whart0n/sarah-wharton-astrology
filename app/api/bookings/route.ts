@@ -165,47 +165,91 @@ export async function POST(request: Request) {
     // Create Zoom meeting before inserting booking
     let zoomMeeting = null;
     let zoomError = null;
+    
+    console.log('[Booking] Creating Zoom meeting...');
     try {
-      // You may want to put your Zoom host email in .env.local as ZOOM_HOST_EMAIL
-      const host_email = process.env.ZOOM_HOST_EMAIL || client_email; // fallback to client_email if not set
+      // Use environment variable host email if available, otherwise fall back to client email
+      const host_email = process.env.ZOOM_HOST_EMAIL || client_email;
+      
+      if (!host_email) {
+        throw new Error('No host email provided and ZOOM_HOST_EMAIL not set in environment');
+      }
+      
+      console.log(`[Booking] Using host email: ${host_email}`);
+      
       zoomMeeting = await createZoomMeeting({
         topic: `Astrology Session with ${client_name}`,
-        start_time: new Date(start_time).toISOString(),
+        start_time: start_time, // Already in ISO string format
         duration: service.duration_minutes || 60,
         timezone: 'America/Denver',
         agenda: `Astrology session for ${client_name}`,
         host_email,
       });
-    } catch (err) {
-      zoomError = err;
-      console.error('Error creating Zoom meeting:', err);
+      
+      console.log('[Booking] Zoom meeting created successfully:', {
+        meetingId: zoomMeeting.meeting_id,
+        joinUrl: zoomMeeting.join_url,
+      });
+    } catch (error: unknown) {
+      zoomError = error instanceof Error ? error : new Error(String(error));
+      
+      // Type guard for axios error
+      const axiosError = error as {
+        response?: {
+          data?: unknown;
+        };
+      };
+      
+      console.error('[Booking] Error creating Zoom meeting:', {
+        error: zoomError.message,
+        stack: zoomError.stack,
+        ...(axiosError?.response?.data ? { responseData: axiosError.response.data } : {})
+      });
+      
+      // Continue with booking creation even if Zoom fails
+      console.log('[Booking] Continuing with booking creation without Zoom link');
     }
 
     // Insert booking into database, saving zoom_link if available
+    console.log('[Booking] Creating database record...');
+    const bookingData = {
+      service_id,
+      client_name,
+      client_email,
+      start_time,
+      end_time,
+      payment_intent_id,
+      birthplace,
+      birthdate,
+      birthtime,
+      status: "confirmed",
+      created_at: new Date().toISOString(),
+      zoom_link: zoomMeeting?.join_url || null,
+      zoom_meeting_id: zoomMeeting?.meeting_id || null,
+      zoom_error: zoomError?.message || null,
+    };
+    
+    console.log('[Booking] Booking data:', {
+      ...bookingData,
+      zoom_link: zoomMeeting?.join_url ? '***zoom-link***' : null,
+      zoom_meeting_id: zoomMeeting?.meeting_id || null,
+    });
+    
     const { data, error } = await supabase
       .from("bookings")
-      .insert([
-        {
-          service_id,
-          client_name,
-          client_email,
-          start_time,
-          end_time,
-          payment_intent_id,
-          birthplace,
-          birthdate,
-          birthtime,
-          status: "confirmed",
-          created_at: new Date().toISOString(),
-          zoom_link: zoomMeeting?.join_url || null,
-        },
-      ])
+      .insert([bookingData])
       .select()
       .single()
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('[Booking] Database error:', error);
+      return NextResponse.json({ 
+        error: 'Failed to create booking',
+        details: error.message 
+      }, { status: 500 });
     }
+    
+    console.log('[Booking] Booking created successfully:', { id: data.id });
 
     // Send confirmation emails
     try {
