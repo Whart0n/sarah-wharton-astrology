@@ -30,12 +30,21 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
     console.log('Email subject:', params.subject);
     
     // Prepare the email data with required fields
+    // Define default content to ensure we always have valid values
+    const defaultText = 'Please view this email in an HTML-compatible email client.';
+    const defaultHtml = '<p>Please view this email in an HTML-compatible email client.</p>';
+    
+    // Ensure text and html are never empty or undefined
+    const safeText = (params.text && params.text.trim() !== '') ? params.text : defaultText;
+    const safeHtml = (params.html && params.html.trim() !== '') ? params.html : defaultHtml;
+    
     const emailData: any = {
       to: params.to,
       from: process.env.EMAIL_FROM || 'no-reply@sarahwharton.com',
       subject: params.subject || 'Notification from Sarah Wharton Astrology',
-      text: params.text || 'Please view this email in an HTML-compatible email client.',
-      html: params.html || '<p>Please view this email in an HTML-compatible email client.</p>',
+      // Always include content, even with templates
+      text: safeText,
+      html: safeHtml,
     };
     
     // If using a template, add template ID and dynamic data
@@ -47,6 +56,12 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
         console.log('With dynamic template data:', JSON.stringify(params.dynamicTemplateData));
         emailData.dynamicTemplateData = params.dynamicTemplateData;
       }
+      
+      // Double-check content is present - SendGrid requires this even with templates
+      console.log('Email content lengths with template:', {
+        textLength: emailData.text?.length || 0,
+        htmlLength: emailData.html?.length || 0
+      });
     } else {
       // Fallback to text/html content if no template
       // Ensure text and html are valid non-empty strings

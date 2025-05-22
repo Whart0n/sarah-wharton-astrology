@@ -93,8 +93,9 @@ export async function POST(request: Request) {
     await sendEmail({
       to: booking.client_email as string,
       subject: 'Your Booking Confirmation',
-      html: '', // Not used for dynamic templates
-      text: '', // Not used for dynamic templates
+      // SendGrid requires non-empty content values, even when using templates
+      html: `<p>Your booking for ${serviceNameForEmail} has been confirmed for ${booking_date} at ${booking_time}.</p>`,
+      text: `Your booking for ${serviceNameForEmail} has been confirmed for ${booking_date} at ${booking_time}.`,
       templateId: 'd-f63c675b82824b509e553189f71ff82e',
       dynamicTemplateData,
     });
