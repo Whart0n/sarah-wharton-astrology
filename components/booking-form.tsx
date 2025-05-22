@@ -121,12 +121,36 @@ export function BookingForm({ service }: BookingFormProps) {
 
         let busyRanges: { start: Date; end: Date }[] = [];
 
+        // Define types for events and availability slots
+        interface CalendarEvent {
+          start: Date;
+          end: Date;
+          isAvailabilitySlot: boolean;
+        }
+        
         // Process Google Calendar events
-        const googleEvents = (googleCalendarData.events || []).map((ev: any) => ({
-          start: new Date(ev.start),
-          end: new Date(ev.end)
-        }));
-        busyRanges.push(...googleEvents);
+        const googleEvents = (googleCalendarData.events || []).map((ev: any): CalendarEvent => {
+          // Parse start and end dates correctly from the response
+          const start = new Date(ev.start?.dateTime || ev.start?.date);
+          const end = new Date(ev.end?.dateTime || ev.end?.date);
+          
+          // Only add to busy ranges if this is NOT an availability slot
+          // Available slots have summary 'Available' and colorId '2'
+          const isAvailabilitySlot = (ev.summary === 'Available' || ev.colorId === '2');
+          
+          return {
+            start,
+            end,
+            isAvailabilitySlot
+          };
+        });
+        
+        // Filter out availability slots from busy ranges
+        const busyGoogleEvents = googleEvents.filter((ev: CalendarEvent) => !ev.isAvailabilitySlot);
+        busyRanges.push(...busyGoogleEvents);
+        
+        // Extract availability slots to use for generating available time slots
+        const availabilitySlots = googleEvents.filter((ev: CalendarEvent) => ev.isAvailabilitySlot);
 
         // Process Supabase bookings
         // Adjust this based on the actual structure of your bookingsData response
@@ -150,31 +174,69 @@ export function BookingForm({ service }: BookingFormProps) {
         
         console.log(`[Availability Check] Combined Busy Ranges (${busyRanges.length} total):`, busyRanges.map(r => ({start: r.start.toISOString(), end: r.end.toISOString()})));
 
-        // Define the working window for the day
-        const businessStart = new Date(startOfDay);
-        businessStart.setHours(9, 0, 0, 0); // 9 AM
-        const businessEnd = new Date(startOfDay);
-        businessEnd.setHours(17, 0, 0, 0); // 5 PM
-
+        // Generate available time slots based on admin-set availability
         let slots: string[] = [];
-        let currentSlotTime = new Date(businessStart);
-
-        // Generate slots: service must end by businessEnd
-        while (currentSlotTime.getTime() + serviceDuration * 60000 <= businessEnd.getTime()) {
-          const slotStart = new Date(currentSlotTime);
-          const slotEnd = new Date(slotStart.getTime() + serviceDuration * 60000);
-          // Interval to check for conflicts: [slotStart, slotStart + serviceDuration + bufferMinutes)
-          const slotWithBufferEnd = new Date(slotStart.getTime() + (serviceDuration + bufferMinutes) * 60000);
-
-          const overlaps = busyRanges.some((busyEvent: { start: Date; end: Date }) =>
-            // Check if [slotStart, slotWithBufferEnd) intersects with [busyEvent.start, busyEvent.end)
-            (slotStart.getTime() < busyEvent.end.getTime() && slotWithBufferEnd.getTime() > busyEvent.start.getTime())
-          );
-
-          if (!overlaps) {
-            slots.push(slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+        
+        // If there are admin-set availability slots, use those
+        if (availabilitySlots.length > 0) {
+          console.log(`[Availability Check] Found ${availabilitySlots.length} admin-set availability slots`);
+          
+          // For each availability slot, generate bookable time slots based on service duration
+          availabilitySlots.forEach((availableBlock: CalendarEvent) => {
+            let currentSlotTime = new Date(availableBlock.start);
+            const blockEnd = new Date(availableBlock.end);
+            
+            // Generate slots within this availability block
+            while (currentSlotTime.getTime() + serviceDuration * 60000 <= blockEnd.getTime()) {
+              const slotStart = new Date(currentSlotTime);
+              const slotEnd = new Date(slotStart.getTime() + serviceDuration * 60000);
+              // Add buffer for checking conflicts
+              const slotWithBufferEnd = new Date(slotStart.getTime() + (serviceDuration + bufferMinutes) * 60000);
+              
+              // Check if this potential slot overlaps with any busy time
+              const overlaps = busyRanges.some((busyEvent: { start: Date; end: Date }) =>
+                // Check if [slotStart, slotWithBufferEnd) intersects with [busyEvent.start, busyEvent.end)
+                (slotStart.getTime() < busyEvent.end.getTime() && slotWithBufferEnd.getTime() > busyEvent.start.getTime())
+              );
+              
+              if (!overlaps) {
+                slots.push(slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+              }
+              
+              // Move to next potential slot (30-minute intervals)
+              currentSlotTime = new Date(currentSlotTime.getTime() + slotInterval * 60000);
+            }
+          });
+        } else {
+          // Fallback to business hours if no admin-set availability
+          console.log(`[Availability Check] No admin-set availability slots found, using business hours`);
+          
+          // Define the working window for the day
+          const businessStart = new Date(startOfDay);
+          businessStart.setHours(9, 0, 0, 0); // 9 AM
+          const businessEnd = new Date(startOfDay);
+          businessEnd.setHours(17, 0, 0, 0); // 5 PM
+          
+          let currentSlotTime = new Date(businessStart);
+          
+          // Generate slots: service must end by businessEnd
+          while (currentSlotTime.getTime() + serviceDuration * 60000 <= businessEnd.getTime()) {
+            const slotStart = new Date(currentSlotTime);
+            const slotEnd = new Date(slotStart.getTime() + serviceDuration * 60000);
+            // Interval to check for conflicts: [slotStart, slotStart + serviceDuration + bufferMinutes)
+            const slotWithBufferEnd = new Date(slotStart.getTime() + (serviceDuration + bufferMinutes) * 60000);
+            
+            const overlaps = busyRanges.some((busyEvent: { start: Date; end: Date }) =>
+              // Check if [slotStart, slotWithBufferEnd) intersects with [busyEvent.start, busyEvent.end)
+              (slotStart.getTime() < busyEvent.end.getTime() && slotWithBufferEnd.getTime() > busyEvent.start.getTime())
+            );
+            
+            if (!overlaps) {
+              slots.push(slotStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+            }
+            
+            currentSlotTime = new Date(currentSlotTime.getTime() + slotInterval * 60000);
           }
-          currentSlotTime = new Date(currentSlotTime.getTime() + slotInterval * 60000);
         }
 
         // Remove duplicates, sort, and filter past times for today
