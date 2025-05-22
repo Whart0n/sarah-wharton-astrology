@@ -4,16 +4,14 @@ import { createPaymentIntent } from "@/lib/stripe"
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { amount, metadata = {}, currency = 'usd' } = body; // Added currency, default to usd
+    const { amount, metadata = {}, promoCode } = body;
 
     if (typeof amount !== 'number') {
       return NextResponse.json({ error: "Amount is required and must be a number." }, { status: 400 });
     }
 
-    // Handle free bookings (no payment intent needed, directly confirm or create booking)
+    // Handle free bookings
     if (amount === 0) {
-      // For free bookings, you might directly create a 'confirmed' booking in Supabase
-      // and then redirect or inform the user. This example skips Stripe for free items.
       try {
         const { createBooking } = await import('@/lib/supabase');
         const bookingPayload = {
@@ -26,13 +24,14 @@ export async function POST(request: Request) {
           birthdate: metadata?.dateOfBirth,
           birthtime: metadata?.timeOfBirth,
           status: 'confirmed', // Directly confirmed as it's free
-          focus_area: metadata?.focusArea,
-          promo_code: metadata?.promoCode
+          focus_area: metadata?.focusArea
         };
         await createBooking(bookingPayload);
-        // Respond in a way that booking-form.tsx can understand it's a free confirmation
-        // Or, booking-form.tsx could handle amount === 0 differently before calling this API.
-        return NextResponse.json({ freeBookingConfirmed: true, message: "Booking confirmed (free service)." });
+        
+        // Return a URL for free confirmation
+        const origin = request.headers.get('origin') || 'http://localhost:3000';
+        const confirmationUrl = `${origin}/booking/confirmation?free=true`;
+        return NextResponse.json({ url: confirmationUrl });
       } catch (bookingError: any) {
         console.error('Failed to create free booking:', bookingError);
         return NextResponse.json({ error: `Failed to create free booking: ${bookingError.message}` }, { status: 500 });
@@ -40,7 +39,7 @@ export async function POST(request: Request) {
     }
 
     // For paid bookings:
-    // 1. Check for booking conflicts BEFORE creating payment intent
+    // 1. Check for booking conflicts BEFORE creating checkout session
     try {
       const { getBookingsByTimeRange } = await import('@/lib/supabase');
       const startTime = new Date(metadata?.startTime);
@@ -61,21 +60,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: `Error checking availability: ${conflictError.message}` }, { status: 500 });
     }
 
-    // 2. Create Payment Intent with Stripe
-    let paymentIntent;
+    // 2. Create Stripe Checkout Session
     try {
-      // createPaymentIntent is already imported at the top
-      paymentIntent = await createPaymentIntent(amount, metadata); // Pass metadata
-    } catch (stripeError: any) {
-      console.error('Stripe Payment Intent creation error:', stripeError);
-      return NextResponse.json({ error: `Failed to initiate payment: ${stripeError.message}` }, { status: 500 });
-    }
+      // Determine redirect URLs
+      const origin = request.headers.get('origin') || 'http://localhost:3000';
+      const successUrl = `${origin}/booking/confirmation`;
+      const cancelUrl = `${origin}/booking/cancelled`;
+      
+      const { createCheckoutSession } = await import('@/lib/stripe');
+      const session = await createCheckoutSession({
+        amount,
+        metadata,
+        promoCode,
+        successUrl,
+        cancelUrl,
+        productName: metadata?.serviceName || 'Astrology Service',
+        productDescription: metadata?.serviceDescription || 'Astrology Reading'
+      });
 
-    // 3. Create a 'pending' booking in Supabase (optional, if you want to record before payment)
-    // This step could also be done in the webhook after successful payment.
-    // For now, we'll assume the webhook handles the 'confirmed' booking creation.
-    // If you create a 'pending' booking here, ensure your webhook updates it to 'confirmed'.
-    try {
+      // 3. Create a 'pending' booking in Supabase
+      try {
         const { createBooking } = await import('@/lib/supabase');
         const bookingPayload = {
           service_id: metadata?.serviceId,
@@ -86,29 +90,30 @@ export async function POST(request: Request) {
           birthplace: metadata?.placeOfBirth,
           birthdate: metadata?.dateOfBirth,
           birthtime: metadata?.timeOfBirth,
-          payment_intent_id: paymentIntent.id,
+          payment_intent_id: typeof session.payment_intent === "string" ? session.payment_intent : null,
+          checkout_session_id: typeof session.id === "string" ? session.id : null,
           status: 'pending', // Booking is pending until payment is confirmed
-          focus_area: metadata?.focusArea,
-          promo_code: metadata?.promoCode
+          focus_area: metadata?.focusArea
         };
         await createBooking(bookingPayload);
-    } catch (dbError: any) {
+      } catch (dbError: any) {
         console.error('Failed to create pending booking in Supabase:', dbError);
-        // Decide if this error should prevent payment. For now, we'll log and continue,
-        // as the primary goal is to get the payment intent to the client.
-        // However, this could lead to a payment without a corresponding pending record.
+        // Continue even if booking creation fails (user can still pay)
+      }
+      
+      // 4. Return checkout session URL to redirect the user
+      return NextResponse.json({ url: session.url });
+      
+    } catch (err: any) {
+      if (err.message && err.message.includes('Invalid or expired promo code')) {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+      }
+      throw err;
     }
-
-    // 4. Return client_secret and id to the frontend
-    return NextResponse.json({
-      client_secret: paymentIntent.client_secret,
-      id: paymentIntent.id
-    });
-
   } catch (error: any) {
-    console.error("Overall error in /api/payment/create-payment-intent:", error);
+    console.error("Error creating payment session:", error);
     return NextResponse.json(
-      { error: error.message || "An unexpected error occurred on the server." },
+      { error: error.message || "Failed to process payment request" },
       { status: 500 }
     );
   }
