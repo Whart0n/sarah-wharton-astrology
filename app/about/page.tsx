@@ -35,12 +35,13 @@ export default async function AboutPage() {
             </div>
             
             {/* Full-size Image */}
-            <div className="lg:w-1/2 relative h-[500px] w-full rounded-lg overflow-hidden shadow-xl">
+            <div className="lg:w-1/2 relative h-[550px] w-full rounded-lg overflow-hidden shadow-xl">
               <Image 
                 src="/images/about.jpg" 
                 alt="Sarah Wharton, Professional Astrologer" 
                 fill
-                className="object-cover object-center"
+                className="object-cover object-position-y-[40%]"
+                style={{ objectPosition: '50% 30%' }}
                 priority
               />
             </div>
