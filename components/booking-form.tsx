@@ -411,6 +411,17 @@ export function BookingForm({ service }: BookingFormProps) {
                       disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
                       initialFocus
                       className="rounded-md border p-0 self-center"
+                      styles={{
+                        day_selected: { 
+                          backgroundColor: 'hsl(var(--primary))', 
+                          color: 'hsl(var(--primary-foreground))',
+                          fontWeight: 'bold'
+                        },
+                        day_today: { 
+                          backgroundColor: 'hsl(var(--accent))', 
+                          color: 'hsl(var(--accent-foreground))'
+                        }
+                      }}
                     />
                     <FormMessage className="mt-2" />
                   </FormItem>

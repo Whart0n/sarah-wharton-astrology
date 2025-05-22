@@ -160,9 +160,16 @@ export default function AdminCalendarPage() {
                   selected={selectedDates}
                   onSelect={setSelectedDates}
                   className="rounded-md border"
-                  classNames={{
-                    day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-                    day_today: "bg-accent text-accent-foreground"
+                  styles={{
+                    day_selected: { 
+                      backgroundColor: 'hsl(var(--primary))', 
+                      color: 'hsl(var(--primary-foreground))',
+                      fontWeight: 'bold'
+                    },
+                    day_today: { 
+                      backgroundColor: 'hsl(var(--accent))', 
+                      color: 'hsl(var(--accent-foreground))'
+                    }
                   }}
                 />
               </div>
