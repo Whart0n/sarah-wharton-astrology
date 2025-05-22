@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         status,
         zoom_link,
         service:services (name)
-      `
+      `)
       .eq('id', bookingId)
       .single(); // Use .single() if bookingId is unique and expected to return one row
 
