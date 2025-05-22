@@ -247,7 +247,8 @@ export async function POST(request: Request) {
                   description,
                   new Date(newBooking.start_time),
                   new Date(newBooking.end_time),
-                  newBooking.client_email
+                  newBooking.client_email,
+                  "11" // Color for client bookings (Red)
                 );
                 console.log('Calendar event created:', event);
                 

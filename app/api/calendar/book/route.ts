@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
           summary,
           start: { dateTime: start, timeZone: "America/Denver" },
           end: { dateTime: end, timeZone: "America/Denver" },
+          colorId: "2", // Color for admin-set availability (Green)
         },
       });
       return { index: idx, event: res.data };

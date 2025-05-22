@@ -10,6 +10,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get("id")
     const summary = searchParams.get("summary") === "true"
+    const date = searchParams.get("date")
 
     // Check if we need to return a dashboard summary
     if (summary) {
@@ -82,6 +83,39 @@ export async function GET(request: Request) {
       }
 
       return NextResponse.json(data)
+    }
+
+    // Check if we need to return bookings for a specific date
+    if (date) {
+      const dayStart = new Date(date + "T00:00:00.000Z"); // Parse date as UTC start of day
+      const dayEnd = new Date(date + "T23:59:59.999Z");   // Parse date as UTC end of day
+
+      // Alternative and often more robust way for full day range:
+      // const dayStart = new Date(date); // e.g., 2023-10-26T00:00:00 local
+      // dayStart.setUTCHours(0, 0, 0, 0); // Set to 2023-10-26T00:00:00Z (UTC)
+      // const dayEnd = new Date(dayStart);
+      // dayEnd.setUTCDate(dayStart.getUTCDate() + 1); // Set to 2023-10-27T00:00:00Z (UTC)
+      // Query would then be .gte('start_time', dayStart.toISOString()).lt('start_time', dayEnd.toISOString())
+
+      console.log(`[API Bookings GET] Fetching bookings for date: ${date}, UTC range: ${dayStart.toISOString()} to ${dayEnd.toISOString()}`);
+
+      const { data: bookingsForDate, error: dateError } = await supabase
+        .from("bookings")
+        .select(`
+          *, 
+          service:services (*)
+        `)
+        .gte('start_time', dayStart.toISOString())
+        .lte('start_time', dayEnd.toISOString()) // Use lte if dayEnd is end of day, or lt if dayEnd is start of next day
+        .order("start_time", { ascending: true });
+
+      if (dateError) {
+        console.error("[API Bookings GET] Error fetching bookings by date:", dateError);
+        return NextResponse.json({ error: dateError.message }, { status: 500 });
+      }
+      
+      console.log(`[API Bookings GET] Found ${bookingsForDate?.length || 0} bookings for ${date}`);
+      return NextResponse.json(bookingsForDate || []);
     }
 
     // Otherwise return all bookings

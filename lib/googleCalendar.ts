@@ -104,24 +104,24 @@ export async function createEvent(
   description: string,
   startTime: Date,
   endTime: Date,
-  attendeeEmail: string
+  attendeeEmail: string, // Keep this if you use it, or remove if not
+  colorId?: string // Optional: Google Calendar color ID
 ) {
   try {
     const calendar = getCalendarClient();
     const calendarId = getCalendarId();
 
-    const event = {
+    const event: any = { // Use 'any' or a more specific type for the event object
       summary,
       description,
       start: {
         dateTime: startTime.toISOString(),
-        timeZone: 'America/New_York', // Adjust as needed
+        timeZone: 'America/New_York', // Consider making this configurable or deriving it
       },
       end: {
         dateTime: endTime.toISOString(),
-        timeZone: 'America/New_York', // Adjust as needed
+        timeZone: 'America/New_York', // Consider making this configurable or deriving it
       },
-
       reminders: {
         useDefault: false,
         overrides: [
@@ -131,10 +131,20 @@ export async function createEvent(
       },
     };
 
+    // Add attendee if provided - you might not need this if it's your own calendar
+    // and bookings are just blocks of time. If you invite the client, keep it.
+    if (attendeeEmail) {
+      event.attendees = [{ email: attendeeEmail }];
+    }
+    
+    if (colorId) {
+      event.colorId = colorId;
+    }
+
     const response = await calendar.events.insert({
       calendarId,
       requestBody: event,
-      sendUpdates: 'all',
+      sendUpdates: 'all', // Consider 'none' if you don't want to notify attendees for every creation/update
     });
 
     return response.data;
@@ -151,49 +161,55 @@ export async function updateEvent(
   description?: string,
   startTime?: Date,
   endTime?: Date,
-  attendeeEmail?: string
+  attendeeEmail?: string, // Keep or remove as per createEvent
+  colorId?: string // Optional: Google Calendar color ID
 ) {
   try {
     const calendar = getCalendarClient();
     const calendarId = getCalendarId();
     
-    // First, get the existing event
     const existingEvent = await calendar.events.get({
       calendarId,
       eventId,
     });
     
-    // Create the update payload
-    const updatedEvent: any = {
+    const updatedEvent: any = { // Use 'any' or a more specific type
       summary: summary || existingEvent.data.summary,
       description: description || existingEvent.data.description,
+      // Preserve existing color if not overridden
+      colorId: colorId || existingEvent.data.colorId 
     };
     
     if (startTime) {
       updatedEvent.start = {
         dateTime: startTime.toISOString(),
-        timeZone: 'America/New_York', // Adjust as needed
+        timeZone: 'America/New_York', 
       };
+    } else if (existingEvent.data.start) { // Preserve existing start time
+        updatedEvent.start = existingEvent.data.start;
     }
     
     if (endTime) {
       updatedEvent.end = {
         dateTime: endTime.toISOString(),
-        timeZone: 'America/New_York', // Adjust as needed
+        timeZone: 'America/New_York',
       };
+    } else if (existingEvent.data.end) { // Preserve existing end time
+        updatedEvent.end = existingEvent.data.end;
     }
     
+    // Handle attendees
     if (attendeeEmail) {
-      updatedEvent.attendees = [
-        { email: attendeeEmail },
-      ];
+      updatedEvent.attendees = [{ email: attendeeEmail }];
+    } else if (existingEvent.data.attendees) { // Preserve existing attendees
+        updatedEvent.attendees = existingEvent.data.attendees;
     }
     
     const response = await calendar.events.update({
       calendarId,
       eventId,
       requestBody: updatedEvent,
-      sendUpdates: 'all',
+      sendUpdates: 'all', // Consider 'none'
     });
     
     return response.data;
