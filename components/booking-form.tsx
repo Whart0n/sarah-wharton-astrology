@@ -284,15 +284,14 @@ export function BookingForm({ service }: BookingFormProps) {
         }),
       });
 
-      const paymentIntentData = await response.json();
+      const checkoutData = await response.json();
 
-      if (!response.ok || !paymentIntentData.client_secret) {
-        throw new Error(paymentIntentData.error || 'Failed to create payment intent');
+      if (!response.ok || !checkoutData.url) {
+        throw new Error(checkoutData.error || 'Failed to create payment session');
       }
       
-      setClientSecret(paymentIntentData.client_secret);
-      setPaymentIntentId(paymentIntentData.id);
-      setStep('payment'); // Move to payment step
+      // Redirect to Stripe Checkout
+      window.location.href = checkoutData.url;
 
     } catch (error: any) {
       console.error("Error creating payment intent:", error);
