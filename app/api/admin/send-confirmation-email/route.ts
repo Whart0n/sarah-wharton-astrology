@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         status,
         zoom_link,
         service:services (name)
-      `
+      `)
       .eq('id', bookingId)
       .single(); // Use .single() if bookingId is unique and expected to return one row
 
@@ -70,33 +70,66 @@ export async function POST(request: Request) {
 
     if (!serviceNameForEmail) {
       console.error('Could not extract service name from booking data:', booking.service);
+      
+      const errorHtmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h2>Booking Error</h2>
+          <p>Hello ${booking.client_name},</p>
+          <p>We encountered an issue processing your booking details.</p>
+          <p>Please contact us for assistance with your booking.</p>
+          <p>Best regards,<br>The Astrology Team</p>
+        </div>
+      `;
+
+      await sendEmail({
+        to: booking.client_email,
+        subject: 'Booking Error - Action Required',
+        html: errorHtmlContent,
+      });
+      
       return NextResponse.json({ error: 'Error processing booking service details. Name not found.' }, { status: 500 });
     }
 
-    // Prepare dynamic template data for SendGrid
+    // Prepare email content
     const startDate = new Date(booking.start_time as string);
-    const booking_date = startDate.toLocaleDateString('en-US', {
-      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    const bookingDate = startDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
-    const booking_time = startDate.toLocaleTimeString('en-US', {
-      hour: 'numeric', minute: '2-digit', hour12: true
+    const bookingTime = startDate.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'America/Denver',
     });
-    const dynamicTemplateData = {
-      client_name: booking.client_name as string,
-      service_name: serviceNameForEmail,
-      booking_date,
-      booking_time,
-      zoom_link: booking.zoom_link || '',
-    };
 
-    // Send the email using SendGrid dynamic template
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2>Your Booking Confirmation</h2>
+        <p>Hello ${booking.client_name},</p>
+        <p>Your booking for <strong>${serviceNameForEmail}</strong> has been confirmed.</p>
+        
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+          <p><strong>Date:</strong> ${bookingDate}</p>
+          <p><strong>Time:</strong> ${bookingTime} (Mountain Time)</p>
+          ${booking.zoom_link ? `
+            <p><strong>Zoom Link:</strong> <a href="${booking.zoom_link}">Join Meeting</a></p>
+            <p>Meeting ID: ${booking.zoom_link.split('/').pop()}</p>
+          ` : '<p>No Zoom link provided. Please contact us for assistance.</p>'}
+        </div>
+
+        <p>We look forward to seeing you!</p>
+        <p>Best regards,<br>The Astrology Team</p>
+      </div>
+    `;
+
+    // Send the email
     await sendEmail({
       to: booking.client_email as string,
-      subject: 'Your Booking Confirmation',
-      html: '', // Not used for dynamic templates
-      text: '', // Not used for dynamic templates
-      templateId: 'd-f63c675b82824b509e553189f71ff82e',
-      dynamicTemplateData,
+      subject: `Your ${serviceNameForEmail} Booking Confirmation`,
+      html: htmlContent,
     });
 
     let statusUpdated = false;
