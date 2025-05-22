@@ -26,8 +26,6 @@ export async function POST(request: Request) {
           birthdate: metadata?.dateOfBirth,
           birthtime: metadata?.timeOfBirth,
           status: 'confirmed', // Directly confirmed as it's free
-          amount_paid: 0,
-          currency: currency,
           focus_area: metadata?.focusArea,
           promo_code: metadata?.promoCode
         };
@@ -90,8 +88,6 @@ export async function POST(request: Request) {
           birthtime: metadata?.timeOfBirth,
           payment_intent_id: paymentIntent.id,
           status: 'pending', // Booking is pending until payment is confirmed
-          amount_paid: amount, // Store the intended amount
-          currency: currency,
           focus_area: metadata?.focusArea,
           promo_code: metadata?.promoCode
         };
