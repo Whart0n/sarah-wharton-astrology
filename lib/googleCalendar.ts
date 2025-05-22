@@ -104,7 +104,7 @@ export async function createEvent(
   description: string,
   startTime: Date,
   endTime: Date,
-  attendeeEmail: string, // Keep this if you use it, or remove if not
+  attendeeEmail: string, // Optional attendee email
   colorId?: string // Optional: Google Calendar color ID
 ) {
   try {
@@ -130,11 +130,18 @@ export async function createEvent(
         ],
       },
     };
-
-    // Add attendee if provided - you might not need this if it's your own calendar
-    // and bookings are just blocks of time. If you invite the client, keep it.
-    if (attendeeEmail) {
+    
+    // Only add attendees if explicitly enabled via environment variable
+    // This prevents errors when using a service account without Domain-Wide Delegation
+    const canAddAttendees = process.env.GOOGLE_CALENDAR_ADD_ATTENDEES === 'true';
+    
+    if (attendeeEmail && canAddAttendees) {
       event.attendees = [{ email: attendeeEmail }];
+      // When adding attendees, use sendUpdates: 'all'
+      var sendUpdatesOption = 'all';
+    } else {
+      // When not adding attendees, use sendUpdates: 'none' to avoid permission errors
+      var sendUpdatesOption = 'none';
     }
     
     if (colorId) {
@@ -144,7 +151,7 @@ export async function createEvent(
     const response = await calendar.events.insert({
       calendarId,
       requestBody: event,
-      sendUpdates: 'all', // Consider 'none' if you don't want to notify attendees for every creation/update
+      sendUpdates: sendUpdatesOption as 'all' | 'externalOnly' | 'none',
     });
 
     return response.data;
@@ -198,18 +205,27 @@ export async function updateEvent(
         updatedEvent.end = existingEvent.data.end;
     }
     
-    // Handle attendees
-    if (attendeeEmail) {
-      updatedEvent.attendees = [{ email: attendeeEmail }];
-    } else if (existingEvent.data.attendees) { // Preserve existing attendees
+    // Only handle attendees if explicitly enabled via environment variable
+    const canAddAttendees = process.env.GOOGLE_CALENDAR_ADD_ATTENDEES === 'true';
+    
+    if (canAddAttendees) {
+      if (attendeeEmail) {
+        updatedEvent.attendees = [{ email: attendeeEmail }];
+      } else if (existingEvent.data.attendees) { // Preserve existing attendees
         updatedEvent.attendees = existingEvent.data.attendees;
+      }
+      var sendUpdatesOption = 'all';
+    } else {
+      // Don't include attendees at all when not enabled
+      delete updatedEvent.attendees;
+      var sendUpdatesOption = 'none';
     }
     
     const response = await calendar.events.update({
       calendarId,
       eventId,
       requestBody: updatedEvent,
-      sendUpdates: 'all', // Consider 'none'
+      sendUpdates: sendUpdatesOption as 'all' | 'externalOnly' | 'none',
     });
     
     return response.data;
@@ -225,10 +241,14 @@ export async function deleteEvent(eventId: string) {
     const calendar = getCalendarClient();
     const calendarId = getCalendarId();
     
+    // Only send updates if explicitly enabled via environment variable
+    const canAddAttendees = process.env.GOOGLE_CALENDAR_ADD_ATTENDEES === 'true';
+    const sendUpdatesOption = canAddAttendees ? 'all' : 'none';
+    
     await calendar.events.delete({
       calendarId,
       eventId,
-      sendUpdates: 'all',
+      sendUpdates: sendUpdatesOption as 'all' | 'none',
     });
     
     return true;
