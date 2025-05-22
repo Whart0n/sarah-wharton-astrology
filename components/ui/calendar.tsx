@@ -92,7 +92,7 @@ function Calendar({
           ),
           nav_button_previous: "absolute left-1",
           nav_button_next: "absolute right-1",
-          day_selected: "bg-deepBlue text-white hover:bg-deepBlue",
+          // day_selected styling is now handled by global JSX style
           ...classNames,
         }}
         {...props}

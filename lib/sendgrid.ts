@@ -45,6 +45,9 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
         console.log('With dynamic template data:', JSON.stringify(params.dynamicTemplateData));
         emailData.dynamicTemplateData = params.dynamicTemplateData;
       }
+      
+      // Even with a template, we need to provide at least a minimal text/plain content
+      emailData.text = params.text || 'Please view this email in an HTML-compatible email client.';
     } else {
       // Fallback to text/html content if no template
       // Ensure text and html are valid non-empty strings
