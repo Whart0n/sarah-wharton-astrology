@@ -14,44 +14,64 @@ function Calendar({
   ...props
 }: CalendarProps) {
   return (
-    <div className="calendar-container w-full">
+    <div className="calendar-container w-full h-full flex flex-col">
       <style jsx global>{`
         .calendar-container .rdp {
+          margin: 0;
           width: 100%;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
         }
         .calendar-container .rdp-months {
+          flex: 1;
           width: 100%;
+          display: flex;
+          flex-direction: column;
         }
         .calendar-container .rdp-month {
+          flex: 1;
           width: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+        .calendar-container .rdp-caption {
+          margin-bottom: 1rem;
         }
         .calendar-container .rdp-table {
           width: 100%;
           table-layout: fixed;
+          border-collapse: collapse;
+          flex: 1;
         }
         .calendar-container .rdp-head_cell {
           text-align: center;
           font-weight: 500;
-          padding-bottom: 10px;
+          padding: 0.5rem 0;
+          font-size: 0.875rem;
+          color: #6b7280;
         }
         .calendar-container .rdp-cell {
           text-align: center;
-          padding: 0;
-          height: 40px;
+          padding: 0.25rem;
+          height: 2.5rem;
         }
         .calendar-container .rdp-button {
-          width: 40px;
-          height: 40px;
-          font-size: 1rem;
+          width: 100%;
+          height: 100%;
+          max-width: 2.5rem;
+          max-height: 2.5rem;
+          margin: 0 auto;
           display: flex;
           align-items: center;
           justify-content: center;
-          margin: 0 auto;
+          border-radius: 0.375rem;
+          transition: all 0.15s ease;
         }
-        .calendar-container .rdp-day_selected {
-          background-color: #0f4c81;
-          color: white;
+        .calendar-container .rdp-button:hover:not([disabled]) {
+          background-color: #f3f4f6;
         }
+        .calendar-container .rdp-day_selected, 
         .calendar-container .rdp-day_selected:hover {
           background-color: #0f4c81;
           color: white;
