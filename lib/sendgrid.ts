@@ -44,9 +44,11 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
 // Template for booking confirmation to client
 export function getClientBookingConfirmationEmail(booking: {
   client_name: string;
+  client_email: string;
   service_name: string;
   start_time: Date;
   end_time: Date;
+  zoom_link?: string; // Add Zoom link as optional parameter
 }): EmailParams {
   const startTime = new Date(booking.start_time);
   const formattedDate = startTime.toLocaleDateString('en-US', {
@@ -69,7 +71,7 @@ export function getClientBookingConfirmationEmail(booking: {
   });
 
   return {
-    to: booking.client_name,
+    to: booking.client_email, // Fixed: Use email address instead of name
     subject: 'Your Astrology Reading Confirmation',
     text: `Thank you for booking an astrology reading with Sarah Wharton. Your appointment for ${booking.service_name} has been confirmed for ${formattedDate} at ${formattedStartTime}.`,
     html: `
@@ -81,6 +83,7 @@ export function getClientBookingConfirmationEmail(booking: {
           <p><strong>Service:</strong> ${booking.service_name}</p>
           <p><strong>Date:</strong> ${formattedDate}</p>
           <p><strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
+          ${booking.zoom_link ? `<p><strong>Zoom Link:</strong> <a href="${booking.zoom_link}">${booking.zoom_link}</a></p>` : ''}
         </div>
         <p>Please be prepared 5 minutes before your appointment. If you need to reschedule or cancel, please contact me at least 24 hours in advance.</p>
         <p>Looking forward to your session!</p>
@@ -97,6 +100,7 @@ export function getAstrologerBookingNotificationEmail(booking: {
   service_name: string;
   start_time: Date;
   end_time: Date;
+  zoom_link?: string; // Add Zoom link as optional parameter
 }): EmailParams {
   const startTime = new Date(booking.start_time);
   const formattedDate = startTime.toLocaleDateString('en-US', {
@@ -132,6 +136,7 @@ export function getAstrologerBookingNotificationEmail(booking: {
           <p><strong>Service:</strong> ${booking.service_name}</p>
           <p><strong>Date:</strong> ${formattedDate}</p>
           <p><strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
+          ${booking.zoom_link ? `<p><strong>Zoom Link:</strong> <a href="${booking.zoom_link}">${booking.zoom_link}</a></p>` : ''}
         </div>
         <p>This appointment has been added to your calendar.</p>
       </div>

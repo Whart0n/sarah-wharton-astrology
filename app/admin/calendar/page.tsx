@@ -103,7 +103,25 @@ export default function AdminCalendarPage() {
   }
 
   async function removeSlot(eventId: string) {
-    alert("Delete functionality coming soon.");
+    if (!confirm("Are you sure you want to delete this availability slot?")) {
+      return;
+    }
+    
+    try {
+      const res = await fetch(`/api/calendar/delete?eventId=${encodeURIComponent(eventId)}`, {
+        method: "DELETE",
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to delete slot");
+      }
+      
+      // Refresh the calendar after successful deletion
+      setRefresh(prev => prev + 1);
+    } catch (err: any) {
+      alert(`Error deleting slot: ${err.message}`);
+    }
   }
 
   return (
@@ -142,6 +160,10 @@ export default function AdminCalendarPage() {
                   selected={selectedDates}
                   onSelect={setSelectedDates}
                   className="rounded-md border"
+                  classNames={{
+                    day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                    day_today: "bg-accent text-accent-foreground"
+                  }}
                 />
               </div>
             </div>

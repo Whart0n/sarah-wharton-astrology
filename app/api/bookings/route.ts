@@ -212,9 +212,11 @@ export async function POST(request: Request) {
       // Send client confirmation
       await sendEmail(getClientBookingConfirmationEmail({
         client_name,
+        client_email,
         service_name: service.name,
         start_time: new Date(start_time),
         end_time: new Date(end_time),
+        zoom_link: zoomMeeting?.join_url,
       }))
       
       // Send notification to astrologer
@@ -224,6 +226,7 @@ export async function POST(request: Request) {
         service_name: service.name,
         start_time: new Date(start_time),
         end_time: new Date(end_time),
+        zoom_link: zoomMeeting?.join_url,
       }))
     } catch (emailError) {
       console.error("Failed to send confirmation emails:", emailError)

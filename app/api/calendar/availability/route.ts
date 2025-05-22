@@ -26,11 +26,24 @@ export async function GET(request: Request) {
 
     // Fetch all events in the given range
     const events = await listEvents(start, end)
+    
+    // Format the events for display, including all necessary fields
     const formattedEvents = events.map(ev => ({
       id: ev.id,
-      summary: ev.summary,
-      start: ev.start?.dateTime || ev.start?.date,
-      end: ev.end?.dateTime || ev.end?.date,
+      summary: ev.summary || 'Available', // Default to 'Available' if no summary
+      start: {
+        dateTime: ev.start?.dateTime,
+        date: ev.start?.date
+      },
+      end: {
+        dateTime: ev.end?.dateTime,
+        date: ev.end?.date
+      },
+      // Include any other fields needed for display
+      colorId: ev.colorId,
+      status: ev.status,
+      // Include the raw event data for debugging if needed
+      raw: ev
     }))
 
     return NextResponse.json({ events: formattedEvents })
