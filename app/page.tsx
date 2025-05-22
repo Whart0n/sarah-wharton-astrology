@@ -38,7 +38,7 @@ export default async function HomePage() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/images/sarah-portrait.png" 
+            src="/images/about.jpg" 
             alt="Sarah Wharton, Professional Astrologer"
             fill
             className="object-cover object-center"
@@ -185,7 +185,7 @@ export default async function HomePage() {
                 <p className="text-white font-sora font-medium">Michael T.</p>
               </div>
               <p className="text-white font-sora leading-relaxed">
-                "I was skeptical at first, but the solar return reading was remarkably accurate. It predicted major themes that unfolded throughout my year and gave me the tools to navigate challenges with confidence. I'm now a regular client."
+                "I was skeptical at first, but my solar return reading was remarkably accurate. It predicted major themes that unfolded throughout my year and gave me the tools to navigate challenges with confidence. I'm now a regular client."
               </p>
             </div>
 
@@ -195,7 +195,7 @@ export default async function HomePage() {
                 <p className="text-white font-sora font-medium">Alicia D.</p>
               </div>
               <p className="text-white font-sora leading-relaxed">
-                "The career astrology consultation came at the perfect time. I was at a crossroads professionally, and the reading provided clarity on which path aligned best with my cosmic blueprint. Six months later, I'm thriving in my new direction."
+                "My career astrology consultation came at the perfect time. I was at a crossroads professionally, and the reading provided clarity on which path aligned best with my cosmic blueprint. Six months later, I'm thriving in my new direction."
               </p>
             </div>
           </div>
