@@ -119,24 +119,34 @@ export function getClientBookingConfirmationEmail(booking: {
     hour12: true,
   });
 
-  // Use SendGrid dynamic template
-  const BOOKING_TEMPLATE_ID = process.env.SENDGRID_BOOKING_TEMPLATE_ID || process.env.SENDGRID_CLIENT_BOOKING_TEMPLATE_ID;
+  // Use SendGrid dynamic template - prioritize SENDGRID_CLIENT_BOOKING_TEMPLATE_ID
+  const BOOKING_TEMPLATE_ID = process.env.SENDGRID_CLIENT_BOOKING_TEMPLATE_ID || process.env.SENDGRID_BOOKING_TEMPLATE_ID;
+  
+  console.log(`[SendGrid] Client booking template ID: ${BOOKING_TEMPLATE_ID || 'NOT SET'}`);
   
   if (BOOKING_TEMPLATE_ID) {
+    // Prepare the dynamic template data
+    const dynamicData = {
+      client_name: booking.client_name,
+      service_name: booking.service_name,
+      date: formattedDate,
+      start_time: formattedStartTime,
+      end_time: formattedEndTime,
+      zoom_link: booking.zoom_link || '',
+      has_zoom_link: !!booking.zoom_link,
+    };
+    
+    console.log(`[SendGrid] Using template ID: ${BOOKING_TEMPLATE_ID} with dynamic data:`, dynamicData);
+    
     // Use the dynamic template
     return {
       to: booking.client_email,
       subject: 'Your Astrology Reading Confirmation',
       templateId: BOOKING_TEMPLATE_ID,
-      dynamicTemplateData: {
-        client_name: booking.client_name,
-        service_name: booking.service_name,
-        date: formattedDate,
-        start_time: formattedStartTime,
-        end_time: formattedEndTime,
-        zoom_link: booking.zoom_link || '',
-        has_zoom_link: !!booking.zoom_link,
-      },
+      dynamicTemplateData: dynamicData,
+      // Always include minimal content to satisfy SendGrid API requirements
+      text: `Your booking for ${booking.service_name} has been confirmed for ${formattedDate} at ${formattedStartTime}.`,
+      html: `<p>Your booking for ${booking.service_name} has been confirmed for ${formattedDate} at ${formattedStartTime}.</p>`,
     };
   } else {
     // Fallback to inline content if no template ID is set

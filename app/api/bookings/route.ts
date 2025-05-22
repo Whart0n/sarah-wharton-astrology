@@ -177,9 +177,26 @@ export async function POST(request: Request) {
       
       console.log(`[Booking] Using host email: ${host_email}`);
       
+      // Ensure start_time is a valid ISO string for Zoom API
+      let formattedStartTime: string;
+      if (typeof start_time === 'string') {
+        formattedStartTime = start_time;
+      } else if (start_time instanceof Date) {
+        formattedStartTime = start_time.toISOString();
+      } else {
+        formattedStartTime = new Date(start_time).toISOString();
+      }
+      
+      console.log(`[Booking] Formatted start time for Zoom: ${formattedStartTime}`);
+      
+      // Verify Zoom credentials are present
+      if (!process.env.ZOOM_ACCOUNT_ID || !process.env.ZOOM_CLIENT_ID || !process.env.ZOOM_CLIENT_SECRET) {
+        throw new Error('Missing required Zoom API credentials. Check environment variables.');
+      }
+      
       zoomMeeting = await createZoomMeeting({
         topic: `Astrology Session with ${client_name}`,
-        start_time: start_time, // Already in ISO string format
+        start_time: formattedStartTime,
         duration: service.duration_minutes || 60,
         timezone: 'America/Denver',
         agenda: `Astrology session for ${client_name}`,
@@ -253,25 +270,44 @@ export async function POST(request: Request) {
 
     // Send confirmation emails
     try {
-      // Send client confirmation
-      await sendEmail(getClientBookingConfirmationEmail({
+      // Log the template IDs we're using
+      const clientTemplateId = process.env.SENDGRID_CLIENT_BOOKING_TEMPLATE_ID;
+      const adminTemplateId = process.env.SENDGRID_ADMIN_BOOKING_TEMPLATE_ID;
+      console.log(`[Booking] Using email templates - Client: ${clientTemplateId || 'NOT SET'}, Admin: ${adminTemplateId || 'NOT SET'}`);
+
+      if (!clientTemplateId) {
+        console.warn('[Booking] SENDGRID_CLIENT_BOOKING_TEMPLATE_ID is not set in environment variables');
+      }
+      
+      // Prepare client confirmation email with dynamic data
+      const clientEmail = getClientBookingConfirmationEmail({
         client_name,
         client_email,
         service_name: service.name,
         start_time: new Date(start_time),
         end_time: new Date(end_time),
         zoom_link: zoomMeeting?.join_url,
-      }))
+      });
+      
+      // Send client confirmation email
+      console.log(`[Booking] Sending client confirmation email to ${client_email}`);
+      const clientEmailResult = await sendEmail(clientEmail);
+      console.log(`[Booking] Client email send result: ${clientEmailResult ? 'Success' : 'Failed'}`);
       
       // Send notification to astrologer
-      await sendEmail(getAstrologerBookingNotificationEmail({
+      console.log('[Booking] Sending notification email to admin');
+      const adminEmail = getAstrologerBookingNotificationEmail({
         client_name,
         client_email,
         service_name: service.name,
         start_time: new Date(start_time),
         end_time: new Date(end_time),
         zoom_link: zoomMeeting?.join_url,
-      }))
+      });
+      
+      const adminEmailResult = await sendEmail(adminEmail);
+      console.log(`[Booking] Admin email send result: ${adminEmailResult ? 'Success' : 'Failed'}`);
+      
     } catch (emailError) {
       console.error("Failed to send confirmation emails:", emailError)
       // Continue even if emails fail

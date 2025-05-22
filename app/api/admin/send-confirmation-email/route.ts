@@ -89,6 +89,16 @@ export async function POST(request: Request) {
       zoom_link: booking.zoom_link || '',
     };
 
+    // Get the template ID from environment variables
+    const BOOKING_TEMPLATE_ID = process.env.SENDGRID_CLIENT_BOOKING_TEMPLATE_ID;
+    
+    if (!BOOKING_TEMPLATE_ID) {
+      console.error('SENDGRID_CLIENT_BOOKING_TEMPLATE_ID environment variable is not set');
+      return NextResponse.json({ error: 'Email template configuration error' }, { status: 500 });
+    }
+    
+    console.log(`Using SendGrid template ID: ${BOOKING_TEMPLATE_ID}`);
+    
     // Send the email using SendGrid dynamic template
     await sendEmail({
       to: booking.client_email as string,
@@ -96,9 +106,11 @@ export async function POST(request: Request) {
       // SendGrid requires non-empty content values, even when using templates
       html: `<p>Your booking for ${serviceNameForEmail} has been confirmed for ${booking_date} at ${booking_time}.</p>`,
       text: `Your booking for ${serviceNameForEmail} has been confirmed for ${booking_date} at ${booking_time}.`,
-      templateId: 'd-f63c675b82824b509e553189f71ff82e',
+      templateId: BOOKING_TEMPLATE_ID, // Use the environment variable instead of hardcoded value
       dynamicTemplateData,
     });
+    
+    console.log('Confirmation email sent successfully to:', booking.client_email);
 
     let statusUpdated = false;
     // As a fallback, ensure the booking status is 'confirmed'.
