@@ -3,6 +3,7 @@ import { supabase, supabaseAdmin } from "@/lib/supabase"
 import { deleteEvent } from "@/lib/googleCalendar"
 import { getClientBookingConfirmationEmail, getAstrologerBookingNotificationEmail, sendEmail } from "@/lib/sendgrid"
 import { getServiceById } from "@/lib/supabase"
+import { createZoomMeeting } from "@/lib/zoom"
 
 export async function GET(request: Request) {
   try {
@@ -127,7 +128,26 @@ export async function POST(request: Request) {
       )
     }
 
-    // Insert booking into database
+    // Create Zoom meeting before inserting booking
+    let zoomMeeting = null;
+    let zoomError = null;
+    try {
+      // You may want to put your Zoom host email in .env.local as ZOOM_HOST_EMAIL
+      const host_email = process.env.ZOOM_HOST_EMAIL || client_email; // fallback to client_email if not set
+      zoomMeeting = await createZoomMeeting({
+        topic: `Astrology Session with ${client_name}`,
+        start_time: new Date(start_time).toISOString(),
+        duration: service.duration_minutes || 60,
+        timezone: 'America/Denver',
+        agenda: `Astrology session for ${client_name}`,
+        host_email,
+      });
+    } catch (err) {
+      zoomError = err;
+      console.error('Error creating Zoom meeting:', err);
+    }
+
+    // Insert booking into database, saving zoom_link if available
     const { data, error } = await supabase
       .from("bookings")
       .insert([
@@ -143,6 +163,7 @@ export async function POST(request: Request) {
           birthtime,
           status: "confirmed",
           created_at: new Date().toISOString(),
+          zoom_link: zoomMeeting?.join_url || null,
         },
       ])
       .select()

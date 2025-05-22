@@ -18,7 +18,6 @@ export function BookingForm({ onSuccess }: BookingFormProps) {
     birthplace: "",
     birthdate: "",
     birthtime: "",
-    zoom_link: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +53,6 @@ export function BookingForm({ onSuccess }: BookingFormProps) {
         birthplace: "",
         birthdate: "",
         birthtime: "",
-        zoom_link: "",
       });
     } catch (err: any) {
       setError(err.message);
@@ -148,17 +146,6 @@ export function BookingForm({ onSuccess }: BookingFormProps) {
           value={form.birthtime}
           onChange={handleChange}
           className="w-full border rounded px-3 py-2"
-        />
-      </div>
-      <div>
-        <label className="block font-medium">Zoom Link (optional)</label>
-        <input
-          type="url"
-          name="zoom_link"
-          value={form.zoom_link}
-          onChange={handleChange}
-          className="w-full border rounded px-3 py-2"
-          placeholder="https://zoom.us/j/your-meeting-id"
         />
       </div>
       {error && <div className="text-red-500">{error}</div>}

@@ -30,6 +30,7 @@ interface Booking {
   birthplace?: string
   birthdate?: string
   birthtime?: string
+  zoom_link?: string;
 }
 
 import { useState as useLocalState } from "react";
