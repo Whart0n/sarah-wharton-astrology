@@ -10,12 +10,13 @@ if (!ZOOM_ACCOUNT_ID || !ZOOM_CLIENT_ID || !ZOOM_CLIENT_SECRET) {
 
 // 1. Get Zoom access token (Server-to-Server OAuth)
 export async function getZoomAccessToken(): Promise<string> {
+  const params = new URLSearchParams();
+  params.append('grant_type', 'account_credentials');
+  params.append('account_id', ZOOM_ACCOUNT_ID!); // Non-null assertion since we check above
+
   const response = await axios.post(
     'https://zoom.us/oauth/token',
-    new URLSearchParams({
-      grant_type: 'account_credentials',
-      account_id: ZOOM_ACCOUNT_ID,
-    }),
+    params,
     {
       headers: {
         Authorization:
