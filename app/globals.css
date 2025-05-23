@@ -210,13 +210,7 @@
 }
 
 /* Gold gradient text */
-./* Removed gold-gradient-text class: gradients not used in new design */ {
-  background: linear-gradient(to right, #d9ad26, #f5e5b5, #d9ad26);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-}
+
 
 /* Divider */
 .star-divider {

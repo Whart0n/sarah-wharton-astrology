@@ -160,6 +160,102 @@ export function getClientBookingConfirmationEmail(booking: {
   }
 }
 
+export function getAstrologerBookingNotificationEmail(booking: {
+  client_name: string;
+  client_email: string;
+  service_name: string;
+  start_time: Date;
+  end_time: Date;
+  zoom_link?: string;
+  birthplace?: string;
+  birthdate?: string;
+  birthtime?: string;
+}): EmailParams {
+  const startTime = new Date(booking.start_time);
+  const formattedDate = startTime.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const formattedStartTime = startTime.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  const formattedEndTime = new Date(booking.end_time).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  const BOOKING_TEMPLATE_ID = process.env.SENDGRID_ADMIN_BOOKING_TEMPLATE_ID;
+
+  console.log(`[SendGrid] Admin booking notification template ID: ${BOOKING_TEMPLATE_ID || 'NOT SET'}`);
+
+  if (BOOKING_TEMPLATE_ID) {
+    const dynamicData = {
+      client_name: booking.client_name,
+      client_email: booking.client_email,
+      service_name: booking.service_name,
+      booking_date: formattedDate,
+      booking_time: `${formattedStartTime} - ${formattedEndTime}`,
+      zoom_link: booking.zoom_link || 'No Zoom link provided',
+      birthplace: booking.birthplace || 'Not provided',
+      birthdate: booking.birthdate || 'Not provided',
+      birthtime: booking.birthtime || 'Not provided',
+    };
+
+    console.log(`[SendGrid] Using admin template ID: ${BOOKING_TEMPLATE_ID} with dynamic data:`, dynamicData);
+
+    return {
+      to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
+      subject: `New Booking: ${booking.client_name} - ${booking.service_name}`,
+      templateId: BOOKING_TEMPLATE_ID,
+      dynamicTemplateData: dynamicData,
+      text: `New booking received from ${booking.client_name} (${booking.client_email}) for ${booking.service_name} on ${formattedDate} at ${formattedStartTime}.`,
+      html: `<p>New booking received from ${booking.client_name} (${booking.client_email}) for ${booking.service_name} on ${formattedDate} at ${formattedStartTime}.</p>`,
+    };
+  } else {
+    console.warn('[SendGrid] SENDGRID_ADMIN_BOOKING_TEMPLATE_ID not set, using inline email content');
+    return {
+      to: process.env.EMAIL_FROM || 'sarah@sarahwharton.com',
+      subject: `New Booking: ${booking.client_name} - ${booking.service_name}`,
+      text: `New booking received from ${booking.client_name} (${booking.client_email}) for ${booking.service_name} on ${formattedDate} at ${formattedStartTime}.
+      
+Client Details:
+- Name: ${booking.client_name}
+- Email: ${booking.client_email}
+- Service: ${booking.service_name}
+- Date: ${formattedDate}
+- Time: ${formattedStartTime} - ${formattedEndTime}
+- Zoom Link: ${booking.zoom_link || 'No Zoom link provided'}
+- Birthplace: ${booking.birthplace || 'Not provided'}
+- Birthdate: ${booking.birthdate || 'Not provided'}
+- Birthtime: ${booking.birthtime || 'Not provided'}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #0a1930;">New Booking Notification</h2>
+          <p>You have received a new booking request:</p>
+          <div style="background-color: #f7f7f7; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <p><strong>Client:</strong> ${booking.client_name} (${booking.client_email})</p>
+            <p><strong>Service:</strong> ${booking.service_name}</p>
+            <p><strong>Date:</strong> ${formattedDate}</p>
+            <p><strong>Time:</strong> ${formattedStartTime} - ${formattedEndTime}</p>
+            ${booking.zoom_link ? `<p><strong>Zoom Link:</strong> <a href="${booking.zoom_link}">${booking.zoom_link}</a></p>` : ''}
+            <p><strong>Birthplace:</strong> ${booking.birthplace || 'Not provided'}</p>
+            <p><strong>Birthdate:</strong> ${booking.birthdate || 'Not provided'}</p>
+            <p><strong>Birthtime:</strong> ${booking.birthtime || 'Not provided'}</p>
+          </div>
+          <p>This booking has been automatically confirmed.</p>
+        </div>
+      `,
+    };
+  }
+}
+
 export function getContactFormNotificationEmail(contact: {
   name: string;
   email: string;

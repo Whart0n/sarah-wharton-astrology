@@ -58,7 +58,7 @@ const BookingServicePage = async ({ params }: { params: { serviceId: string } })
               </Link>
             </div>
 
-            <BookingForm service={service} />
+            <BookingForm service={service} services={[service]} />
 
             <div className="mt-12 bg-blush-light p-6 rounded-lg">
               <h3 className="text-lg font-medium mb-4">Important Information</h3>

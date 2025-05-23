@@ -98,7 +98,7 @@ export function BookingForm({ service: initialService, services }: BookingFormPr
   // State management
   const [isLoading, setIsLoading] = useState(false);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
   
   // Initialize service state with type safety
@@ -518,7 +518,7 @@ export function BookingForm({ service: initialService, services }: BookingFormPr
                   <Calendar
                     mode="single"
                     selected={selectedDate}
-                    onSelect={(date: Date | undefined) => setSelectedDate(date || null)}
+                    onSelect={(date: Date | undefined) => setSelectedDate(date || undefined)}
                     disabled={(date) => {
                       // Disable past dates
                       const today = new Date();

@@ -199,8 +199,7 @@ export async function POST(request: Request) {
         start_time: formattedStartTime,
         duration: service.duration_minutes || 60,
         timezone: 'America/Denver',
-        agenda: `Astrology session for ${client_name}`,
-        host_email,
+        agenda: `Astrology session for ${client_name}`
       });
       
       console.log('[Booking] Zoom meeting created successfully:', {

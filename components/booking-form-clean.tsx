@@ -173,11 +173,35 @@ export function BookingForm({ service: initialService, services }: BookingFormPr
 
         // Combine with existing bookings
         const allBusyRanges = [
-          ...googleEvents.filter((e: CalendarEvent) => !e.isAvailabilitySlot).map((e: CalendarEvent) => ({
-            start: e.start,
-            end: e.end,
-  
-// ... rest of the component code ...
+          ...googleEvents
+            .filter((e: CalendarEvent) => !e.isAvailabilitySlot)
+            .map((e: CalendarEvent) => ({
+              start: e.start,
+              end: e.end,
+            })),
+        ];
 
-// Add this at the end of the file
+        // Process available slots logic here...
+        // This is a placeholder - you'll need to implement the actual logic
+        // for determining available time slots based on the busy ranges
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching availability:', error);
+        setErrorMessage('Failed to load available time slots. Please try again.');
+        setIsLoading(false);
+      }
+    };
+
+    fetchAvailability();
+  }, [selectedDate, service]);
+
+  // Rest of the component code...
+  return (
+    <div>
+      {/* Your form JSX here */}
+    </div>
+  );
+}
+
 export default BookingForm;
