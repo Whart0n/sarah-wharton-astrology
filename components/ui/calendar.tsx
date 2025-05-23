@@ -1,67 +1,26 @@
 "use client"
 
 import * as React from "react"
-import { DayPicker } from "react-day-picker"
+import { DayPicker as BaseDayPicker } from "react-day-picker"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
 
-// Default icon components
-const DefaultIconLeft = (props: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={cn("h-4 w-4", props.className)}
-  >
-    <path d="m15 18-6-6 6-6" />
-  </svg>
-);
+// Using default icons from react-day-picker v9
 
-const DefaultIconRight = (props: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={cn("h-4 w-4", props.className)}
-  >
-    <path d="m9 18 6-6-6-6" />
-  </svg>
-);
-
-// Extend the DayPicker props to include our custom props
-interface CalendarProps {
+// Define the Calendar props
+type CalendarProps = React.ComponentProps<typeof BaseDayPicker> & {
   className?: string;
   classNames?: Record<string, string>;
-  showOutsideDays?: boolean;
-  components?: {
-    IconLeft?: React.ComponentType<{ className?: string }>;
-    IconRight?: React.ComponentType<{ className?: string }>;
-  };
-  [key: string]: any; // Allow other props to pass through
-}
+};
 
 function Calendar({
   className,
   classNames = {},
-  showOutsideDays = true,
-  components = {},
   ...props
 }: CalendarProps) {
-  // Use provided components or default ones
-  const { IconLeft = DefaultIconLeft, IconRight = DefaultIconRight } = components;
-
   return (
     <div className="w-full">
-      <DayPicker
-        showOutsideDays={showOutsideDays}
+      <BaseDayPicker
         className={cn("p-3 w-full", className)}
         classNames={{
           // Layout
@@ -106,10 +65,7 @@ function Calendar({
           // Custom class names
           ...classNames,
         }}
-        components={{
-          ...(IconLeft ? { IconLeft } : {}),
-          ...(IconRight ? { IconRight } : {})
-        }}
+        // For react-day-picker v9, we'll use the default icons and style them with CSS
         {...props}
       />
     </div>
