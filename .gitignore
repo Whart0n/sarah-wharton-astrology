@@ -3,3 +3,5 @@ node_modules
 .env.local
 google-service-account.json
 .next/
+# Local environment files
+.env.local_old

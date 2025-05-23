@@ -476,9 +476,9 @@ export function BookingForm({ service: initialService, services }: BookingFormPr
           {service.description} - {formatDuration(service.duration_minutes)} - {formatPrice(service.price_cents)}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Personal Details Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
@@ -510,73 +510,58 @@ export function BookingForm({ service: initialService, services }: BookingFormPr
             </div>
 
             {/* Date and Time Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date</FormLabel>
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={(date: Date | undefined) => {
-                        field.onChange(date);
-                        setSelectedDate(date || null);
-                      }}
-                      disabled={(date) => {
-                        // Disable past dates
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date < today;
-                      }}
-                      initialFocus
-                      className="rounded-md border"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="time"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Time</FormLabel>
-                    <div className="space-y-2">
-                      {isLoading ? (
-                        <div className="flex items-center justify-center h-40">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                        </div>
-                      ) : selectedDate && formattedTimeSlots.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1">
-                          {formattedTimeSlots.map((slot) => (
-                            <Button
-                              key={slot.value}
-                              type="button"
-                              variant={field.value === slot.value ? 'default' : 'outline'}
-                              className="justify-start"
-                              onClick={() => field.onChange(slot.value)}
-                            >
-                              {slot.label}
-                            </Button>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center h-40 text-muted-foreground">
-                          {selectedDate ? 'No available time slots' : 'Select a date first'}
-                        </div>
-                      )}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Select Date & Time</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>Date</Label>
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date: Date | undefined) => setSelectedDate(date || null)}
+                    disabled={(date) => {
+                      // Disable past dates
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      return date < today;
+                    }}
+                    initialFocus
+                    className="rounded-md border"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Time</Label>
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-40">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                     </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  ) : selectedDate && formattedTimeSlots.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto p-1">
+                      {formattedTimeSlots.map((slot) => (
+                        <Button
+                          key={slot.value}
+                          type="button"
+                          variant={form.watch('time') === slot.value ? 'default' : 'outline'}
+                          className="justify-start"
+                          onClick={() => form.setValue('time', slot.value)}
+                        >
+                          {slot.label}
+                        </Button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-20 text-muted-foreground">
+                      {selectedDate ? 'No available time slots' : 'Select a date first'}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Birth Information Section */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 border-t pt-6">Birth Information (for your reading)</h3>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Birth Information (for your reading)</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
                   control={form.control}
@@ -621,40 +606,38 @@ export function BookingForm({ service: initialService, services }: BookingFormPr
             </div>
 
             {/* Additional Information */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 border-t pt-6">Additional Information</h3>
-              <div className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="focusArea"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>What would you like to focus on? (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Any specific areas of your life you'd like to explore?"
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="promoCode"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Promo Code (Optional)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter promo code" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Additional Information</h3>
+              <FormField
+                control={form.control}
+                name="focusArea"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>What would you like to focus on? (Optional)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Any specific areas of your life you'd like to explore?"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="promoCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Promo Code (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter promo code" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="pt-4">
